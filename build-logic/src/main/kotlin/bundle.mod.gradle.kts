@@ -5,6 +5,7 @@ plugins {
     `maven-publish`
 
     id("net.fabricmc.fabric-loom")
+    id("com.diffplug.spotless")
 }
 
 val libs = the<LibrariesForLibs>()
@@ -40,6 +41,19 @@ loom {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
     withSourcesJar()
+}
+
+spotless {
+    java {
+        princeOfSpace("2.3.0")
+            .indentSize(4)
+            .closingParenOnNewLine(true)
+            .trailingCommas(true)
+
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 // Set every mod to compile against the right Java version.
