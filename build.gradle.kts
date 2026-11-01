@@ -1,5 +1,9 @@
+import com.diffplug.gradle.spotless.SpotlessExtension
+
 plugins {
     base
+
+    id("com.diffplug.spotless") version "8.10.4"
 }
 
 val bundleJars = configurations.dependencyScope("bundleJars")
@@ -13,6 +17,23 @@ val bundleJarFiles = configurations.resolvable("bundleJarFiles") {
 
 dependencies {
     subprojects.forEach { bundleJars(project(it.path)) }
+}
+
+subprojects {
+    // Set up code formatting:
+    pluginManager.withPlugin("java") {
+        pluginManager.apply("com.diffplug.spotless")
+
+        extensions.configure<SpotlessExtension> {
+            java {
+                palantirJavaFormat("2.103.0")
+                    .formatJavadoc(true)
+                removeUnusedImports()
+                trimTrailingWhitespace()
+                endWithNewline()
+            }
+        }
+    }
 }
 
 val collectJars by tasks.registering(Sync::class) {
