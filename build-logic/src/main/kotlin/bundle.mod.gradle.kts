@@ -46,6 +46,11 @@ java {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+
+    val junitDir = layout.buildDirectory.dir("junit")
+    doFirst { junitDir.get().asFile.mkdirs() }
+
+    workingDir(junitDir)
 }
 
 val hasGameTests = file("src/gametest").exists()
