@@ -17,6 +17,8 @@ dependencies {
     minecraft(libs.minecraft)
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
+
+    testImplementation(libs.fabric.loader.junit)
 }
 
 // Mods with a src/client directory get an optional client part: client-only code in its own source
@@ -54,6 +56,10 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
     }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
 
 // Set every mod to compile against the right Java version.
