@@ -5,7 +5,6 @@ plugins {
     `maven-publish`
 
     id("net.fabricmc.fabric-loom")
-    id("com.diffplug.spotless")
 }
 
 val libs = the<LibrariesForLibs>()
@@ -43,16 +42,6 @@ loom {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
     withSourcesJar()
-}
-
-spotless {
-    java {
-        eclipse().configFile(rootProject.file("config/eclipse-formatter.xml"))
-
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
 }
 
 tasks.withType<Test>().configureEach {
