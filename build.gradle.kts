@@ -1,5 +1,7 @@
 plugins {
     base
+
+    id("bundle.tasks")
 }
 
 val bundleJars = configurations.dependencyScope("bundleJars")
