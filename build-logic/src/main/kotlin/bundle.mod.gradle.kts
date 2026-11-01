@@ -62,6 +62,24 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
+val hasGameTests = file("src/gametest").exists()
+val hasClientGameTests =
+    file("src/gametest/java").walkTopDown()
+        .any { it.isFile && it.name.endsWith("ClientGameTest.java") }
+
+// Set up every mod with a GameTest directory to use a conventional GameTest setup.
+if (hasGameTests) {
+    fabricApi {
+        configureTests {
+            createSourceSet = true
+            modId = "${project.name}-gametest"
+            enableGameTests = true
+            enableClientGameTests = hasClientGameTests
+            eula = true // TODO: Check if this needs to be set to true actually.
+        }
+    }
+}
+
 // Set every mod to compile against the right Java version.
 tasks.withType<JavaCompile>().configureEach {
     options.release = javaVersion
