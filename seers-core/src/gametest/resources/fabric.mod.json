@@ -1,0 +1,16 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-core-gametest",
+    "version": "${version}",
+    "name": "Seer's Core GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.core.SeersCoreGameTest"
+        ]
+    },
+    "depends": {
+        "seers-core": "*"
+    }
+}

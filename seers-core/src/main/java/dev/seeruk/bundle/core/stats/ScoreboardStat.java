@@ -1,0 +1,55 @@
+package dev.seeruk.bundle.core.stats;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+
+/**
+ * A per-player statistic kept in a Vanilla scoreboard objective, so it persists with the world and
+ * works for everyone without a client mod. A real Vanilla statistic isn't an option, as Fabric
+ * syncs that registry to clients.
+ *
+ * @param modId         the mod's ID, e.g. {@code seers-disposal}
+ * @param objectiveName the objectiveName's name, e.g. {@code items_disposed}
+ * @param displayName   the objectiveName's display name, e.g. {@code Items Disposed}
+ */
+public record ScoreboardStat(String modId, String objectiveName, String displayName) {
+    /**
+     * Creates the objectiveName if it's missing. Safe to call repeatedly.
+     */
+    public void ensureObjective(MinecraftServer server) {
+        final var scoreboard = server.getScoreboard();
+        final var objectiveId = objectiveId();
+
+        if (scoreboard.getObjective(objectiveId) == null) {
+            scoreboard.addObjective(
+                objectiveId,
+                ObjectiveCriteria.DUMMY,
+                Component.literal(displayName),
+                ObjectiveCriteria.RenderType.INTEGER,
+                true,
+                null
+            );
+        }
+    }
+
+    /**
+     * Adds to the player's score. Does nothing if the objectiveName has been removed (i.e. doesn't
+     * throw or anything). Call {@link #ensureObjective(MinecraftServer)} before calls that require
+     * the objectiveName to exist.
+     */
+    public void add(Player player, int amount) {
+        final var scoreboard = player.level().getServer().getScoreboard();
+        final var scoreObjective = scoreboard.getObjective(objectiveId());
+        if (scoreObjective == null) {
+            return; // Either removed, or failed to initialize.
+        }
+
+        scoreboard.getOrCreatePlayerScore(player, scoreObjective).add(amount);
+    }
+
+    private String objectiveId() {
+        return "%s.%s".formatted(modId, objectiveName);
+    }
+}
