@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-disposal-gametest",
+    "version": "${version}",
+    "name": "Seer's Disposal GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.disposal.SeersDisposalGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.disposal.client.SeersDisposalClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-disposal": "*"
+    }
+}

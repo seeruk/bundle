@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "seers-disposal",
+  "version": "${version}",
+  "name": "Seer's Disposal",
+  "description": "Provides a disposal inventory for quick and easy item destruction without littering.",
+  "authors": [
+    "Elliot Wright"
+  ],
+  "contact": {
+    "sources": "https://github.com/seeruk/bundle"
+  },
+  "license": "MPL-2.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.seeruk.bundle.disposal.SeersDisposal"
+    ],
+    "client": [
+      "dev.seeruk.bundle.disposal.client.SeersDisposalClient"
+    ]
+  },
+  "depends": {
+    "java": ">=25",
+    "minecraft": "~26.3",
+    "fabricloader": ">=0.20.1",
+    "fabric-api": "*"
+  }
+}
