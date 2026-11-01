@@ -7,6 +7,8 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.loom.plugin)
+
     // Allows the use of `libs` in these precompiled script plugins.
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }
