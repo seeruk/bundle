@@ -47,10 +47,7 @@ java {
 
 spotless {
     java {
-        princeOfSpace("2.3.0")
-            .indentSize(4)
-            .closingParenOnNewLine(true)
-            .trailingCommas(true)
+        eclipse().configFile(rootProject.file("config/eclipse-formatter.xml"))
 
         removeUnusedImports()
         trimTrailingWhitespace()

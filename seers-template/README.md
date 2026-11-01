@@ -5,7 +5,7 @@ base that can be copied to create new mods quickly.
 
 ## Usage
 
-This template mod can be copied to create a new mod. A helper task is defined in the shared 
+This template mod can be copied to create a new mod. A helper task is defined in the shared
 `build-logic` module. Simply run:
 
 ```bash
