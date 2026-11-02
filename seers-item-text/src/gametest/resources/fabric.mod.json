@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-item-text-gametest",
+    "version": "${version}",
+    "name": "Seer's Item Text GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.itemtext.SeersItemTextGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.itemtext.client.SeersItemTextClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-item-text": "*"
+    }
+}

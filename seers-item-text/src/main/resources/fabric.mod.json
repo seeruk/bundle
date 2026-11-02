@@ -1,0 +1,29 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-item-text",
+    "version": "${version}",
+    "name": "Seer's Item Text",
+    "description": "A template repository",
+    "authors": [
+        "Elliot Wright"
+    ],
+    "contact": {
+        "sources": "https://github.com/seeruk/bundle"
+    },
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "dev.seeruk.bundle.itemtext.SeersItemText"
+        ],
+        "client": [
+            "dev.seeruk.bundle.itemtext.client.SeersItemTextClient"
+        ]
+    },
+    "depends": {
+        "java": ">=25",
+        "minecraft": "~26.3",
+        "fabricloader": ">=0.20.1",
+        "fabric-api": "*"
+    }
+}

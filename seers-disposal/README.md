@@ -10,6 +10,8 @@ Provides a disposal inventory for quick and easy item destruction, without litte
 
 ## Usage
 
+This mod is server-side, and optionally client-side.
+
 You can always open the disposal inventory by running the `/disposal` command, this only requires
 the mod server-side. If you also have the client-side mod installed, you can set a key binding to
 open the disposal inventory without needing to type the command (it just sends the command for you).
