@@ -71,8 +71,10 @@ public class DisposalMenu extends ChestMenu {
         final var count = items.stream().mapToInt(ItemStack::getCount).sum();
 
         playSfx(player);
-        player.sendOverlayMessage(Component.literal(
-            "Disposed of %d item%s".formatted(count, count == 1 ? "" : "s")
-        ));
+        player.sendOverlayMessage(Component.literal(disposedMessage(count)));
+    }
+
+    static String disposedMessage(int count) {
+        return "Disposed of %d item%s".formatted(count, count == 1 ? "" : "s");
     }
 }
