@@ -29,7 +29,7 @@ abstract class ScaffoldMod : DefaultTask() {
     @TaskAction
     fun createMod() {
         val name = modName.get().trim()
-        if (!name.matches(Regex("[ -~]+"))) {
+        if (!name.matches(Regex("""[ -~&&[^"\\]]+"""))) { // Disallow " and \
             throw GradleException("The display name must only contain ASCII characters, got: $name")
         }
 
