@@ -103,8 +103,12 @@ public class DisposalMenuGameTest {
         player.closeContainer();
 
         final var events = eventsFor(player);
+        final var items = events.getFirst().items();
+
         helper.assertValueEqual(events.size(), 1, "number of events");
-        helper.assertValueEqual(events.getFirst().items().size(), 2, "number of items");
+        helper.assertValueEqual(items.size(), 2, "number of items");
+        helper.assertTrue(items.get(0).is(Items.DIRT) && items.get(0).getCount() == 1, "Expected 1 dirt");
+        helper.assertTrue(items.get(1).is(Items.STONE) && items.get(1).getCount() == 2, "Expected 2 stone");
         helper.succeed();
     }
 
