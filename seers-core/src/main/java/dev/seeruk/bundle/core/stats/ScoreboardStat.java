@@ -11,12 +11,12 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
  * syncs that registry to clients.
  *
  * @param modId         the mod's ID, e.g. {@code seers-disposal}
- * @param objectiveName the objectiveName's name, e.g. {@code items_disposed}
- * @param displayName   the objectiveName's display name, e.g. {@code Items Disposed}
+ * @param objectiveName the objective's name, e.g. {@code items_disposed}
+ * @param displayName   the objective's display name, e.g. {@code Items Disposed}
  */
 public record ScoreboardStat(String modId, String objectiveName, String displayName) {
     /**
-     * Creates the objectiveName if it's missing. Safe to call repeatedly.
+     * Creates the objective if it's missing. Safe to call repeatedly.
      */
     public void ensureObjective(MinecraftServer server) {
         final var scoreboard = server.getScoreboard();
@@ -35,9 +35,9 @@ public record ScoreboardStat(String modId, String objectiveName, String displayN
     }
 
     /**
-     * Adds to the player's score. Does nothing if the objectiveName has been removed (i.e. doesn't
+     * Adds to the player's score. Does nothing if the objective has been removed (i.e. doesn't
      * throw or anything). Call {@link #ensureObjective(MinecraftServer)} before calls that require
-     * the objectiveName to exist.
+     * the objective to exist.
      */
     public void add(Player player, int amount) {
         final var scoreboard = player.level().getServer().getScoreboard();

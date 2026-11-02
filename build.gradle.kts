@@ -14,7 +14,10 @@ val bundleJarFiles = configurations.resolvable("bundleJarFiles") {
 }
 
 dependencies {
-    subprojects.forEach { bundleJars(project(it.path)) }
+    subprojects
+        // Ignore the template mod.
+        .filter { it.name != "seers-template" }
+        .forEach { bundleJars(project(it.path)) }
 }
 
 val collectJars by tasks.registering(Sync::class) {

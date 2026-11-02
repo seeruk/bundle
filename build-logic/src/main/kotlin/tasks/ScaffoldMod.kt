@@ -34,7 +34,10 @@ abstract class ScaffoldMod : DefaultTask() {
         }
 
         val words = Regex("[A-Za-z0-9]+").findAll(name.replace("'", "")).map { it.value }.toList()
-        if (words.first() == "seers") {
+        if (words.isEmpty()) {
+            throw GradleException("The display name must contain at least one letter or number, got: $name")
+        }
+        if (words.first().equals("seers", ignoreCase = true)) {
             throw GradleException("The display name must not start with \"Seer's\", got: $name")
         }
 
@@ -111,6 +114,6 @@ abstract class ScaffoldMod : DefaultTask() {
             propsText.replaceRange(modulesMatch.range, updated)
         )
 
-        logger.lifecycle("$name created under $modId/")
+        logger.lifecycle("$name created under seers-$modId/")
     }
 }

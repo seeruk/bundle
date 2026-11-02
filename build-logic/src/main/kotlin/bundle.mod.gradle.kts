@@ -105,10 +105,13 @@ configurations.consumable("bundleJar") {
     outgoing.artifact(tasks.jar)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("release") {
-            from(components["java"])
+// Ignore the template mod.
+if (project.name != "seers-template") {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["java"])
+            }
         }
     }
 }
