@@ -30,6 +30,8 @@ public final class DisposalEvents {
         /**
          * @param items copies of the disposed item stacks
          */
-        void onDisposed(Player player, List<ItemStack> items);;
+        void onDisposed(Player player, List<ItemStack> items);
+
+        ;
     }
 }

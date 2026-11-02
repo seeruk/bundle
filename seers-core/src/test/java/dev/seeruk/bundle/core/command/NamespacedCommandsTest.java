@@ -18,6 +18,11 @@ public class NamespacedCommandsTest {
     private static final String NAME = "test-command";
     private static final String NAMESPACED = MOD_ID + ":" + NAME;
 
+    // Avoids Minecraft needing to be bootstrapped for this set of tests.
+    private static LiteralArgumentBuilder<CommandSourceStack> literal(String name) {
+        return LiteralArgumentBuilder.literal(name);
+    }
+
     @Nested
     class Register {
         private CommandDispatcher<CommandSourceStack> dispatcher;
@@ -68,10 +73,5 @@ public class NamespacedCommandsTest {
             assertEquals(2, dispatcher.execute(NAME + " sub", null));
             assertEquals(2, dispatcher.execute(NAMESPACED + " sub", null));
         }
-    }
-
-    // Avoids Minecraft needing to be bootstrapped for this set of tests.
-    private static LiteralArgumentBuilder<CommandSourceStack> literal(String name) {
-        return LiteralArgumentBuilder.literal(name);
     }
 }

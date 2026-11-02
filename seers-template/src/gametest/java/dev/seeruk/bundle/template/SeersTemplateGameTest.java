@@ -9,14 +9,14 @@ import java.lang.reflect.Method;
 
 public class SeersTemplateGameTest implements CustomTestMethodInvoker {
     @GameTest
-    public void test(GameTestHelper context) {
-        context.assertBlockPresent(Blocks.AIR, 0, 0, 0);
-        context.succeed();
+    public void test(GameTestHelper helper) {
+        helper.assertBlockPresent(Blocks.AIR, 0, 0, 0);
+        helper.succeed();
     }
 
     @Override
-    public void invokeTestMethod(GameTestHelper context, Method method) throws ReflectiveOperationException {
-        context.setBlock(0, 0, 0, Blocks.AIR);
-        method.invoke(this, context);
+    public void invokeTestMethod(GameTestHelper helper, Method method) throws ReflectiveOperationException {
+        helper.setBlock(0, 0, 0, Blocks.AIR);
+        method.invoke(this, helper);
     }
 }

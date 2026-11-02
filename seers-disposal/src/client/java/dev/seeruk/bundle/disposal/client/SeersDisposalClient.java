@@ -23,20 +23,13 @@ import static dev.seeruk.bundle.disposal.SeersDisposal.id;
 public class SeersDisposalClient implements ClientModInitializer {
     private static final String COMMAND = id("disposal").toString();
 
+    public static final String OPEN_KEY = "key.seers-disposal.open";
+
     private static final KeyMapping OPEN = new KeyMapping(
-        "key.seers-disposal.open",
+        OPEN_KEY,
         InputConstants.UNKNOWN.getValue(),
         KeyMapping.Category.INVENTORY
     );
-
-    @Override
-    public void onInitializeClient() {
-        KeyMappingHelper.registerKeyMapping(OPEN);
-
-        ClientTickEvents.END_CLIENT_TICK.register(SeersDisposalClient::onEndClientTick);
-
-        LOGGER.info("Initialized client");
-    }
 
     private static void onEndClientTick(Minecraft minecraft) {
         while (OPEN.consumeClick()) {
@@ -60,5 +53,14 @@ public class SeersDisposalClient implements ClientModInitializer {
 
         player.sendOverlayMessage(Component.literal(
             "This server doesn't have Seer's Disposal installed"));
+    }
+
+    @Override
+    public void onInitializeClient() {
+        KeyMappingHelper.registerKeyMapping(OPEN);
+
+        ClientTickEvents.END_CLIENT_TICK.register(SeersDisposalClient::onEndClientTick);
+
+        LOGGER.info("Initialized client");
     }
 }

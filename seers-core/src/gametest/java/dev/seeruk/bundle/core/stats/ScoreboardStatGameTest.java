@@ -16,6 +16,31 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 public class ScoreboardStatGameTest {
     private static final String MOD_ID = "seers-core-gametest";
 
+    /**
+     * Creates a brand-new stat, removing any existing objective with the same name first.
+     */
+    private static ScoreboardStat newStat(MinecraftServer server, String name, String displayName) {
+        final var stat = new ScoreboardStat(MOD_ID, name, displayName);
+        removeObjective(server, stat);
+        return stat;
+    }
+
+    private static Objective objective(MinecraftServer server, ScoreboardStat stat) {
+        return server.getScoreboard().getObjective(stat.objectiveId());
+    }
+
+    private static void removeObjective(MinecraftServer server, ScoreboardStat stat) {
+        final var objective = objective(server, stat);
+        if (objective != null) {
+            server.getScoreboard().removeObjective(objective);
+        }
+    }
+
+    private static int score(MinecraftServer server, ScoreboardStat stat, Player player) {
+        final var info = server.getScoreboard().getPlayerScoreInfo(player, objective(server, stat));
+        return info == null ? 0 : info.value();
+    }
+
     @GameTest
     public void ensureObjectiveAddsMissingObjective(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
@@ -27,8 +52,8 @@ public class ScoreboardStatGameTest {
             final var objective = server.getScoreboard().getObjective(stat.objectiveId());
 
             helper.assertTrue(objective != null, "Objective wasn't added as " + stat.objectiveId());
-            helper.assertValueEqual(ObjectiveCriteria.DUMMY, objective.getCriteria(), "criteria");
-            helper.assertValueEqual("Test Stat", objective.getDisplayName().getString(), "display name");
+            helper.assertValueEqual(objective.getCriteria(), ObjectiveCriteria.DUMMY, "criteria");
+            helper.assertValueEqual(objective.getDisplayName().getString(), "Test Stat", "display name");
         } finally {
             removeObjective(server, stat);
         }
@@ -47,7 +72,7 @@ public class ScoreboardStatGameTest {
             stat.add(player, 5);
             stat.ensureObjective(server);
 
-            helper.assertValueEqual(5, score(server, stat, player), "score after re-ensuring");
+            helper.assertValueEqual(score(server, stat, player), 5, "score after re-ensuring");
         } finally {
             removeObjective(server, stat);
         }
@@ -65,10 +90,10 @@ public class ScoreboardStatGameTest {
             stat.ensureObjective(server);
 
             stat.add(player, 42);
-            helper.assertValueEqual(42, score(server, stat, player), "score after first add");
+            helper.assertValueEqual(score(server, stat, player), 42, "score after first add");
 
             stat.add(player, 27);
-            helper.assertValueEqual(69, score(server, stat, player), "score after second add");
+            helper.assertValueEqual(score(server, stat, player), 69, "score after second add");
         } finally {
             removeObjective(server, stat);
         }
@@ -110,30 +135,5 @@ public class ScoreboardStatGameTest {
         }
 
         helper.succeed();
-    }
-
-    /**
-     * Creates a brand-new stat, removing any existing objective with the same name first.
-     */
-    private static ScoreboardStat newStat(MinecraftServer server, String name, String displayName) {
-        final var stat = new ScoreboardStat(MOD_ID, name, displayName);
-        removeObjective(server, stat);
-        return stat;
-    }
-
-    private static Objective objective(MinecraftServer server, ScoreboardStat stat) {
-        return server.getScoreboard().getObjective(stat.objectiveId());
-    }
-
-    private static void removeObjective(MinecraftServer server, ScoreboardStat stat) {
-        final var objective = objective(server, stat);
-        if (objective != null) {
-            server.getScoreboard().removeObjective(objective);
-        }
-    }
-
-    private static int score(MinecraftServer server, ScoreboardStat stat, Player player) {
-        final var info = server.getScoreboard().getPlayerScoreInfo(player, objective(server, stat));
-        return info == null ? 0 : info.value();
     }
 }

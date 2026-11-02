@@ -34,23 +34,6 @@ public class DisposalMenu extends ChestMenu {
         this.container = container;
     }
 
-    private static void playSfx(Player player) {
-        if (!(player instanceof ServerPlayer serverPlayer)) {
-            return;
-        }
-
-        serverPlayer.connection.send(new ClientboundSoundPacket(
-            BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.LAVA_EXTINGUISH),
-            SoundSource.BLOCKS,
-            player.getX(),
-            player.getY(),
-            player.getZ(),
-            0.5f,
-            1f,
-            player.getRandom().nextLong()
-        ));
-    }
-
     @Override
     public void removed(@NonNull Player player) {
         super.removed(player);
@@ -70,11 +53,28 @@ public class DisposalMenu extends ChestMenu {
 
         final var count = items.stream().mapToInt(ItemStack::getCount).sum();
 
-        playSfx(player);
         player.sendOverlayMessage(Component.literal(disposedMessage(count)));
+        playSfx(player);
     }
 
     static String disposedMessage(int count) {
         return "Disposed of %d item%s".formatted(count, count == 1 ? "" : "s");
+    }
+
+    private static void playSfx(Player player) {
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        serverPlayer.connection.send(new ClientboundSoundPacket(
+            BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.LAVA_EXTINGUISH),
+            SoundSource.BLOCKS,
+            player.getX(),
+            player.getY(),
+            player.getZ(),
+            0.5f,
+            1f,
+            player.getRandom().nextLong()
+        ));
     }
 }

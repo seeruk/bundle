@@ -17,10 +17,12 @@ import net.minecraft.world.SimpleMenuProvider;
 public final class DisposalCommand {
     private static final Component TITLE = Component.literal("Disposal");
 
+    static final String NAME = "disposal";
+
     private DisposalCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        NamespacedCommands.register(dispatcher, SeersDisposal.MOD_ID, "disposal",
+        NamespacedCommands.register(dispatcher, SeersDisposal.MOD_ID, NAME,
             name -> Commands.literal(name).executes(DisposalCommand::open)
         );
     }

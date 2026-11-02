@@ -20,7 +20,7 @@ public final class DisposalStats {
      */
     public static final String DISPOSED_OBJECTIVE = "items_disposed";
 
-    private static final ScoreboardStat DISPOSED = new ScoreboardStat(MOD_ID, DISPOSED_OBJECTIVE, "Items Disposed");
+    static final ScoreboardStat DISPOSED = new ScoreboardStat(MOD_ID, DISPOSED_OBJECTIVE, "Items Disposed");
 
     private DisposalStats() {}
 

@@ -7,7 +7,9 @@
     "environment": "*",
     "entrypoints": {
         "fabric-gametest": [
-            "dev.seeruk.bundle.disposal.SeersDisposalGameTest"
+            "dev.seeruk.bundle.disposal.DisposalMenuGameTest",
+            "dev.seeruk.bundle.disposal.DisposalStatsGameTest",
+            "dev.seeruk.bundle.disposal.command.DisposalCommandGameTest"
         ],
         "fabric-client-gametest": [
             "dev.seeruk.bundle.disposal.client.SeersDisposalClientGameTest"
