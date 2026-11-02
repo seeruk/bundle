@@ -49,7 +49,7 @@ public record ScoreboardStat(String modId, String objectiveName, String displayN
         scoreboard.getOrCreatePlayerScore(player, scoreObjective).add(amount);
     }
 
-    private String objectiveId() {
+    public String objectiveId() {
         return "%s.%s".formatted(modId, objectiveName);
     }
 }

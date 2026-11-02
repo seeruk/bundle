@@ -6,8 +6,13 @@
     "license": "MPL-2.0",
     "environment": "*",
     "entrypoints": {
+        "main": [
+            "dev.seeruk.bundle.core.command.NamespacedCommandsGameTest"
+        ],
         "fabric-gametest": [
-            "dev.seeruk.bundle.core.SeersCoreGameTest"
+            "dev.seeruk.bundle.core.SeersCoreGameTest",
+            "dev.seeruk.bundle.core.command.NamespacedCommandsGameTest",
+            "dev.seeruk.bundle.core.stats.ScoreboardStatGameTest"
         ]
     },
     "depends": {
