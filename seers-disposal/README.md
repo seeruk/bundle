@@ -40,13 +40,13 @@ Fired when items are disposed of via the disposal inventory. Only fires if at le
 actually destroyed (i.e. not just fired every time the inventory is closed).
 
 ```
-dev.seeruk.disposal.api.DisposalEvents.DISPOSED
+dev.seeruk.bundle.disposal.api.DisposalEvents.DISPOSED
 ```
 
 **Callback signature:**
 
 ```java
-void onDisposed(ServerPlayer player, List<ItemStack> items);
+void onDisposed(Player player, List<ItemStack> items);
 ```
 
 | Parameter | Description                   |
