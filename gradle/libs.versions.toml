@@ -3,7 +3,11 @@ java = "25"
 minecraft = "26.3"
 fabric-loader = "0.20.1"
 fabric-api = "0.165.0+26.3"
+junit = "5.10.0"
 loom = "1.19-SNAPSHOT"
+
+# https://maven.nucleoid.xyz/eu/pb4/placeholder-api/
+placeholder-api = "3.2.0+26.3"
 
 # Check https://fabricmc.net/develop for the latest Fabric versions.
 
@@ -12,4 +16,6 @@ minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
 fabric-loader-junit = { module = "net.fabricmc:fabric-loader-junit", version.ref = "fabric-loader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 loom-plugin = { module = "net.fabricmc.fabric-loom:net.fabricmc.fabric-loom.gradle.plugin", version.ref = "loom" }
+placeholder-api = { module = "eu.pb4:placeholder-api", version.ref = "placeholder-api" }

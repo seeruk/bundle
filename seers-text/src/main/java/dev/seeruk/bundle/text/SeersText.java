@@ -15,6 +15,6 @@ public class SeersText implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Hello, World! From {}", MOD_ID);
+        LOGGER.info("Initialized");
     }
 }

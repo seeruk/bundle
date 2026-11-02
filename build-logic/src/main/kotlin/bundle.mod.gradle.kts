@@ -12,12 +12,17 @@ val javaVersion = libs.versions.java.get().toInt()
 
 group = "dev.seeruk.bundle"
 
+repositories {
+    maven("https://maven.nucleoid.xyz/") { name = "Nucleoid" }
+}
+
 dependencies {
     minecraft(libs.minecraft)
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
 
     testImplementation(libs.fabric.loader.junit)
+    testImplementation(libs.junit.jupiter.params)
 }
 
 // Mods with a src/client directory get an optional client part: client-only code in its own source

@@ -3,7 +3,7 @@
     "id": "seers-text",
     "version": "${version}",
     "name": "Seer's Text",
-    "description": "A template repository",
+    "description": "Shared text formatting library mod for Seer's mods.",
     "authors": [
         "Elliot Wright"
     ],
@@ -15,9 +15,6 @@
     "entrypoints": {
         "main": [
             "dev.seeruk.bundle.text.SeersText"
-        ],
-        "client": [
-            "dev.seeruk.bundle.text.client.SeersTextClient"
         ]
     },
     "depends": {
