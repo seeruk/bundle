@@ -49,12 +49,12 @@ public class DisposalMenu extends ChestMenu {
             return;
         }
 
-        DisposalEvents.DISPOSED.invoker().onDisposed(player, items);
-
         final var count = items.stream().mapToInt(ItemStack::getCount).sum();
 
         player.sendOverlayMessage(Component.literal(disposedMessage(count)));
         playSfx(player);
+
+        DisposalEvents.DISPOSED.invoker().onDisposed(player, items);
     }
 
     static String disposedMessage(int count) {
