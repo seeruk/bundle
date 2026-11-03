@@ -43,6 +43,7 @@ public class ItemLoreCommand {
                         .executes(CommandExecutors.logged(ItemLoreCommand::set)))))
             .then(Commands.literal("insert")
                 .then(Commands.argument("line", lineArg())
+                    .executes(CommandExecutors.logged(ItemLoreCommand::insertEmpty))
                     .then(Commands.argument("lore", loreArg())
                         .executes(CommandExecutors.logged(ItemLoreCommand::insert)))))
             .then(Commands.literal("remove")
@@ -72,29 +73,39 @@ public class ItemLoreCommand {
     }
 
     private static int add(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return write(context, (player, stack) ->
-            LoreText.add(player, stack, StringArgumentType.getString(context, "lore"))
-        );
+        final var lore = StringArgumentType.getString(context, "lore");
+        return write(context, (player, stack) -> LoreText.add(player, stack, lore));
     }
 
     private static int set(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return 0;
+        final var line = IntegerArgumentType.getInteger(context, "line");
+        final var lore = StringArgumentType.getString(context, "lore");
+        return write(context, (player, stack) -> LoreText.set(player, stack, line, lore));
     }
 
     private static int insert(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return 0;
+        final var line = IntegerArgumentType.getInteger(context, "line");
+        final var lore = StringArgumentType.getString(context, "lore");
+        return write(context, (player, stack) -> LoreText.insert(player, stack, line, lore));
+    }
+
+    private static int insertEmpty(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var line = IntegerArgumentType.getInteger(context, "line");
+        return write(context, (player, stack) -> LoreText.insert(player, stack, line, ""));
     }
 
     private static int remove(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return 0;
+        final var line = IntegerArgumentType.getInteger(context, "line");
+        return write(context, (player, stack) -> LoreText.remove(player, stack, line));
     }
 
     private static int removeAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return 0;
+        return write(context, LoreText::removeAll);
     }
 
     private static int clear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return 0;
+        final var line = IntegerArgumentType.getInteger(context, "line");
+        return write(context, (player, stack) -> LoreText.clear(player, stack, line));
     }
 
     private static IntegerArgumentType lineArg() {
