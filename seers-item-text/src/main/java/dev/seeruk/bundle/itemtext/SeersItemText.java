@@ -1,6 +1,9 @@
 package dev.seeruk.bundle.itemtext;
 
+import dev.seeruk.bundle.itemtext.command.ItemLoreCommand;
+import dev.seeruk.bundle.itemtext.command.ItemNameCommand;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,11 @@ public class SeersItemText implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Hello, World! From {}", MOD_ID);
+        CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) -> {
+            ItemLoreCommand.register(dispatcher);
+            ItemNameCommand.register(dispatcher);
+        });
+
+        LOGGER.info("Initialized");
     }
 }

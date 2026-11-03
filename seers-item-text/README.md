@@ -18,60 +18,59 @@ formatting options in the [Text Placeholder API documentation][2].
 
 ### Commands
 
-| Command                            | Description                                            |
-|------------------------------------|--------------------------------------------------------|
-| `/itemname set <name>`             | Sets the name of an item                               |
-| `/itemname reset`                  | Resets the name of an item to it's default             |
-| `/itemlore`                        | Shows the lore of an item, with line numbers           |
-| `/itemlore add <lore>`             | Adds a line to the end of an item's lore               |
-| `/itemlore set <line> <lore>`      | Sets the lore of an item                               |
-| `/itemlore insert <line> [<lore>]` | Inserts a line of lore, moving the lines below it down |
-| `/itemlore remove <line>`          | Removes a line of lore, moving the lines below it up   |
-| `/itemlore clear <line>`           | Clears a line of lore, leaving an empty line behind    |
-| `/itemlore remove`                 | Removes all the lore from an item                      |
+| Command                            | Description                                               |
+|------------------------------------|-----------------------------------------------------------|
+| `/itemname set <name>`             | Sets the name of an item                                  |
+| `/itemname reset`                  | Resets the name of an item to it's default                |
+| `/itemlore`                        | Shows the lore of an item, with line numbers              |
+| `/itemlore add <lore>`             | Adds a line to the end of an item's lore                  |
+| `/itemlore set <line> <lore>`      | Sets the lore of an item                                  |
+| `/itemlore insert <line> [<lore>]` | Inserts a line of lore, moving the lines below it down    |
+| `/itemlore remove [<line>]`        | Removes all of, or a line of lore. If one line, shifts up |
+| `/itemlore clear <line>`           | Clears a line of lore, leaving an empty line behind       |
 
 ### Events
 
-#### NAME_WRITTEN
+#### ItemNameEvents.WRITTEN
 
 Fired when an item's name is set (only when text is added, so, not when it's reset).
 
 ```
-dev.seeruk.bundle.itemtext.api.ItemTextEvents.NAME_WRITTEN
+dev.seeruk.bundle.itemtext.api.ItemNameEvents.WRITTEN
 ```
 
 **Callback signature:**
 
 ```java
-void onNameWritten(Player player, ItemStack item, String name);
+void onWritten(Player player, ItemStack item, String name);
 ```
 
 | Parameter | Description                    |
 |-----------|--------------------------------|
-| `player`  | The player who set the name    |
+| `player`  | The player that set the name   |
 | `item`    | The item that had its name set |  
-| `name`    | The name that was set          |
+| `name`    | The new name of the item       |
 
-#### LORE_WRITTEN
+#### ItemLoreEvents.WRITTEN
 
 Fired when an item's lore is added to (add, set, insert), but not when it's removed or cleared.
 
 ```
-dev.seeruk.bundle.itemtext.api.ItemTextEvents.LORE_WRITTEN
+dev.seeruk.bundle.itemtext.api.ItemLoreEvents.WRITTEN
 ```
 
 **Callback signature:**
 
 ```java
-void onLoreWritten(Player player, ItemStack item, int line, String lore);
+void onWritten(Player player, ItemStack item, int line, String lore);
 ```
 
-| Parameter | Description                     |
-|-----------|---------------------------------|
-| `player`  | The player who set the lore     |
-| `item`    | The item that had its lore set  |
-| `line`    | The line number that was set on |
-| `lore`    | The lore that was set           |
+| Parameter | Description                                     |
+|-----------|-------------------------------------------------|
+| `player`  | The player who set the lore                     |
+| `item`    | The item that had its lore written to           |
+| `line`    | The line number that was written to (0 indexed) |
+| `lore`    | The lore that was written                       |
 
 (All Lore can subsequently be retrieved from the item itself).
 
