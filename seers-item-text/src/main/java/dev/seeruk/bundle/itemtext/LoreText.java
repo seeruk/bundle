@@ -48,11 +48,6 @@ public final class LoreText {
     }
 
     public static Result<List<Component>, String> set(Player player, ItemStack stack, int lineNumber, String input) {
-        final var validLineNumber = validateLineNumber(lineNumber);
-        if (validLineNumber.isPresent()) {
-            return new Result.Failure<>(validLineNumber.get());
-        }
-
         final var parsed = TextParsers.parseAsUntrusted(input);
         final var issue = validateLine(parsed);
         if (issue.isPresent()) {
@@ -60,8 +55,9 @@ public final class LoreText {
         }
 
         final var lines = new ArrayList<>(lines(stack));
-        if (lineNumber < 1 || lineNumber > lines.size() + 1) {
-            return new Result.Failure<>("Line " + lineNumber + " does not exist");
+        final var validLineNumber = validateLineNumber(lineNumber, lines.size());
+        if (validLineNumber.isPresent()) {
+            return new Result.Failure<>(validLineNumber.get());
         }
 
         lines.set(lineNumber - 1, parsed);
@@ -69,11 +65,6 @@ public final class LoreText {
     }
 
     public static Result<List<Component>, String> insert(Player player, ItemStack stack, int lineNumber, String input) {
-        final var validLineNumber = validateLineNumber(lineNumber);
-        if (validLineNumber.isPresent()) {
-            return new Result.Failure<>(validLineNumber.get());
-        }
-
         final var parsed = TextParsers.parseAsUntrusted(input);
         final var issue = validateLine(parsed);
         if (issue.isPresent()) {
@@ -81,16 +72,28 @@ public final class LoreText {
         }
 
         final var lines = new ArrayList<>(lines(stack));
+        // Similar to add, we need to check that we won't exceed the max lines when inserting.
+        if (lines.size() >= MAX_LINES) {
+            return new Result.Failure<>("Lore can span at most " + MAX_LINES + " lines");
+        }
+
+        final var validLineNumber = validateLineNumber(lineNumber, lines.size());
+        if (validLineNumber.isPresent()) {
+            return new Result.Failure<>(validLineNumber.get());
+        }
+
+        // Insert blank lines if necessary to reach the line number
         while (lines.size() < lineNumber - 1) {
             lines.add(Component.empty());
         }
+
         lines.add(lineNumber - 1, parsed);
         return write(player, stack, lineNumber - 1, lines);
     }
 
     public static Result<List<Component>, String> remove(Player player, ItemStack stack, int lineNumber) {
         final var lines = new ArrayList<>(lines(stack));
-        final var validLineNumber = validateLineNumber(lineNumber);
+        final var validLineNumber = validateLineNumber(lineNumber, lines.size());
         if (validLineNumber.isPresent()) {
             return new Result.Failure<>(validLineNumber.get());
         }
@@ -108,7 +111,7 @@ public final class LoreText {
 
     public static Result<List<Component>, String> clear(Player player, ItemStack stack, int lineNumber) {
         final var lines = new ArrayList<>(lines(stack));
-        final var validLineNumber = validateLineNumber(lineNumber);
+        final var validLineNumber = validateLineNumber(lineNumber, lines.size());
         if (validLineNumber.isPresent()) {
             return new Result.Failure<>(validLineNumber.get());
         }
@@ -130,16 +133,12 @@ public final class LoreText {
         return Optional.empty();
     }
 
-    private static Optional<String> validateLineNumber(int lineNumber) {
-        return validateLineNumber(lineNumber, Optional.empty());
-    }
-
-    private static Optional<String> validateLineNumber(int lineNumber, Optional<Integer> currentLines) {
+    private static Optional<String> validateLineNumber(int lineNumber, int currentLines) {
         if (lineNumber < 1 || lineNumber > MAX_LINES) {
             return Optional.of("Line number must be between 1 and " + MAX_LINES);
         }
 
-        if (currentLines.isPresent() && lineNumber > currentLines.get() + 1) {
+        if (lineNumber > currentLines + 1) {
             return Optional.of("Line number can't be higher than the current number of lines");
         }
 

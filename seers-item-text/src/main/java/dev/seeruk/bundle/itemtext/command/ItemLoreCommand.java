@@ -15,6 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.component.ItemLore;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.stream.IntStream;
 
 /**
  * {@code /itemlore}: commands and subcommands for modifying item lore.
@@ -64,7 +66,7 @@ public class ItemLoreCommand {
 
         context.getSource().sendSuccess(
             () -> Component.empty()
-                .append(TextParsers.parseAsUntrusted("<green>Current Lore:</green>\n"))
+                .append(TextParsers.parseAsTrusted("<green>Current Lore:</green>\n"))
                 .append(preview(LoreText.lines(stack.get()))),
             false
         );
@@ -132,14 +134,14 @@ public class ItemLoreCommand {
             case Result.Success<List<Component>, String> lines -> {
                 context.getSource().sendSuccess(
                     () -> Component.empty()
-                        .append(TextParsers.parseAsUntrusted("<green>Lore updated:</green>\n"))
+                        .append(TextParsers.parseAsTrusted("<green>Lore updated:</green>\n"))
                         .append(preview(lines.value())),
                     false
                 );
                 yield 1;
             }
             case Result.Failure<List<Component>, String> failure -> {
-                context.getSource().sendFailure(TextParsers.parseAsUntrusted("<red>" + failure.error() + "</red>"));
+                context.getSource().sendFailure(TextParsers.parseAsTrusted("<red>" + failure.error() + "</red>"));
                 yield 0;
             }
         };
@@ -154,22 +156,24 @@ public class ItemLoreCommand {
         final var styled = new ItemLore(lines).styledLines();
 
         if (styled.isEmpty()) {
-            return preview.append(Component.literal("No lore").withStyle(ChatFormatting.GRAY));
+            return Component.literal("No lore").withStyle(ChatFormatting.GRAY);
         }
 
-        for (var i = 0; i < styled.size(); i++) {
-            preview.append(Component.literal((i + 1) + ": ").withStyle(ChatFormatting.GRAY))
-                .append(styled.get(i))
-                .append("\n");
-        }
+        final var numbered = IntStream.range(0, styled.size())
+            .mapToObj(i ->
+                Component.empty()
+                    .append(Component.literal((i + 1) + ": ").withStyle(ChatFormatting.GRAY))
+                    .append(styled.get(i))
+            )
+            .toList();
 
-        return preview;
+        return ComponentUtils.formatList(numbered, Component.literal("\n"));
     }
 
     private static Optional<ItemStack> mainHandItem(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var player = context.getSource().getPlayerOrException();
         if (player.isSpectator()) {
-            context.getSource().sendFailure(TextParsers.parseAsUntrusted(
+            context.getSource().sendFailure(TextParsers.parseAsTrusted(
                 "<red>You can't modify item lore while spectating!</red>"
             ));
             return Optional.empty();
@@ -177,7 +181,7 @@ public class ItemLoreCommand {
 
         final var stack = player.getMainHandItem();
         if (stack.isEmpty()) {
-            context.getSource().sendFailure(TextParsers.parseAsUntrusted(
+            context.getSource().sendFailure(TextParsers.parseAsTrusted(
                 "<red>Hold an item in your main hand to modify its lore</red>"
             ));
             return Optional.empty();

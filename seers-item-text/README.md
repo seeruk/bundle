@@ -62,7 +62,7 @@ dev.seeruk.bundle.itemtext.api.ItemLoreEvents.WRITTEN
 **Callback signature:**
 
 ```java
-void onWritten(Player player, ItemStack item, int line, String lore);
+void onWritten(Player player, ItemStack item, int line, Component lore);
 ```
 
 | Parameter | Description                                     |
