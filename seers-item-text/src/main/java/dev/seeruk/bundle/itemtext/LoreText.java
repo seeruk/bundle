@@ -55,9 +55,9 @@ public final class LoreText {
         }
 
         final var lines = new ArrayList<>(lines(stack));
-        final var validLineNumber = validateLineNumber(lineNumber, lines.size());
-        if (validLineNumber.isPresent()) {
-            return new Result.Failure<>(validLineNumber.get());
+        final var lineNumberIssue = validateLineExists(lineNumber, lines.size());
+        if (lineNumberIssue.isPresent()) {
+            return new Result.Failure<>(lineNumberIssue.get());
         }
 
         lines.set(lineNumber - 1, parsed);
@@ -77,9 +77,9 @@ public final class LoreText {
             return new Result.Failure<>("Lore can span at most " + MAX_LINES + " lines");
         }
 
-        final var validLineNumber = validateLineNumber(lineNumber, lines.size());
-        if (validLineNumber.isPresent()) {
-            return new Result.Failure<>(validLineNumber.get());
+        final var lineNumberIssue = validateLineNumber(lineNumber);
+        if (lineNumberIssue.isPresent()) {
+            return new Result.Failure<>(lineNumberIssue.get());
         }
 
         // Insert blank lines if necessary to reach the line number
@@ -93,9 +93,9 @@ public final class LoreText {
 
     public static Result<List<Component>, String> remove(Player player, ItemStack stack, int lineNumber) {
         final var lines = new ArrayList<>(lines(stack));
-        final var validLineNumber = validateLineNumber(lineNumber, lines.size());
-        if (validLineNumber.isPresent()) {
-            return new Result.Failure<>(validLineNumber.get());
+        final var lineNumberIssue = validateLineExists(lineNumber, lines.size());
+        if (lineNumberIssue.isPresent()) {
+            return new Result.Failure<>(lineNumberIssue.get());
         }
 
         lines.remove(lineNumber - 1);
@@ -104,16 +104,16 @@ public final class LoreText {
 
     public static Result<List<Component>, String> removeAll(Player player, ItemStack stack) {
         if (lines(stack).isEmpty()) {
-            return new Result.Failure<>("That item has no lore");
+            return new Result.Failure<>("This item has no lore");
         }
         return save(stack, List.of());
     }
 
     public static Result<List<Component>, String> clear(Player player, ItemStack stack, int lineNumber) {
         final var lines = new ArrayList<>(lines(stack));
-        final var validLineNumber = validateLineNumber(lineNumber, lines.size());
-        if (validLineNumber.isPresent()) {
-            return new Result.Failure<>(validLineNumber.get());
+        final var lineNumberIssue = validateLineExists(lineNumber, lines.size());
+        if (lineNumberIssue.isPresent()) {
+            return new Result.Failure<>(lineNumberIssue.get());
         }
 
         lines.set(lineNumber - 1, Component.empty());
@@ -127,19 +127,33 @@ public final class LoreText {
             return Optional.of("Lore lines cannot be longer than " + MAX_LINE_LENGTH + " characters");
         }
 
-        // Empty lines are allowed, so that a player can add a blank lineNumber without having to add one
+        // Empty lines are allowed, so that a player can add a blank line without having to add one
         // with text, and then use /itemlore clear to remove the text from it.
 
         return Optional.empty();
     }
 
-    private static Optional<String> validateLineNumber(int lineNumber, int currentLines) {
+    private static Optional<String> validateLineNumber(int lineNumber) {
         if (lineNumber < 1 || lineNumber > MAX_LINES) {
             return Optional.of("Line number must be between 1 and " + MAX_LINES);
         }
 
-        if (lineNumber > currentLines + 1) {
-            return Optional.of("Line number can't be higher than the current number of lines");
+        return Optional.empty();
+    }
+
+    private static Optional<String> validateLineExists(int lineNumber, int currentLines) {
+        final var inRange = validateLineNumber(lineNumber);
+        if (inRange.isPresent()) {
+            return inRange;
+        }
+
+        if (currentLines == 0) {
+            return Optional.of("This item has no lore");
+        }
+
+        if (lineNumber > currentLines) {
+            return Optional.of("Line " + lineNumber + " doesn't exist, this item only has "
+                + currentLines + (currentLines == 1 ? " line" : " lines") + " of lore");
         }
 
         return Optional.empty();
