@@ -98,7 +98,7 @@ public class ItemLoreCommand {
     }
 
     private static IntegerArgumentType lineArg() {
-        return IntegerArgumentType.integer(1, 10); // TODO: Const
+        return IntegerArgumentType.integer(1, LoreText.MAX_LINES);
     }
 
     private static StringArgumentType loreArg() {
