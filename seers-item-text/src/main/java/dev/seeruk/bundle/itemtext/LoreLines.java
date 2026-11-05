@@ -162,6 +162,11 @@ public final class LoreLines {
     }
 
     private static Optional<LoreEditResult.Failure> validateLineExists(int lineNumber, int currentLines) {
+        final var lineNumberIssue = validateLineNumber(lineNumber, currentLines);
+        if (lineNumberIssue.isPresent()) {
+            return lineNumberIssue;
+        }
+
         if (currentLines == 0) {
             return Optional.of(new LoreEditResult.NoLore());
         }
