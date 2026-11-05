@@ -5,10 +5,11 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.seeruk.bundle.core.Result;
 import dev.seeruk.bundle.core.command.CommandExecutors;
 import dev.seeruk.bundle.core.command.NamespacedCommands;
-import dev.seeruk.bundle.itemtext.LoreText;
+import dev.seeruk.bundle.itemtext.LoreEditResult;
+import dev.seeruk.bundle.itemtext.LoreEditor;
+import dev.seeruk.bundle.itemtext.LoreLines;
 import dev.seeruk.bundle.itemtext.SeersItemText;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.ChatFormatting;
@@ -67,7 +68,7 @@ public class ItemLoreCommand {
         context.getSource().sendSuccess(
             () -> Component.empty()
                 .append(TextParsers.parseAsTrusted("<green>Current Lore:</green>\n"))
-                .append(preview(LoreText.lines(stack.get()))),
+                .append(preview(LoreEditor.lines(stack.get()))),
             false
         );
 
@@ -76,42 +77,42 @@ public class ItemLoreCommand {
 
     private static int add(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var lore = StringArgumentType.getString(context, "lore");
-        return write(context, (player, stack) -> LoreText.add(player, stack, lore));
+        return write(context, (player, stack) -> LoreEditor.add(player, stack, lore));
     }
 
     private static int set(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
         final var lore = StringArgumentType.getString(context, "lore");
-        return write(context, (player, stack) -> LoreText.set(player, stack, line, lore));
+        return write(context, (player, stack) -> LoreEditor.set(player, stack, line, lore));
     }
 
     private static int insert(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
         final var lore = StringArgumentType.getString(context, "lore");
-        return write(context, (player, stack) -> LoreText.insert(player, stack, line, lore));
+        return write(context, (player, stack) -> LoreEditor.insert(player, stack, line, lore));
     }
 
     private static int insertEmpty(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
-        return write(context, (player, stack) -> LoreText.insert(player, stack, line, ""));
+        return write(context, (player, stack) -> LoreEditor.insert(player, stack, line, ""));
     }
 
     private static int remove(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
-        return write(context, (player, stack) -> LoreText.remove(player, stack, line));
+        return write(context, (player, stack) -> LoreEditor.remove(player, stack, line));
     }
 
     private static int removeAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return write(context, LoreText::removeAll);
+        return write(context, LoreEditor::removeAll);
     }
 
     private static int clear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
-        return write(context, (player, stack) -> LoreText.clear(player, stack, line));
+        return write(context, (player, stack) -> LoreEditor.clear(player, stack, line));
     }
 
     private static IntegerArgumentType lineArg() {
-        return IntegerArgumentType.integer(1, LoreText.MAX_LINES);
+        return IntegerArgumentType.integer(1, LoreLines.MAX_LINES);
     }
 
     private static StringArgumentType loreArg() {
@@ -120,7 +121,7 @@ public class ItemLoreCommand {
 
     private static int write(
         CommandContext<CommandSourceStack> context,
-        BiFunction<Player, ItemStack, Result<List<Component>, String>> callback
+        BiFunction<Player, ItemStack, LoreEditResult> callback
     ) throws CommandSyntaxException {
         final var player = context.getSource().getPlayerOrException();
         final var stack = mainHandItem(context);
@@ -131,17 +132,49 @@ public class ItemLoreCommand {
         final var result = callback.apply(player, stack.get());
 
         return switch (result) {
-            case Result.Success<List<Component>, String> lines -> {
+            case LoreEditResult.Edited edited -> {
                 context.getSource().sendSuccess(
                     () -> Component.empty()
                         .append(TextParsers.parseAsTrusted("<green>Lore updated:</green>\n"))
-                        .append(preview(lines.value())),
+                        .append(preview(edited.edited())),
                     false
                 );
                 yield 1;
             }
-            case Result.Failure<List<Component>, String> failure -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted("<red>" + failure.error() + "</red>"));
+
+            case LoreEditResult.InvalidLineLength invalidLineLength -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>A line of lore cannot be longer than %d characters (yours is %d)</red>".formatted(
+                        invalidLineLength.maxLineLength(),
+                        invalidLineLength.line().getString().length()
+                    )
+                ));
+                yield 0;
+            }
+
+            case LoreEditResult.LineOutOfBounds lineOutOfBounds -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>Line %d doesn't exist (must be between 1 and %d)</red>".formatted(
+                        lineOutOfBounds.line(),
+                        lineOutOfBounds.currentLines()
+                    )
+                ));
+                yield 0;
+            }
+
+            case LoreEditResult.MaxLinesExceeded maxLinesExceeded -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>Cannot add more lore lines (max %d)</red>".formatted(
+                        maxLinesExceeded.maxLines()
+                    )
+                ));
+                yield 0;
+            }
+
+            case LoreEditResult.NoLore noLore -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>This item has no lore</red>"
+                ));
                 yield 0;
             }
         };
@@ -152,9 +185,7 @@ public class ItemLoreCommand {
      * to the player after a command successfully modifies the lore.
      */
     private static Component preview(List<Component> lines) {
-        final var preview = Component.empty();
         final var styled = new ItemLore(lines).styledLines();
-
         if (styled.isEmpty()) {
             return Component.literal("No lore").withStyle(ChatFormatting.GRAY);
         }
