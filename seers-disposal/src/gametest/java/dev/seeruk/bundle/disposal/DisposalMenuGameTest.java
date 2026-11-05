@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.disposal;
 
+import dev.seeruk.bundle.core.testing.EventLog;
 import dev.seeruk.bundle.disposal.api.DisposalEvents;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -13,17 +14,13 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DisposalMenuGameTest {
-    // Since listeners can't be removed, we keep track of events for all players in one list and
-    // filter it in each test. It's safe to do though, because tests are run on the server thread
-    // and have their own players; though, test players may share a name.
-    private static final List<Disposed> EVENTS = new ArrayList<>();
+    private static final EventLog<Disposed> EVENTS = new EventLog<>();
 
     static {
-        DisposalEvents.DISPOSED.register((player, items) -> EVENTS.add(new Disposed(player, items)));
+        DisposalEvents.DISPOSED.register((player, items) -> EVENTS.record(new Disposed(player, items)));
     }
 
     @SuppressWarnings("removal")
@@ -165,6 +162,6 @@ public class DisposalMenuGameTest {
     }
 
     private static List<Disposed> eventsFor(Player player) {
-        return EVENTS.stream().filter(event -> event.player() == player).toList();
+        return EVENTS.matching(event -> event.player() == player);
     }
 }
