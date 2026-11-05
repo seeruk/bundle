@@ -13,7 +13,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -71,9 +70,9 @@ public class LoreLinesTest {
                 ),
                 Arguments.of(
                     "Allows the maximum number of lines",
-                    nLines(LoreLines.MAX_LINES - 1, i -> literal("%d".formatted(i))),
+                    numberedLines(LoreLines.MAX_LINES - 1),
                     literal("%d".formatted(LoreLines.MAX_LINES - 1)),
-                    nLines(LoreLines.MAX_LINES, i -> literal("%d".formatted(i)))
+                    numberedLines(LoreLines.MAX_LINES)
                 )
             );
         }
@@ -108,14 +107,14 @@ public class LoreLinesTest {
                 ),
                 Arguments.of(
                     "Does not allow appending past the maximum number of lines",
-                    nLines(LoreLines.MAX_LINES, i -> literal("%d".formatted(i))),
+                    numberedLines(LoreLines.MAX_LINES),
                     literal("%d".formatted(LoreLines.MAX_LINES)),
                     (Expected) (lines, line) ->
                         new LoreEditResult.MaxLinesExceeded(LoreLines.MAX_LINES, lines.size() + 1)
                 ),
                 Arguments.of(
                     "Does not allow appending to lines above the maximum number of lines already",
-                    nLines(LoreLines.MAX_LINES + 10, i -> literal("%d".formatted(i))),
+                    numberedLines(LoreLines.MAX_LINES + 10),
                     literal("%d".formatted(LoreLines.MAX_LINES)),
                     (Expected) (lines, line) ->
                         new LoreEditResult.MaxLinesExceeded(LoreLines.MAX_LINES, lines.size() + 1)
@@ -144,9 +143,9 @@ public class LoreLinesTest {
             .append(literal(" with bold").withStyle(ChatFormatting.BOLD));
     }
 
-    private static List<Component> nLines(int lines, IntFunction<Component> lineGenerator) {
-        return IntStream.range(0, lines)
-            .mapToObj(lineGenerator)
+    private static List<Component> numberedLines(int count) {
+        return IntStream.range(0, count)
+            .<Component>mapToObj(i -> literal("%d".formatted(i)))
             .toList();
     }
 }
