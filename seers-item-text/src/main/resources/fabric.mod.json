@@ -3,7 +3,7 @@
     "id": "seers-item-text",
     "version": "${version}",
     "name": "Seer's Item Text",
-    "description": "A template repository",
+    "description": "Adds player utilities for editing item text, including support for formatting markup and tags.",
     "authors": [
         "Elliot Wright"
     ],
@@ -15,9 +15,6 @@
     "entrypoints": {
         "main": [
             "dev.seeruk.bundle.itemtext.SeersItemText"
-        ],
-        "client": [
-            "dev.seeruk.bundle.itemtext.client.SeersItemTextClient"
         ]
     },
     "depends": {
