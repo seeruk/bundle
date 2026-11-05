@@ -65,7 +65,12 @@ public class TextParsersTest {
         static Stream<Arguments> shouldParse() {
             return Stream.of(
                 Arguments.of("<red>Hello</red>", Component.literal("Hello").withStyle(ChatFormatting.RED)),
+                Arguments.of("<#ff0000>Hello</#ff0000>", Component.literal("Hello").withColor(0xFF0000)),
                 Arguments.of("<b>Hello</b>", Component.literal("Hello").withStyle(ChatFormatting.BOLD)),
+                Arguments.of("<i>Hello</i>", Component.literal("Hello").withStyle(ChatFormatting.ITALIC)),
+                Arguments.of("<u>Hello</u>", Component.literal("Hello").withStyle(ChatFormatting.UNDERLINE)),
+                Arguments.of("<st>Hello</st>", Component.literal("Hello").withStyle(ChatFormatting.STRIKETHROUGH)),
+                Arguments.of("<obf>Hello</obf>", Component.literal("Hello").withStyle(ChatFormatting.OBFUSCATED)),
                 Arguments.of("**Hello**", Component.literal("Hello").withStyle(ChatFormatting.BOLD)),
                 Arguments.of("*Hello*", Component.literal("Hello").withStyle(ChatFormatting.ITALIC)),
                 Arguments.of("__Hello__", Component.literal("Hello").withStyle(ChatFormatting.UNDERLINE)),
@@ -75,9 +80,16 @@ public class TextParsersTest {
 
         static Stream<Arguments> shouldNotParse() {
             return Stream.of(
-                Arguments.of("<page 2>Test</page>"),
+                Arguments.of("<click run_command '/say hi'>Hello</click>"),
                 Arguments.of("<run_cmd '/say hi'>Hello</run_cmd>"),
+                Arguments.of("<cmd '/say hi'>Hello</cmd>"),
+                Arguments.of("<url 'https://example.com'>Hello</url>"),
+                Arguments.of("<copy 'Hi'>Hello</copy>"),
+                Arguments.of("<page 2>Test</page>"),
                 Arguments.of("<hover 'Hi'>Hello</hover>"),
+                Arguments.of("<insert 'Hi'>Hello</insert>"),
+                Arguments.of("<lang 'block.minecraft.stone'>"),
+                Arguments.of("<key 'key.jump'>"),
                 Arguments.of("`Hello`"),
                 Arguments.of("[Hello](https://example.com)")
             );
