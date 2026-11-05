@@ -33,38 +33,44 @@ public class LoreLinesTest {
 
         static Stream<Arguments> shouldAppendLine() {
             return Stream.of(
-                // Append to an empty list
                 Arguments.of(
+                    "Appends to an empty list",
                     List.of(),
                     literal("Testing"),
                     List.of(literal("Testing"))
                 ),
-                // Append to end of existing list
                 Arguments.of(
-                    List.of(literal("Testing")),
-                    literal("Testing"),
-                    List.of(literal("Testing"), literal("Testing"))
+                    "Appends to end of existing list",
+                    List.of(literal("Testing 1")),
+                    literal("Testing 2"),
+                    List.of(literal("Testing 1"), literal("Testing 2"))
                 ),
-                // Allows the maximum line length
                 Arguments.of(
+                    "Preserves styling and children of existing lines",
+                    List.of(styledLine()),
+                    literal("Testing"),
+                    List.of(styledLine(), literal("Testing"))
+                ),
+                Arguments.of(
+                    "Allows the maximum line length",
                     List.of(),
                     literal("a".repeat(LoreLines.MAX_LINE_LENGTH)),
                     List.of(literal("a".repeat(LoreLines.MAX_LINE_LENGTH)))
                 ),
-                // Styling doesn't count towards line length
                 Arguments.of(
+                    "Styling doesn't count towards line length",
                     List.of(),
                     literal("a".repeat(LoreLines.MAX_LINE_LENGTH)).withStyle(ChatFormatting.RED),
                     List.of(literal("a".repeat(LoreLines.MAX_LINE_LENGTH)).withStyle(ChatFormatting.RED))
                 ),
-                // Allows an empty line
                 Arguments.of(
+                    "Allows an empty line",
                     List.of(),
                     literal(""),
                     List.of(literal(""))
                 ),
-                // Allows the maximum number of lines
                 Arguments.of(
+                    "Allows the maximum number of lines",
                     nLines(LoreLines.MAX_LINES - 1, i -> literal("%d".formatted(i))),
                     literal("%d".formatted(LoreLines.MAX_LINES - 1)),
                     nLines(LoreLines.MAX_LINES, i -> literal("%d".formatted(i)))
@@ -72,55 +78,70 @@ public class LoreLinesTest {
             );
         }
 
-        @ParameterizedTest(name = "shouldAppendLine({0}, {1})")
+        @ParameterizedTest(name = "{0}")
         @MethodSource
-        void shouldAppendLine(final List<Component> lines, final Component line, final List<Component> expected) {
+        void shouldAppendLine(
+            final String description,
+            final List<Component> lines,
+            final Component line,
+            final List<Component> expected
+        ) {
             assertEquals(new LoreEditResult.Edited(lines, expected), LoreLines.add(lines, line));
         }
 
         static Stream<Arguments> shouldNotAppendLine() {
             return Stream.of(
-                // Does not allow several sub-maximum length component parts in one tree
                 Arguments.of(
+                    "Does not allow several sub-maximum length component parts in one tree",
                     List.of(),
                     literal("a".repeat(LoreLines.MAX_LINE_LENGTH / 2))
                         .append(literal("a".repeat((LoreLines.MAX_LINE_LENGTH / 2) + 1))),
                     (Expected) (lines, line) ->
                         new LoreEditResult.InvalidLineLength(LoreLines.MAX_LINE_LENGTH, line)
                 ),
-                // Does not allow a line beyond the maximum line length
                 Arguments.of(
+                    "Does not allow a line beyond the maximum line length",
                     List.of(),
                     literal("a".repeat(LoreLines.MAX_LINE_LENGTH + 1)),
                     (Expected) (lines, line) ->
                         new LoreEditResult.InvalidLineLength(LoreLines.MAX_LINE_LENGTH, line)
                 ),
-                // Does not allow appending past the maximum number of lines
                 Arguments.of(
+                    "Does not allow appending past the maximum number of lines",
                     nLines(LoreLines.MAX_LINES, i -> literal("%d".formatted(i))),
                     literal("%d".formatted(LoreLines.MAX_LINES)),
                     (Expected) (lines, line) ->
-                        new LoreEditResult.MaxLinesExceeded(LoreLines.MAX_LINES, LoreLines.MAX_LINES + 1)
+                        new LoreEditResult.MaxLinesExceeded(LoreLines.MAX_LINES, lines.size() + 1)
                 ),
-                // Does not allow appending to lines above the maximum number of lines already
                 Arguments.of(
+                    "Does not allow appending to lines above the maximum number of lines already",
                     nLines(LoreLines.MAX_LINES + 10, i -> literal("%d".formatted(i))),
                     literal("%d".formatted(LoreLines.MAX_LINES)),
                     (Expected) (lines, line) ->
-                        new LoreEditResult.MaxLinesExceeded(LoreLines.MAX_LINES, LoreLines.MAX_LINES + 11)
+                        new LoreEditResult.MaxLinesExceeded(LoreLines.MAX_LINES, lines.size() + 1)
                 )
             );
         }
 
-        @ParameterizedTest(name = "shouldNotAppendLine({0}, {1})")
+        @ParameterizedTest(name = "{0}")
         @MethodSource
-        void shouldNotAppendLine(final List<Component> lines, final Component line, final Expected expected) {
+        void shouldNotAppendLine(
+            final String description,
+            final List<Component> lines,
+            final Component line,
+            final Expected expected
+        ) {
             assertEquals(expected.apply(lines, line), LoreLines.add(lines, line));
         }
     }
 
     private static MutableComponent literal(String text) {
         return Component.literal(text);
+    }
+
+    private static Component styledLine() {
+        return literal("Red").withStyle(ChatFormatting.RED)
+            .append(literal(" with bold").withStyle(ChatFormatting.BOLD));
     }
 
     private static List<Component> nLines(int lines, IntFunction<Component> lineGenerator) {
