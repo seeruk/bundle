@@ -28,12 +28,12 @@ public sealed interface LoreEditResult {
     sealed interface Failure extends LoreEditResult {}
 
     /**
-     * A {@link Failure} returned when an individual line has an invalid length.
+     * A {@link Failure} returned when an individual line is longer than the maximum line length.
      *
      * @param maxLineLength The maximum line length.
-     * @param line          The line that has an invalid length.
+     * @param line          The line that is too long.
      */
-    record InvalidLineLength(int maxLineLength, Component line) implements Failure {}
+    record MaxLineLengthExceeded(int maxLineLength, Component line) implements Failure {}
 
     /**
      * A {@link Failure} returned when a line number is out of bounds (i.e. above the current number

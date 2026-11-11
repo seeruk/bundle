@@ -140,37 +140,33 @@ public class ItemLoreCommand extends ItemTextCommand {
                 );
                 yield 1;
             }
-
-            case LoreEditResult.InvalidLineLength invalidLineLength -> {
+            case LoreEditResult.MaxLineLengthExceeded failure -> {
                 context.getSource().sendFailure(TextParsers.parseAsTrusted(
                     "<red>A line of lore cannot be longer than %d characters (yours is %d)</red>".formatted(
-                        invalidLineLength.maxLineLength(),
-                        invalidLineLength.line().getString().length()
+                        failure.maxLineLength(),
+                        failure.line().getString().length()
                     )
                 ));
                 yield 0;
             }
-
-            case LoreEditResult.LineOutOfBounds lineOutOfBounds -> {
+            case LoreEditResult.LineOutOfBounds failure -> {
                 context.getSource().sendFailure(TextParsers.parseAsTrusted(
                     "<red>Line %d doesn't exist (must be between 1 and %d)</red>".formatted(
-                        lineOutOfBounds.line(),
-                        lineOutOfBounds.currentLines()
+                        failure.line(),
+                        failure.currentLines()
                     )
                 ));
                 yield 0;
             }
-
-            case LoreEditResult.MaxLinesExceeded maxLinesExceeded -> {
+            case LoreEditResult.MaxLinesExceeded failure -> {
                 context.getSource().sendFailure(TextParsers.parseAsTrusted(
                     "<red>Cannot add more lore lines (max %d)</red>".formatted(
-                        maxLinesExceeded.maxLines()
+                        failure.maxLines()
                     )
                 ));
                 yield 0;
             }
-
-            case LoreEditResult.NoLore noLore -> {
+            case LoreEditResult.NoLore _ -> {
                 context.getSource().sendFailure(TextParsers.parseAsTrusted(
                     "<red>This item has no lore</red>"
                 ));

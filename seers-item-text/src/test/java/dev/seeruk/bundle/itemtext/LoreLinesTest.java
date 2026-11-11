@@ -96,14 +96,14 @@ public class LoreLinesTest {
                     literal("a".repeat(LoreLines.MAX_LINE_LENGTH / 2))
                         .append(literal("a".repeat((LoreLines.MAX_LINE_LENGTH / 2) + 1))),
                     (Expected) (lines, line) ->
-                        new LoreEditResult.InvalidLineLength(LoreLines.MAX_LINE_LENGTH, line)
+                        new LoreEditResult.MaxLineLengthExceeded(LoreLines.MAX_LINE_LENGTH, line)
                 ),
                 Arguments.of(
                     "Does not allow a line beyond the maximum line length",
                     List.of(),
                     literal("a".repeat(LoreLines.MAX_LINE_LENGTH + 1)),
                     (Expected) (lines, line) ->
-                        new LoreEditResult.InvalidLineLength(LoreLines.MAX_LINE_LENGTH, line)
+                        new LoreEditResult.MaxLineLengthExceeded(LoreLines.MAX_LINE_LENGTH, line)
                 ),
                 Arguments.of(
                     "Does not allow appending past the maximum number of lines",
@@ -196,7 +196,7 @@ public class LoreLinesTest {
                     1,
                     literal("a".repeat(LoreLines.MAX_LINE_LENGTH + 1)),
                     (Expected) (lines, lineNumber, line) ->
-                        new LoreEditResult.InvalidLineLength(LoreLines.MAX_LINE_LENGTH, line)
+                        new LoreEditResult.MaxLineLengthExceeded(LoreLines.MAX_LINE_LENGTH, line)
                 ),
                 Arguments.of(
                     "Does not allow setting a line when above the maximum number of lines already",
@@ -301,7 +301,7 @@ public class LoreLinesTest {
                     1,
                     literal("a".repeat(LoreLines.MAX_LINE_LENGTH + 1)),
                     (Expected) (lines, lineNumber, line) ->
-                        new LoreEditResult.InvalidLineLength(LoreLines.MAX_LINE_LENGTH, line)
+                        new LoreEditResult.MaxLineLengthExceeded(LoreLines.MAX_LINE_LENGTH, line)
                 ),
                 Arguments.of(
                     "Does not allow inserting past the maximum number of lines",

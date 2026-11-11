@@ -13,27 +13,39 @@ Adds player utilities for editing item text, including support for formatting ma
 This mod is server-side.
 
 All the functionality of this mod is driven by commands, listed below. Formatting uses the excellent
-[Text Placeholder API][1] by Patbox. You can find more information about available tags and 
+[Text Placeholder API][1] by Patbox. You can find more information about available tags and
 formatting options in the [Text Placeholder API documentation][2].
 
 ### Commands
 
-| Command                            | Description                                               |
-|------------------------------------|-----------------------------------------------------------|
-| `/itemname set <name>`             | Sets the name of an item                                  |
-| `/itemname reset`                  | Resets the name of an item to it's default                |
-| `/itemlore`                        | Shows the lore of an item, with line numbers              |
-| `/itemlore add <lore>`             | Adds a line to the end of an item's lore                  |
-| `/itemlore set <line> <lore>`      | Sets the lore of an item                                  |
-| `/itemlore insert <line> [<lore>]` | Inserts a line of lore, moving the lines below it down    |
-| `/itemlore remove [<line>]`        | Removes all of, or a line of lore. If one line, shifts up |
-| `/itemlore clear <line>`           | Clears a line of lore, leaving an empty line behind       |
+| Command                            | Description                                             |
+|------------------------------------|---------------------------------------------------------|
+| `/itemname set <name>`             | Sets the name of an item                                |
+| `/itemname reset`                  | Resets the name of an item to its default               |
+| `/itemlore`                        | Shows the lore of an item, with line numbers            |
+| `/itemlore add <lore>`             | Adds a line to the end of an item's lore                |
+| `/itemlore set <line> <lore>`      | Sets a line of an item's lore                           |
+| `/itemlore insert <line> [<lore>]` | Inserts a line of lore, moving the lines below it down  |
+| `/itemlore remove [<line>]`        | Removes a line of lore, or all lore if no line is given |
+| `/itemlore clear <line>`           | Clears a line of lore, leaving an empty line behind     |
+
+### Limits
+
+Limits are based on plain text, so formatting tags don't count towards them (e.g. `<red>Sword</red>`
+counts as 5 characters).
+
+| Limit                        | Value |
+|------------------------------|-------|
+| Maximum item name length     | 50    |
+| Maximum number of Lore lines | 10    |
+| Maximum lore line length     | 60    |
 
 ### Events
 
 #### ItemNameEvents.EDITED
 
-Fired when an item's name is modified in any way, providing both the old and new name.
+Fired when an item's name is set or reset, providing both the old and new name. Only fired when the
+name has actually changed.
 
 ```
 dev.seeruk.bundle.itemtext.api.ItemNameEvents.EDITED
@@ -54,7 +66,8 @@ void onEdited(Player player, ItemStack item, Optional<Component> original, Optio
 
 #### ItemLoreEvents.EDITED
 
-Fired when an item's lore is added to (add, set, insert), but not when it's removed or cleared.
+Fired when an item's lore is modified in any way, providing both the old and new lore. Only fired
+when the lore has actually changed.
 
 ```
 dev.seeruk.bundle.itemtext.api.ItemLoreEvents.EDITED
@@ -63,22 +76,23 @@ dev.seeruk.bundle.itemtext.api.ItemLoreEvents.EDITED
 **Callback signature:**
 
 ```java
-void onEdited(Player player, ItemStack item, int line, Component lore);
+void onEdited(Player player, ItemStack item, List<Component> original, List<Component> edited);
 ```
 
 | Parameter  | Description                                   |
 |------------|-----------------------------------------------|
-| `player`   | The player who modified the lore              |
+| `player`   | The player that modified the lore             |
 | `item`     | The item that had its lore modified           |
 | `original` | The original lore of the item, before editing |
 | `edited`   | The new lore of the item, after editing       |
 
-(All Lore can subsequently be retrieved from the item itself).
-
 ### Statistics
 
-Statistics updated by this mod only record additive changes to item names and lore, in other words,
-removing lore lines, or clearing lines does not affect the statistics.
+**Planned, not implemented yet!** These statistics don't exist yet, but this is what they'll look
+like when they do.
+
+Statistics will only count new text written by players, i.e. the plain text of a new name, or of new
+lines of lore. Removing names, or removing or clearing lines of lore won't affect them.
 
 | Scoreboard Objective           | Description                                                       |
 |--------------------------------|-------------------------------------------------------------------|

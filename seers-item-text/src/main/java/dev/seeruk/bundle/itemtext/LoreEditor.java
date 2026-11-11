@@ -25,7 +25,7 @@ public final class LoreEditor {
      * Retrieve the lines of lore from an item stack.
      *
      * @param stack The item stack to retrieve lore from.
-     * @return The lines of lore from the item stack, or an empty list of there was no lore.
+     * @return The lines of lore from the item stack, or an empty list if there was no lore.
      */
     public static List<Component> lines(ItemStack stack) {
         final var lore = stack.get(DataComponents.LORE);
@@ -65,7 +65,9 @@ public final class LoreEditor {
 
     private static LoreEditResult edit(Player player, ItemStack stack, Supplier<LoreEditResult> operation) {
         final var result = operation.get();
-        if (result instanceof LoreEditResult.Edited edited) {
+        // If the lore hasn't changed, we don't want to deny the edit, but we also don't want to do
+        // things like fire events - we can just ignore it silently.
+        if (result instanceof LoreEditResult.Edited edited && !edited.original().equals(edited.edited())) {
             save(player, stack, edited);
         }
 

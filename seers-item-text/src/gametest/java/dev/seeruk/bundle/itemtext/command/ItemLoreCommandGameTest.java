@@ -77,6 +77,19 @@ public class ItemLoreCommandGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
+    public void setWithSameLoreSucceeds(GameTestHelper helper) throws CommandSyntaxException {
+        final var player = helper.makeMockServerPlayerInLevel();
+        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
+
+        final var result = execute(helper, player, ItemLoreCommand.NAME + " set 1 Testing 1");
+
+        helper.assertValueEqual(result, 1, "command result");
+        helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing 1", "Testing 2"), "lore");
+        helper.succeed();
+    }
+
+    @SuppressWarnings("removal")
+    @GameTest
     public void insertInsertsLoreAtGivenLine(GameTestHelper helper) throws CommandSyntaxException {
         final var player = helper.makeMockServerPlayerInLevel();
         player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));

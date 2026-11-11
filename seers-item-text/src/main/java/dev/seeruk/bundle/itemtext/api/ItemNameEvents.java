@@ -13,7 +13,8 @@ import java.util.Optional;
  */
 public final class ItemNameEvents {
     /**
-     * Fired when a player modifies an item's name.
+     * Fired when a player modifies an item's name. Only fired when an edit is successful, and the
+     * name has actually changed.
      */
     public static final Event<Edited> EDITED = EventFactory.createArrayBacked(Edited.class,
         (listeners) -> (player, item, original, edited) -> {

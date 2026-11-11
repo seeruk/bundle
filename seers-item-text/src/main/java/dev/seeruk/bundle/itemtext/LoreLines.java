@@ -58,7 +58,7 @@ public final class LoreLines {
     }
 
     /**
-     * Inserts a line of lore. If the line is occupied, it will be shifted up. If the line does not
+     * Inserts a line of lore. If the line is occupied, it will be shifted down. If the line does not
      * exist, it will be inserted. If intermediate lines do not exist, they'll be created as blank
      * lines.
      *
@@ -143,7 +143,7 @@ public final class LoreLines {
     private static Optional<LoreEditResult.Failure> validateLine(Component line) {
         final var text = line.getString();
         if (text.length() > MAX_LINE_LENGTH) {
-            return Optional.of(new LoreEditResult.InvalidLineLength(MAX_LINE_LENGTH, line));
+            return Optional.of(new LoreEditResult.MaxLineLengthExceeded(MAX_LINE_LENGTH, line));
         }
 
         return Optional.empty();
@@ -155,7 +155,7 @@ public final class LoreLines {
             return Optional.of(new LoreEditResult.LineOutOfBounds(line, currentLines));
         }
 
-        // There's no check on MAX_LINES here, because it's checked in ensureWithinLimit, or for
+        // There's no check on MAX_LINES here, because it's checked in ensureWithinMaxLines, or for
         // insert as a special case separately.
 
         return Optional.empty();

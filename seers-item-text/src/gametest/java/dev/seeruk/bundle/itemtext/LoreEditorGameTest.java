@@ -108,6 +108,34 @@ public class LoreEditorGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
+    public void setWithSameLoreSucceedsWithoutFiringEvent(GameTestHelper helper) {
+        final var player = helper.makeMockServerPlayerInLevel();
+        final var stack = withLore("Testing 1", "Testing 2");
+
+        final var result = LoreEditor.set(player, stack, 1, "Testing 1");
+
+        helper.assertTrue(result instanceof LoreEditResult.Edited, "Edit didn't succeed");
+        helper.assertValueEqual(LoreEditor.lines(stack), literals("Testing 1", "Testing 2"), "lore");
+        helper.assertTrue(eventsFor(player).isEmpty(), "Event fired for unchanged lore");
+        helper.succeed();
+    }
+
+    @SuppressWarnings("removal")
+    @GameTest
+    public void removeAllWithoutLoreSucceedsWithoutFiringEvent(GameTestHelper helper) {
+        final var player = helper.makeMockServerPlayerInLevel();
+        final var stack = new ItemStack(Items.NETHERITE_SWORD);
+
+        final var result = LoreEditor.removeAll(player, stack);
+
+        helper.assertTrue(result instanceof LoreEditResult.Edited, "Edit didn't succeed");
+        helper.assertValueEqual(LoreEditor.lines(stack), List.of(), "lore");
+        helper.assertTrue(eventsFor(player).isEmpty(), "Event fired for unchanged lore");
+        helper.succeed();
+    }
+
+    @SuppressWarnings("removal")
+    @GameTest
     public void parsesSafeTags(GameTestHelper helper) {
         // Only checks which parser is used, TextParsersTest covers which tags are safe
         final var player = helper.makeMockServerPlayerInLevel();
