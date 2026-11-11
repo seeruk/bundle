@@ -59,7 +59,8 @@ public class ItemLoreCommand extends ItemTextCommand {
     }
 
     private static int list(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        final var stack = mainHandItem(context);
+        final var player = context.getSource().getPlayerOrException();
+        final var stack = mainHandItem(context, player);
         if (stack.isEmpty()) {
             return 0;
         }
@@ -123,7 +124,7 @@ public class ItemLoreCommand extends ItemTextCommand {
         BiFunction<Player, ItemStack, LoreEditResult> callback
     ) throws CommandSyntaxException {
         final var player = context.getSource().getPlayerOrException();
-        final var stack = mainHandItem(context);
+        final var stack = mainHandItem(context, player);
         if (stack.isEmpty()) {
             return 0;
         }

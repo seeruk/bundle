@@ -8,6 +8,8 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
+import static dev.seeruk.bundle.core.testing.TestCommands.execute;
+
 public class DisposalCommandGameTest {
     @GameTest
     public void registersNameAndNamespacedName(GameTestHelper helper) {
@@ -29,10 +31,9 @@ public class DisposalCommandGameTest {
     @SuppressWarnings("removal")
     @GameTest
     public void opensDisposalMenu(GameTestHelper helper) throws CommandSyntaxException {
-        final var dispatcher = helper.getLevel().getServer().getCommands().getDispatcher();
         final var player = helper.makeMockServerPlayerInLevel();
 
-        final var result = dispatcher.execute(DisposalCommand.NAME, player.createCommandSourceStack());
+        final var result = execute(helper, player, DisposalCommand.NAME);
 
         helper.assertValueEqual(result, 1, "command result");
         helper.assertTrue(player.containerMenu instanceof DisposalMenu, "Menu wasn't opened");
@@ -43,10 +44,9 @@ public class DisposalCommandGameTest {
 
     @GameTest
     public void refusesSpectators(GameTestHelper helper) throws CommandSyntaxException {
-        final var dispatcher = helper.getLevel().getServer().getCommands().getDispatcher();
         final var player = (ServerPlayer) helper.makeMockServerPlayer(GameType.SPECTATOR);
 
-        final var result = dispatcher.execute(DisposalCommand.NAME, player.createCommandSourceStack().withSuppressedOutput());
+        final var result = execute(helper, player, DisposalCommand.NAME);
 
         helper.assertValueEqual(result, 0, "command result");
         // player.containerMenu can't be null, and is set to their inventory when one isn't open

@@ -15,11 +15,11 @@ import static dev.seeruk.bundle.disposal.SeersDisposal.MOD_ID;
  * {@link ScoreboardStat}).
  */
 public final class DisposalStats {
+    public static final String DISPOSED_OBJECTIVE = "items_disposed";
+
     /**
      * Total number of items each player has disposed of.
      */
-    public static final String DISPOSED_OBJECTIVE = "items_disposed";
-
     static final ScoreboardStat DISPOSED = new ScoreboardStat(MOD_ID, DISPOSED_OBJECTIVE, "Items Disposed");
 
     private DisposalStats() {}

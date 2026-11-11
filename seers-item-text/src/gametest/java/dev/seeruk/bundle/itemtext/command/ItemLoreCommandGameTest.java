@@ -4,18 +4,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.seeruk.bundle.itemtext.LoreEditor;
 import dev.seeruk.bundle.itemtext.SeersItemText;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.GameType;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static dev.seeruk.bundle.core.testing.TestCommands.execute;
+import static dev.seeruk.bundle.itemtext.LoreFixtures.literals;
+import static dev.seeruk.bundle.itemtext.LoreFixtures.withLore;
 
 public class ItemLoreCommandGameTest {
     @GameTest
@@ -221,20 +220,5 @@ public class ItemLoreCommandGameTest {
         } catch (CommandSyntaxException e) {
             helper.succeed();
         }
-    }
-
-    private static int execute(GameTestHelper helper, ServerPlayer player, String command) throws CommandSyntaxException {
-        final var dispatcher = helper.getLevel().getServer().getCommands().getDispatcher();
-        return dispatcher.execute(command, player.createCommandSourceStack().withSuppressedOutput());
-    }
-
-    private static ItemStack withLore(String... lines) {
-        final var stack = new ItemStack(Items.STICK);
-        stack.set(DataComponents.LORE, new ItemLore(literals(lines)));
-        return stack;
-    }
-
-    private static List<Component> literals(String... lines) {
-        return Arrays.stream(lines).<Component>map(Component::literal).toList();
     }
 }

@@ -4,17 +4,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.seeruk.bundle.itemtext.NameEditor;
 import dev.seeruk.bundle.itemtext.SeersItemText;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 
 import java.util.Optional;
+
+import static dev.seeruk.bundle.core.testing.TestCommands.execute;
+import static dev.seeruk.bundle.itemtext.NameFixtures.literal;
+import static dev.seeruk.bundle.itemtext.NameFixtures.withName;
 
 public class ItemNameCommandGameTest {
     @GameTest
@@ -134,20 +134,5 @@ public class ItemNameCommandGameTest {
         } catch (CommandSyntaxException e) {
             helper.succeed();
         }
-    }
-
-    private static int execute(GameTestHelper helper, ServerPlayer player, String command) throws CommandSyntaxException {
-        final var dispatcher = helper.getLevel().getServer().getCommands().getDispatcher();
-        return dispatcher.execute(command, player.createCommandSourceStack().withSuppressedOutput());
-    }
-
-    private static ItemStack withName(String name) {
-        final var stack = new ItemStack(Items.STICK);
-        stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
-        return stack;
-    }
-
-    private static Optional<Component> literal(String name) {
-        return Optional.of(Component.literal(name));
     }
 }

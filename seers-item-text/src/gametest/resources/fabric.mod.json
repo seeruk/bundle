@@ -10,7 +10,8 @@
             "dev.seeruk.bundle.itemtext.LoreEditorGameTest",
             "dev.seeruk.bundle.itemtext.command.ItemLoreCommandGameTest",
             "dev.seeruk.bundle.itemtext.NameEditorGameTest",
-            "dev.seeruk.bundle.itemtext.command.ItemNameCommandGameTest"
+            "dev.seeruk.bundle.itemtext.command.ItemNameCommandGameTest",
+            "dev.seeruk.bundle.itemtext.ItemTextStatsGameTest"
         ]
     },
     "depends": {

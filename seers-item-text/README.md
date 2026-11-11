@@ -88,16 +88,16 @@ void onEdited(Player player, ItemStack item, List<Component> original, List<Comp
 
 ### Statistics
 
-**Planned, not implemented yet!** These statistics don't exist yet, but this is what they'll look
-like when they do.
-
-Statistics will only count new text written by players, i.e. the plain text of a new name, or of new
-lines of lore. Removing names, or removing or clearing lines of lore won't affect them.
+Statistics only count new text written by players, i.e. the plain text of a new name, or of new
+lines of lore. Removing names, or removing or clearing lines of lore doesn't affect them.
 
 | Scoreboard Objective           | Description                                                       |
 |--------------------------------|-------------------------------------------------------------------|
 | `seers-item-text.name_written` | The total number of characters a player has written in item names |
 | `seers-item-text.lore_written` | The total number of characters a player has written in item lore  |
+
+Objectives can be removed while the server is running, but will be recreated on server restart.
+Removing an objective will reset it for all players.
 
 [1]: https://placeholders.pb4.eu/
 [2]: https://placeholders.pb4.eu/user/text-format/

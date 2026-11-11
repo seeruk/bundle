@@ -4,12 +4,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import static dev.seeruk.bundle.core.testing.StatScores.score;
 
 public class DisposalStatsGameTest {
     private static final String OBJECTIVE_ID = DisposalStats.DISPOSED.objectiveId();
@@ -43,15 +44,14 @@ public class DisposalStatsGameTest {
     @SuppressWarnings("removal")
     @GameTest
     public void disposingAddsTotalItemCount(GameTestHelper helper) {
-        final var server = helper.getLevel().getServer();
         final var player = helper.makeMockServerPlayerInLevel();
-        final var before = score(server, player);
+        final var before = score(player, DisposalStats.DISPOSED);
 
         dispose(player, new ItemStack(Items.DIRT, 16), new ItemStack(Items.DIAMOND, 3));
-        helper.assertValueEqual(score(server, player) - before, 19, "score increase");
+        helper.assertValueEqual(score(player, DisposalStats.DISPOSED) - before, 19, "score increase");
 
         dispose(player, new ItemStack(Items.DIRT, 7));
-        helper.assertValueEqual(score(server, player) - before, 26, "score increase");
+        helper.assertValueEqual(score(player, DisposalStats.DISPOSED) - before, 26, "score increase");
 
         helper.succeed();
     }
@@ -67,11 +67,5 @@ public class DisposalStatsGameTest {
             Component.literal("Disposal")
         ));
         player.closeContainer();
-    }
-
-    private static int score(MinecraftServer server, ServerPlayer player) {
-        final var scoreboard = server.getScoreboard();
-        final var info = scoreboard.getPlayerScoreInfo(player, scoreboard.getObjective(OBJECTIVE_ID));
-        return info == null ? 0 : info.value();
     }
 }

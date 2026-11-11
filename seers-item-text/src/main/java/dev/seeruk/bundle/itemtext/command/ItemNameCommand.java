@@ -53,7 +53,7 @@ public class ItemNameCommand extends ItemTextCommand {
         BiFunction<Player, ItemStack, NameEditResult> callback
     ) throws CommandSyntaxException {
         final var player = context.getSource().getPlayerOrException();
-        final var stack = mainHandItem(context);
+        final var stack = mainHandItem(context, player);
         if (stack.isEmpty()) {
             return 0;
         }

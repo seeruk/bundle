@@ -4,16 +4,16 @@ import dev.seeruk.bundle.core.testing.EventLog;
 import dev.seeruk.bundle.itemtext.api.ItemLoreEvents;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemLore;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static dev.seeruk.bundle.itemtext.LoreFixtures.literals;
+import static dev.seeruk.bundle.itemtext.LoreFixtures.withLore;
 
 public class LoreEditorGameTest {
     private static final EventLog<Edited> EVENTS = new EventLog<>();
@@ -179,15 +179,5 @@ public class LoreEditorGameTest {
 
     private static List<Edited> eventsFor(Player player) {
         return EVENTS.matching(event -> event.player() == player);
-    }
-
-    private static ItemStack withLore(String... lines) {
-        final var stack = new ItemStack(Items.NETHERITE_SWORD);
-        stack.set(DataComponents.LORE, new ItemLore(literals(lines)));
-        return stack;
-    }
-
-    private static List<Component> literals(String... lines) {
-        return Arrays.stream(lines).<Component>map(Component::literal).toList();
     }
 }

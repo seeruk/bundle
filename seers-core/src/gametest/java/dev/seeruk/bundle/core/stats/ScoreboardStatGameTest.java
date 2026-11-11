@@ -4,10 +4,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+
+import static dev.seeruk.bundle.core.testing.StatScores.score;
 
 /**
  * The scoreboard is shared by every test on the server, so each test uses its own objective and
@@ -34,11 +35,6 @@ public class ScoreboardStatGameTest {
         if (objective != null) {
             server.getScoreboard().removeObjective(objective);
         }
-    }
-
-    private static int score(MinecraftServer server, ScoreboardStat stat, Player player) {
-        final var info = server.getScoreboard().getPlayerScoreInfo(player, objective(server, stat));
-        return info == null ? 0 : info.value();
     }
 
     @GameTest
@@ -72,7 +68,7 @@ public class ScoreboardStatGameTest {
             stat.add(player, 5);
             stat.ensureObjective(server);
 
-            helper.assertValueEqual(score(server, stat, player), 5, "score after re-ensuring");
+            helper.assertValueEqual(score(player, stat), 5, "score after re-ensuring");
         } finally {
             removeObjective(server, stat);
         }
@@ -90,10 +86,10 @@ public class ScoreboardStatGameTest {
             stat.ensureObjective(server);
 
             stat.add(player, 42);
-            helper.assertValueEqual(score(server, stat, player), 42, "score after first add");
+            helper.assertValueEqual(score(player, stat), 42, "score after first add");
 
             stat.add(player, 27);
-            helper.assertValueEqual(score(server, stat, player), 69, "score after second add");
+            helper.assertValueEqual(score(player, stat), 69, "score after second add");
         } finally {
             removeObjective(server, stat);
         }

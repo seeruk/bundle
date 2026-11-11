@@ -4,7 +4,6 @@ import dev.seeruk.bundle.core.testing.EventLog;
 import dev.seeruk.bundle.itemtext.api.ItemNameEvents;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -14,6 +13,9 @@ import net.minecraft.world.item.Items;
 
 import java.util.List;
 import java.util.Optional;
+
+import static dev.seeruk.bundle.itemtext.NameFixtures.literal;
+import static dev.seeruk.bundle.itemtext.NameFixtures.withName;
 
 public class NameEditorGameTest {
     private static final EventLog<Edited> EVENTS = new EventLog<>();
@@ -204,15 +206,5 @@ public class NameEditorGameTest {
 
     private static List<Edited> eventsFor(Player player) {
         return EVENTS.matching(event -> event.player() == player);
-    }
-
-    private static ItemStack withName(String name) {
-        final var stack = new ItemStack(Items.NETHERITE_SWORD);
-        stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
-        return stack;
-    }
-
-    private static Optional<Component> literal(String name) {
-        return Optional.of(Component.literal(name));
     }
 }

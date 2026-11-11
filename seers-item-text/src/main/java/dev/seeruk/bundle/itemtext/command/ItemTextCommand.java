@@ -1,16 +1,15 @@
 package dev.seeruk.bundle.itemtext.command;
 
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
 public abstract class ItemTextCommand {
-    protected static Optional<ItemStack> mainHandItem(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        final var player = context.getSource().getPlayerOrException();
+    protected static Optional<ItemStack> mainHandItem(CommandContext<CommandSourceStack> context, ServerPlayer player) {
         if (player.isSpectator()) {
             context.getSource().sendFailure(TextParsers.parseAsTrusted(
                 "<red>You can't modify this item while spectating!</red>"
