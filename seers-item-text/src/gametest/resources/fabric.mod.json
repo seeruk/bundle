@@ -8,7 +8,9 @@
     "entrypoints": {
         "fabric-gametest": [
             "dev.seeruk.bundle.itemtext.LoreEditorGameTest",
-            "dev.seeruk.bundle.itemtext.command.ItemLoreCommandGameTest"
+            "dev.seeruk.bundle.itemtext.command.ItemLoreCommandGameTest",
+            "dev.seeruk.bundle.itemtext.NameEditorGameTest",
+            "dev.seeruk.bundle.itemtext.command.ItemNameCommandGameTest"
         ]
     },
     "depends": {
