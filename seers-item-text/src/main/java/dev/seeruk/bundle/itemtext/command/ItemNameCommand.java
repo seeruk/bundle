@@ -3,35 +3,94 @@ package dev.seeruk.bundle.itemtext.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.seeruk.bundle.core.command.CommandExecutors;
+import dev.seeruk.bundle.core.command.NamespacedCommands;
+import dev.seeruk.bundle.itemtext.NameEditResult;
+import dev.seeruk.bundle.itemtext.NameEditor;
+import dev.seeruk.bundle.itemtext.SeersItemText;
+import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.function.BiFunction;
 
 /**
  * {@code /itemname}: commands and subcommands for modifying item names.
  */
-public class ItemNameCommand {
+public class ItemNameCommand extends ItemTextCommand {
     static final String NAME = "itemname";
 
     private ItemNameCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal(NAME)
+        NamespacedCommands.register(dispatcher, SeersItemText.MOD_ID, NAME, name -> Commands.literal(name)
             .then(Commands.literal("set")
                 .then(Commands.argument("name", nameArg())
-                    .executes(ItemNameCommand::set)))
+                    .executes(CommandExecutors.logged(ItemNameCommand::set))))
             .then(Commands.literal("reset")
-                .executes(ItemNameCommand::reset)));
+                .executes(CommandExecutors.logged(ItemNameCommand::reset))));
     }
 
-    private static int set(CommandContext<CommandSourceStack> context) {
-        return 0;
+    private static int set(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var name = StringArgumentType.getString(context, "name");
+        return edit(context, (player, stack) -> NameEditor.set(player, stack, name));
     }
 
-    private static int reset(CommandContext<CommandSourceStack> context) {
-        return 0;
+    private static int reset(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        return edit(context, NameEditor::reset);
     }
 
     private static StringArgumentType nameArg() {
         return StringArgumentType.greedyString();
+    }
+
+    private static int edit(
+        CommandContext<CommandSourceStack> context,
+        BiFunction<Player, ItemStack, NameEditResult> callback
+    ) throws CommandSyntaxException {
+        final var player = context.getSource().getPlayerOrException();
+        final var stack = mainHandItem(context);
+        if (stack.isEmpty()) {
+            return 0;
+        }
+
+        final var result = callback.apply(player, stack.get());
+
+        return switch (result) {
+            case NameEditResult.Edited _ -> {
+                context.getSource().sendSuccess(
+                    () -> Component.empty()
+                        .append(TextParsers.parseAsTrusted("<green>Name updated:</green>\n"))
+                        .append(stack.get().getStyledHoverName()),
+                    false
+                );
+                yield 1;
+            }
+            case NameEditResult.BlankName _ -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>New name cannot be blank</red>"
+                ));
+                yield 0;
+            }
+            case NameEditResult.MaxLengthExceeded failure -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>New name cannot be longer than %d characters (yours is %d)</red>".formatted(
+                        failure.maxNameLength(),
+                        failure.name().getString().length()
+                    )
+                ));
+                yield 0;
+            }
+            case NameEditResult.NoCustomName _ -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>This item has no custom name</red>"
+                ));
+                yield 0;
+            }
+        };
     }
 }

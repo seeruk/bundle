@@ -29,7 +29,7 @@ public final class ItemLoreEvents {
     public interface Edited {
         /**
          * @param player   The player who set the lore
-         * @param item     The item that had its lore written to
+         * @param item     The item that had its lore modified
          * @param original The original lore of the item, before editing
          * @param edited   The new lore of the item, after editing
          */

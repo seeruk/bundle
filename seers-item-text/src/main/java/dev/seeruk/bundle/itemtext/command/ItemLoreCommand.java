@@ -22,14 +22,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
 /**
  * {@code /itemlore}: commands and subcommands for modifying item lore.
  */
-public class ItemLoreCommand {
+public class ItemLoreCommand extends ItemTextCommand {
     static final String NAME = "itemlore";
 
     private ItemLoreCommand() {}
@@ -77,38 +76,38 @@ public class ItemLoreCommand {
 
     private static int add(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var lore = StringArgumentType.getString(context, "lore");
-        return write(context, (player, stack) -> LoreEditor.add(player, stack, lore));
+        return edit(context, (player, stack) -> LoreEditor.add(player, stack, lore));
     }
 
     private static int set(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
         final var lore = StringArgumentType.getString(context, "lore");
-        return write(context, (player, stack) -> LoreEditor.set(player, stack, line, lore));
+        return edit(context, (player, stack) -> LoreEditor.set(player, stack, line, lore));
     }
 
     private static int insert(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
         final var lore = StringArgumentType.getString(context, "lore");
-        return write(context, (player, stack) -> LoreEditor.insert(player, stack, line, lore));
+        return edit(context, (player, stack) -> LoreEditor.insert(player, stack, line, lore));
     }
 
     private static int insertEmpty(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
-        return write(context, (player, stack) -> LoreEditor.insert(player, stack, line, ""));
+        return edit(context, (player, stack) -> LoreEditor.insert(player, stack, line, ""));
     }
 
     private static int remove(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
-        return write(context, (player, stack) -> LoreEditor.remove(player, stack, line));
+        return edit(context, (player, stack) -> LoreEditor.remove(player, stack, line));
     }
 
     private static int removeAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return write(context, LoreEditor::removeAll);
+        return edit(context, LoreEditor::removeAll);
     }
 
     private static int clear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var line = IntegerArgumentType.getInteger(context, "line");
-        return write(context, (player, stack) -> LoreEditor.clear(player, stack, line));
+        return edit(context, (player, stack) -> LoreEditor.clear(player, stack, line));
     }
 
     private static IntegerArgumentType lineArg() {
@@ -119,7 +118,7 @@ public class ItemLoreCommand {
         return StringArgumentType.greedyString();
     }
 
-    private static int write(
+    private static int edit(
         CommandContext<CommandSourceStack> context,
         BiFunction<Player, ItemStack, LoreEditResult> callback
     ) throws CommandSyntaxException {
@@ -199,25 +198,5 @@ public class ItemLoreCommand {
             .toList();
 
         return ComponentUtils.formatList(numbered, Component.literal("\n"));
-    }
-
-    private static Optional<ItemStack> mainHandItem(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        final var player = context.getSource().getPlayerOrException();
-        if (player.isSpectator()) {
-            context.getSource().sendFailure(TextParsers.parseAsTrusted(
-                "<red>You can't modify item lore while spectating!</red>"
-            ));
-            return Optional.empty();
-        }
-
-        final var stack = player.getMainHandItem();
-        if (stack.isEmpty()) {
-            context.getSource().sendFailure(TextParsers.parseAsTrusted(
-                "<red>Hold an item in your main hand to modify its lore</red>"
-            ));
-            return Optional.empty();
-        }
-
-        return Optional.of(stack);
     }
 }

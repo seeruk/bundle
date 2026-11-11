@@ -31,50 +31,54 @@ formatting options in the [Text Placeholder API documentation][2].
 
 ### Events
 
-#### ItemNameEvents.WRITTEN
+#### ItemNameEvents.EDITED
 
-Fired when an item's name is set (only when text is added, so, not when it's reset).
+Fired when an item's name is modified in any way, providing both the old and new name.
 
 ```
-dev.seeruk.bundle.itemtext.api.ItemNameEvents.WRITTEN
+dev.seeruk.bundle.itemtext.api.ItemNameEvents.EDITED
 ```
 
 **Callback signature:**
 
 ```java
-void onWritten(Player player, ItemStack item, String name);
+void onEdited(Player player, ItemStack item, Optional<Component> original, Optional<Component> edited);
 ```
 
-| Parameter | Description                    |
-|-----------|--------------------------------|
-| `player`  | The player that set the name   |
-| `item`    | The item that had its name set |  
-| `name`    | The new name of the item       |
+| Parameter  | Description                                      |
+|------------|--------------------------------------------------|
+| `player`   | The player that modified the name                |
+| `item`     | The item that had its name modified              |
+| `original` | The original custom name of the item, if present |
+| `edited`   | The new custom name of the item, if present      |
 
-#### ItemLoreEvents.WRITTEN
+#### ItemLoreEvents.EDITED
 
 Fired when an item's lore is added to (add, set, insert), but not when it's removed or cleared.
 
 ```
-dev.seeruk.bundle.itemtext.api.ItemLoreEvents.WRITTEN
+dev.seeruk.bundle.itemtext.api.ItemLoreEvents.EDITED
 ```
 
 **Callback signature:**
 
 ```java
-void onWritten(Player player, ItemStack item, int line, Component lore);
+void onEdited(Player player, ItemStack item, int line, Component lore);
 ```
 
-| Parameter | Description                                     |
-|-----------|-------------------------------------------------|
-| `player`  | The player who set the lore                     |
-| `item`    | The item that had its lore written to           |
-| `line`    | The line number that was written to (0 indexed) |
-| `lore`    | The lore that was written                       |
+| Parameter  | Description                                   |
+|------------|-----------------------------------------------|
+| `player`   | The player who modified the lore              |
+| `item`     | The item that had its lore modified           |
+| `original` | The original lore of the item, before editing |
+| `edited`   | The new lore of the item, after editing       |
 
 (All Lore can subsequently be retrieved from the item itself).
 
 ### Statistics
+
+Statistics updated by this mod only record additive changes to item names and lore, in other words,
+removing lore lines, or clearing lines does not affect the statistics.
 
 | Scoreboard Objective           | Description                                                       |
 |--------------------------------|-------------------------------------------------------------------|

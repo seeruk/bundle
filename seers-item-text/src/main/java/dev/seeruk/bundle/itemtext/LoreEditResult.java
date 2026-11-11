@@ -5,8 +5,8 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 /**
- * LoreEdit is a result type used to represent the outcome of attempting to edit the lore of an
- * item.
+ * LoreEditResult is a result type used to represent the outcome of attempting to edit the lore of
+ * an item.
  */
 public sealed interface LoreEditResult {
     // Success cases
