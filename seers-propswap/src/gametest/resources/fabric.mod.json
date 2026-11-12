@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-propswap-gametest",
+    "version": "${version}",
+    "name": "Seer's PropSwap GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.propswap.SeersPropSwapGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.propswap.client.SeersPropSwapClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-propswap": "*"
+    }
+}
