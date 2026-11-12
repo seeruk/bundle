@@ -37,9 +37,9 @@ primarily to prevent accidental changes to blocks!
 |------------------------------|---------------------------------------------|----------------------------|
 | Fences, glass panes, bars    | Toggles the connection on the clicked side  | Removes or adds every side |
 | Walls                        | Cycles the clicked side, or the post on top | Removes or adds every side |
-| Stairs                       | Cycles the shape, corners included          | -                          |
+| Stairs                       | Cycles the shape, corners included          | Cycles the shape backwards |
 | Mushroom blocks and stems    | Toggles the clicked face (pores or skin)    | -                          |
-| Pillars (logs, basalt, etc.) | Cycles the axis                             | -                          |
+| Pillars (logs, basalt, etc.) | Cycles the axis                             | Cycles the axis backwards  |
 | All furnaces and smokers     | Toggles whether it looks lit                | -                          |
 
 Clicking the top or bottom of a fence, pane or bar toggles the side you're facing instead.

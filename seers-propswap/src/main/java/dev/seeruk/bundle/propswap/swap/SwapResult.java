@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.propswap.swap;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
@@ -20,5 +21,17 @@ public record SwapResult(BlockState state, Component message) {
             property.getName(state.getValue(property))
         );
         return new SwapResult(state, message);
+    }
+
+    /**
+     * Moves a property to its next value, or its previous one if {@code backwards}, like the debug
+     * stick does.
+     */
+    public static <T extends Comparable<T>> SwapResult cycled(BlockState state, Property<T> property, boolean backwards) {
+        final var values = property.getPossibleValues();
+        final var current = state.getValue(property);
+        final var value = backwards ? Util.findPreviousInIterable(values, current) : Util.findNextInIterable(values, current);
+
+        return changed(state.setValue(property, value), property);
     }
 }

@@ -10,7 +10,10 @@ import java.util.Optional;
  */
 public final class Swaps {
     private static final List<Swap> ALL = List.of(
-        new LitSwap()
+        new AxisSwap(),
+        new LitSwap(),
+        new MushroomSwap(),
+        new StairSwap()
     );
 
     private Swaps() {}

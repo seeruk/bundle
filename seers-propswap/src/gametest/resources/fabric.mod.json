@@ -9,7 +9,8 @@
         "fabric-gametest": [
             "dev.seeruk.bundle.propswap.PropSwapInteractionGameTest",
             "dev.seeruk.bundle.propswap.PropSwapStatsGameTest",
-            "dev.seeruk.bundle.propswap.command.PropSwapCommandGameTest"
+            "dev.seeruk.bundle.propswap.command.PropSwapCommandGameTest",
+            "dev.seeruk.bundle.propswap.swap.SwapsGameTest"
         ]
     },
     "depends": {
