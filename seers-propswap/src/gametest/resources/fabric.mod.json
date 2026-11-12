@@ -7,10 +7,9 @@
     "environment": "*",
     "entrypoints": {
         "fabric-gametest": [
-            "dev.seeruk.bundle.propswap.SeersPropSwapGameTest"
-        ],
-        "fabric-client-gametest": [
-            "dev.seeruk.bundle.propswap.client.SeersPropSwapClientGameTest"
+            "dev.seeruk.bundle.propswap.PropSwapInteractionGameTest",
+            "dev.seeruk.bundle.propswap.PropSwapStatsGameTest",
+            "dev.seeruk.bundle.propswap.command.PropSwapCommandGameTest"
         ]
     },
     "depends": {

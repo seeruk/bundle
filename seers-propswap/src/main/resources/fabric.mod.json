@@ -3,7 +3,7 @@
     "id": "seers-propswap",
     "version": "${version}",
     "name": "Seer's PropSwap",
-    "description": "A template repository",
+    "description": "Debug-stick-like behaviours on regular tools, for customising blocks without leaving Vanilla.",
     "authors": [
         "Elliot Wright"
     ],
@@ -15,9 +15,6 @@
     "entrypoints": {
         "main": [
             "dev.seeruk.bundle.propswap.SeersPropSwap"
-        ],
-        "client": [
-            "dev.seeruk.bundle.propswap.client.SeersPropSwapClient"
         ]
     },
     "depends": {
