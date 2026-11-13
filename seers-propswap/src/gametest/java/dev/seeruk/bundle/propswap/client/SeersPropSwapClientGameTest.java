@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.propswap.client;
 
+import dev.seeruk.bundle.propswap.lock.LockedBlocks;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -8,7 +9,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CrossCollisionBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -35,6 +38,7 @@ public class SeersPropSwapClientGameTest implements FabricClientGameTest {
             clientReceivesMode(context, pos);
             logIsSwappedWithoutBeingStripped(context, pos);
             clientReceivesModeTurningOff(context, singleplayer);
+            lockedBlockKeepsShapeWhenPlacingNextToIt(context, singleplayer, pos.south(2));
         }
     }
 
@@ -59,6 +63,38 @@ public class SeersPropSwapClientGameTest implements FabricClientGameTest {
         }
 
         context.waitFor(client -> client.level.getBlockState(pos).getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Z);
+    }
+
+    private void lockedBlockKeepsShapeWhenPlacingNextToIt(
+        ClientGameTestContext context,
+        TestSingleplayerContext singleplayer,
+        BlockPos pos
+    ) {
+        singleplayer.getServer().runOnServer(server -> {
+            final var player = server.getPlayerList().getPlayers().getFirst();
+            final var fence = Blocks.OAK_FENCE.defaultBlockState().setValue(CrossCollisionBlock.NORTH, true);
+
+            player.level().setBlock(pos, fence, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+            LockedBlocks.lock(player.level(), pos);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.TORCH));
+        });
+
+        context.waitFor(client -> client.player.getMainHandItem().is(Items.TORCH)
+            && client.level.getBlockState(pos).is(Blocks.OAK_FENCE)
+            && LockedBlocks.isLocked(client.level, pos));
+
+        // Places a torch north of the fence, the same way right-clicking the ground there would.
+        // Fences don't connect to torches, so the client would normally drop the connection.
+        final var predicted = context.computeOnClient(client -> {
+            final var ground = pos.north().below();
+            final var hit = new BlockHitResult(Vec3.atCenterOf(ground).add(0, 0.5, 0), Direction.UP, ground, false);
+            client.gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, hit);
+            return client.level.getBlockState(pos);
+        });
+
+        if (!predicted.getValue(CrossCollisionBlock.NORTH)) {
+            throw new AssertionError("Expected the client to keep the locked fence's shape, but got " + predicted);
+        }
     }
 
     private void clientReceivesModeTurningOff(ClientGameTestContext context, TestSingleplayerContext singleplayer) {

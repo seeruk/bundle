@@ -33,7 +33,8 @@ primarily to prevent accidental changes to blocks!
 
 The optional client-side mod ensures that your client doesn't show flickering blocks or do things
 like play sounds while prop swapping. The client-side mod uses the same logic as the server-side mod
-to determine what to ignore while PropSwap is enabled.
+to determine what to ignore while PropSwap is enabled. It also knows which blocks are locked, so
+placing blocks next to them doesn't make them flicker either.
 
 **Note:** Vanilla clients can still connect, and use PropSwap, without the client-side mod.
 

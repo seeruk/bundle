@@ -4,11 +4,14 @@ import com.mojang.serialization.Codec;
 import dev.seeruk.bundle.propswap.SeersPropSwap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,9 +32,16 @@ public final class LockedBlocks {
         positions -> Arrays.stream(positions.toLongArray())
     );
 
+    private static final StreamCodec<ByteBuf, LongSet> SYNC_CODEC = ByteBufCodecs.LONG_ARRAY.map(
+        LongOpenHashSet::new,
+        LongSet::toLongArray
+    );
+
+    // Synced to clients with PropSwap installed, so their own predictions keep locked blocks too.
+    // Fabric only sends it to clients that know about it, so Vanilla clients are unaffected.
     public static final AttachmentType<LongSet> ATTACHMENT = AttachmentRegistry.create(
         SeersPropSwap.id("locked_blocks"),
-        builder -> builder.persistent(CODEC)
+        builder -> builder.persistent(CODEC).syncWith(SYNC_CODEC, AttachmentSyncPredicate.all())
     );
 
     // Locks cleared this tick. Vanilla removes a broken block before working out its drops, so this
@@ -45,11 +55,12 @@ public final class LockedBlocks {
     public static void init() {}
 
     public static boolean isLocked(LevelReader level, BlockPos pos) {
-        if (!(level instanceof ServerLevel serverLevel)) {
+        // Anything other than a level (e.g. world generation) never has locks
+        if (!(level instanceof Level fullLevel)) {
             return false;
         }
 
-        final var chunk = serverLevel.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+        final var chunk = fullLevel.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
         return chunk != null && isLocked(chunk, pos);
     }
 
@@ -70,11 +81,20 @@ public final class LockedBlocks {
         return positions != null && positions.contains(pos.asLong());
     }
 
+    // Fabric only syncs an attachment when it's set again, so locking and unlocking replace the set
+    // rather than changing it.
     public static void lock(Level level, BlockPos pos) {
         final var chunk = level.getChunkAt(pos);
-        if (chunk.getAttachedOrCreate(ATTACHMENT, LongOpenHashSet::new).add(pos.asLong())) {
-            chunk.markUnsaved();
+        final var positions = chunk.getAttached(ATTACHMENT);
+        if (positions != null && positions.contains(pos.asLong())) {
+            return;
         }
+
+        final var updated = positions == null ? new LongOpenHashSet() : new LongOpenHashSet(positions.toLongArray());
+        updated.add(pos.asLong());
+
+        chunk.setAttached(ATTACHMENT, updated);
+        chunk.markUnsaved();
     }
 
     public static void unlock(Level level, BlockPos pos) {
@@ -111,12 +131,17 @@ public final class LockedBlocks {
 
     private static void unlock(LevelChunk chunk, BlockPos pos) {
         final var positions = chunk.getAttached(ATTACHMENT);
-        if (positions == null || !positions.remove(pos.asLong())) {
+        if (positions == null || !positions.contains(pos.asLong())) {
             return;
         }
 
-        if (positions.isEmpty()) {
+        final var updated = new LongOpenHashSet(positions.toLongArray());
+        updated.remove(pos.asLong());
+
+        if (updated.isEmpty()) {
             chunk.removeAttached(ATTACHMENT);
+        } else {
+            chunk.setAttached(ATTACHMENT, updated);
         }
 
         chunk.markUnsaved();
