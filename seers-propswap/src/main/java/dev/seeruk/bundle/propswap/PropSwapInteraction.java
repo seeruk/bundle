@@ -33,7 +33,7 @@ public final class PropSwapInteraction {
         final var pos = hit.getBlockPos();
         final var original = level.getBlockState(pos);
 
-        if (!PropSwapTool.canChange(stack, original) || !player.mayBuild() || !player.mayUseItemAt(pos, hit.getDirection(), stack)) {
+        if (!PropSwapTargets.allowed(player, stack, original, hit)) {
             return InteractionResult.PASS;
         }
 

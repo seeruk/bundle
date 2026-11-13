@@ -2,6 +2,7 @@ package dev.seeruk.bundle.propswap.swap;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,11 @@ public final class Swaps {
     );
 
     private Swaps() {}
+
+    public static boolean supports(BlockState state) {
+        return PLAYER_AWARE_SWAPS.stream().anyMatch(swap -> swap.supports(state))
+            || SWAPS.stream().anyMatch(swap -> swap.supports(state));
+    }
 
     /**
      * Swaps the block with whichever swap supports it. Returns empty if none do, or the swap

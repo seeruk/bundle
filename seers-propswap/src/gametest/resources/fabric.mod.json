@@ -11,11 +11,15 @@
             "dev.seeruk.bundle.propswap.PropSwapModeGameTest",
             "dev.seeruk.bundle.propswap.PropSwapReminderGameTest",
             "dev.seeruk.bundle.propswap.PropSwapStatsGameTest",
+            "dev.seeruk.bundle.propswap.PropSwapTargetsGameTest",
             "dev.seeruk.bundle.propswap.command.PropSwapCommandGameTest",
             "dev.seeruk.bundle.propswap.lock.LockedBlocksGameTest",
             "dev.seeruk.bundle.propswap.swap.BarrelSwapGameTest",
             "dev.seeruk.bundle.propswap.swap.BedSwapGameTest",
             "dev.seeruk.bundle.propswap.swap.SwapsGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.propswap.client.SeersPropSwapClientGameTest"
         ]
     },
     "depends": {

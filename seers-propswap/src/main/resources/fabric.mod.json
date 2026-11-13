@@ -15,6 +15,9 @@
     "entrypoints": {
         "main": [
             "dev.seeruk.bundle.propswap.SeersPropSwap"
+        ],
+        "client": [
+            "dev.seeruk.bundle.propswap.client.SeersPropSwapClient"
         ]
     },
     "mixins": [

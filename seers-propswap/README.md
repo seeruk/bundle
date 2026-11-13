@@ -12,10 +12,11 @@ behind them, and more!
 - **Locked Changes**: Changed blocks stay that way, even when blocks around them change.
 - **Datapack-friendly Tools**: Which tools work on which blocks is driven by block tags.
 - **Event Hooks**: Fires an event when a block is PropSwapped, allowing other mods to react.
+- **Optional Client Mod**: Stops your client briefly showing what Vanilla would do instead.
 
 ## Usage
 
-This mod is server-side.
+This mod is server-side, and optionally client-side.
 
 Run `/propswap` to turn PropSwapping on, then use (right-click) a block while holding the tool that
 would break it. Crouching and using can also modify some blocks in a slightly different way. As 
@@ -29,6 +30,12 @@ replaced.
 If you don't use PropSwap for 5 minutes, it'll turn itself off. When you log into a server it
 will be disabled to begin with, and won't remember if you previously had it enabled. This is 
 primarily to prevent accidental changes to blocks!
+
+The optional client-side mod ensures that your client doesn't show flickering blocks or do things
+like play sounds while prop swapping. The client-side mod uses the same logic as the server-side mod
+to determine what to ignore while PropSwap is enabled.
+
+**Note:** Vanilla clients can still connect, and use PropSwap, without the client-side mod.
 
 ### Commands
 

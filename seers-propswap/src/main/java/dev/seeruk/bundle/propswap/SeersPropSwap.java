@@ -3,6 +3,7 @@ package dev.seeruk.bundle.propswap;
 import dev.seeruk.bundle.propswap.api.PropSwapEvents;
 import dev.seeruk.bundle.propswap.command.PropSwapCommand;
 import dev.seeruk.bundle.propswap.lock.LockedBlocks;
+import dev.seeruk.bundle.propswap.network.PropSwapNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
@@ -30,6 +31,7 @@ public class SeersPropSwap implements ModInitializer {
     @Override
     public void onInitialize() {
         LockedBlocks.init();
+        PropSwapNetworking.init();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
             PropSwapCommand.register(dispatcher));
@@ -38,7 +40,7 @@ public class SeersPropSwap implements ModInitializer {
         UseBlockCallback.EVENT.register(LATE_PHASE, PropSwapInteraction::interact);
 
         ServerPlayConnectionEvents.DISCONNECT.register((listener, server) -> {
-            PropSwapMode.disable(listener.getPlayer());
+            PropSwapMode.forget(listener.getPlayer());
             PropSwapReminder.forget(listener.getPlayer());
         });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {

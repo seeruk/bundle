@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.propswap;
 
+import dev.seeruk.bundle.propswap.network.PropSwapNetworking;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
@@ -42,11 +43,28 @@ public final class PropSwapMode {
         return true;
     }
 
+    /**
+     * Enables PropSwap for the player, and tells their client if that changed anything.
+     */
     public static void enable(Player player) {
-        LAST_ACTIVE.put(player.getUUID(), now(player));
+        if (LAST_ACTIVE.put(player.getUUID(), now(player)) == null) {
+            PropSwapNetworking.sync(player);
+        }
     }
 
+    /**
+     * Disables PropSwap for the player, and tells their client if that changed anything.
+     */
     public static void disable(Player player) {
+        if (LAST_ACTIVE.remove(player.getUUID()) != null) {
+            PropSwapNetworking.sync(player);
+        }
+    }
+
+    /**
+     * Forgets the player without telling their client, e.g. because they're disconnecting.
+     */
+    public static void forget(Player player) {
         LAST_ACTIVE.remove(player.getUUID());
     }
 
