@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.propswap;
 
 import dev.seeruk.bundle.propswap.api.PropSwapEvents;
+import dev.seeruk.bundle.propswap.lock.LockedBlocks;
 import dev.seeruk.bundle.propswap.swap.SwapInput;
 import dev.seeruk.bundle.propswap.swap.Swaps;
 import net.minecraft.world.InteractionHand;
@@ -43,6 +44,10 @@ public final class PropSwapInteraction {
         }
 
         final var swapped = result.get().state();
+        if (result.get().lock()) {
+            LockedBlocks.lock(level, pos);
+        }
+
         if (swapped != original) {
             level.setBlock(pos, swapped, UPDATE_FLAGS);
             PropSwapEvents.SWAPPED.invoker().onSwapped(player, level, pos, original, swapped);

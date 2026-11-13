@@ -18,6 +18,6 @@ public final class MushroomSwap implements Swap {
     @Override
     public Optional<SwapResult> swap(SwapInput input) {
         final var property = PipeBlock.PROPERTY_BY_DIRECTION.get(input.face());
-        return Optional.of(SwapResult.cycled(input.state(), property, false));
+        return Optional.of(SwapResult.cycled(input.state(), property, false).locked());
     }
 }

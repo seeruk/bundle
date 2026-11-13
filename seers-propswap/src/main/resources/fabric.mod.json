@@ -3,7 +3,7 @@
     "id": "seers-propswap",
     "version": "${version}",
     "name": "Seer's PropSwap",
-    "description": "Debug-stick-like behaviours on regular tools, for customising blocks without leaving Vanilla.",
+    "description": "Debug-stick-like behaviours on regular tools, for customizing blocks without leaving Vanilla.",
     "authors": [
         "Elliot Wright"
     ],
@@ -17,6 +17,9 @@
             "dev.seeruk.bundle.propswap.SeersPropSwap"
         ]
     },
+    "mixins": [
+        "seers-propswap.mixins.json"
+    ],
     "depends": {
         "java": ">=25",
         "minecraft": "~26.3",

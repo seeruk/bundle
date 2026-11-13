@@ -53,32 +53,32 @@ public class WallSwapTest {
                 Arguments.of(
                     "Cycles a side from none to low",
                     wall(true, WallSide.NONE), Direction.NORTH,
-                    SwapResult.changed(wall(true, WallSide.LOW), north)
+                    SwapResult.changed(wall(true, WallSide.LOW), north).locked()
                 ),
                 Arguments.of(
                     "Cycles a side from low to tall",
                     wall(true, WallSide.LOW), Direction.NORTH,
-                    SwapResult.changed(wall(true, WallSide.TALL), north)
+                    SwapResult.changed(wall(true, WallSide.TALL), north).locked()
                 ),
                 Arguments.of(
                     "Cycles a side from tall back to none",
                     wall(true, WallSide.TALL), Direction.NORTH,
-                    SwapResult.changed(wall(true, WallSide.NONE), north)
+                    SwapResult.changed(wall(true, WallSide.NONE), north).locked()
                 ),
                 Arguments.of(
                     "Adds the post when removing the last side",
                     wall(false, WallSide.TALL), Direction.NORTH,
-                    SwapResult.changed(wall(true, WallSide.NONE), north)
+                    SwapResult.changed(wall(true, WallSide.NONE), north).locked()
                 ),
                 Arguments.of(
                     "Cycles the side faced when clicking the top",
                     wall(true), Direction.UP,
-                    SwapResult.changed(wall(true, WallSide.NONE, WallSide.LOW), WallBlock.EAST)
+                    SwapResult.changed(wall(true, WallSide.NONE, WallSide.LOW), WallBlock.EAST).locked()
                 ),
                 Arguments.of(
                     "Cycles the side faced when clicking the bottom",
                     wall(true), Direction.DOWN,
-                    SwapResult.changed(wall(true, WallSide.NONE, WallSide.LOW), WallBlock.EAST)
+                    SwapResult.changed(wall(true, WallSide.NONE, WallSide.LOW), WallBlock.EAST).locked()
                 )
             );
         }
@@ -101,12 +101,12 @@ public class WallSwapTest {
                 Arguments.of(
                     "Removes the post",
                     wall(true, WallSide.LOW),
-                    SwapResult.changed(wall(false, WallSide.LOW), WallBlock.UP)
+                    SwapResult.changed(wall(false, WallSide.LOW), WallBlock.UP).locked()
                 ),
                 Arguments.of(
                     "Adds the post",
                     wall(false, WallSide.LOW),
-                    SwapResult.changed(wall(true, WallSide.LOW), WallBlock.UP)
+                    SwapResult.changed(wall(true, WallSide.LOW), WallBlock.UP).locked()
                 ),
                 Arguments.of(
                     "Refuses to remove the post without any sides",
@@ -164,7 +164,7 @@ public class WallSwapTest {
         ) {
             final var result = SWAP.swap(new SwapInput(state, face, Direction.EAST, true));
 
-            assertEquals(SwapResult.changed(expected, "sides", value), result.orElseThrow());
+            assertEquals(SwapResult.changed(expected, "sides", value).locked(), result.orElseThrow());
         }
     }
 

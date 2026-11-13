@@ -17,12 +17,12 @@ public final class ConnectionSwap implements Swap {
     @Override
     public Optional<SwapResult> swap(SwapInput input) {
         if (input.crouching()) {
-            return Optional.of(toggleAll(input.state()));
+            return Optional.of(toggleAll(input.state()).locked());
         }
 
         // Clicking the top or bottom toggles the side the player is looking towards
         final var side = input.face().getAxis().isHorizontal() ? input.face() : input.facing();
-        return Optional.of(SwapResult.cycled(input.state(), CrossCollisionBlock.PROPERTY_BY_DIRECTION.get(side), false));
+        return Optional.of(SwapResult.cycled(input.state(), CrossCollisionBlock.PROPERTY_BY_DIRECTION.get(side), false).locked());
     }
 
     private static SwapResult toggleAll(BlockState state) {

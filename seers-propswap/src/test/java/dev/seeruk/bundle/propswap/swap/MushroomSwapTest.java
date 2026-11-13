@@ -68,7 +68,7 @@ public class MushroomSwapTest {
 
             final var result = SWAP.swap(new SwapInput(state, face, Direction.NORTH, crouching));
 
-            assertEquals(SwapResult.changed(state.setValue(property, expected), property), result.orElseThrow());
+            assertEquals(SwapResult.changed(state.setValue(property, expected), property).locked(), result.orElseThrow());
         }
     }
 }

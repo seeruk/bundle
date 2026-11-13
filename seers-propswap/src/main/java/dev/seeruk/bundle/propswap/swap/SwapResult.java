@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.propswap.swap;
 
+import dev.seeruk.bundle.propswap.lock.LockedBlocks;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import net.minecraft.world.level.block.state.BlockState;
@@ -9,8 +10,17 @@ import net.minecraft.world.level.block.state.properties.Property;
  * The outcome of a {@link Swap}.
  *
  * @param message Shown to the player in the action bar.
+ * @param lock    Whether to lock the block (see {@link LockedBlocks}).
  */
-public record SwapResult(BlockState state, Component message) {
+public record SwapResult(BlockState state, Component message, boolean lock) {
+    public SwapResult(BlockState state, Component message) {
+        this(state, message, false);
+    }
+
+    public SwapResult locked() {
+        return new SwapResult(state, message, true);
+    }
+
     /**
      * A property was changed, with the same message as the debug stick (e.g.
      * {@code "lit" to true}).

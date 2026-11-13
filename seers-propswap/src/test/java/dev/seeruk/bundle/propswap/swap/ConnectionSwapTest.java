@@ -78,7 +78,7 @@ public class ConnectionSwapTest {
 
             final var result = SWAP.swap(new SwapInput(state, face, facing, false));
 
-            assertEquals(SwapResult.changed(state.cycle(property), property), result.orElseThrow());
+            assertEquals(SwapResult.changed(state.cycle(property), property).locked(), result.orElseThrow());
         }
 
         static Stream<Arguments> shouldToggleAllSidesWhileCrouching() {
@@ -100,7 +100,7 @@ public class ConnectionSwapTest {
         ) {
             final var result = SWAP.swap(new SwapInput(state, Direction.NORTH, Direction.NORTH, true));
 
-            assertEquals(SwapResult.changed(expected, "sides", value), result.orElseThrow());
+            assertEquals(SwapResult.changed(expected, "sides", value).locked(), result.orElseThrow());
         }
     }
 

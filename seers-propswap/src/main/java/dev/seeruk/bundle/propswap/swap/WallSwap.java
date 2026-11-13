@@ -23,17 +23,17 @@ public final class WallSwap implements Swap {
         final var vertical = input.face().getAxis().isVertical();
 
         if (input.crouching()) {
-            return Optional.of(vertical ? toggleAll(state) : togglePost(state));
+            return Optional.of(vertical ? toggleAll(state).locked() : togglePost(state));
         }
 
         // Clicking the top or bottom cycles the side the player is looking towards
         final var side = WallBlock.PROPERTY_BY_DIRECTION.get(vertical ? input.facing() : input.face());
         final var result = SwapResult.cycled(state, side, false);
         if (isEmpty(result.state())) {
-            return Optional.of(SwapResult.changed(result.state().setValue(WallBlock.UP, true), side));
+            return Optional.of(SwapResult.changed(result.state().setValue(WallBlock.UP, true), side).locked());
         }
 
-        return Optional.of(result);
+        return Optional.of(result.locked());
     }
 
     private static SwapResult togglePost(BlockState state) {
@@ -42,7 +42,7 @@ public final class WallSwap implements Swap {
             return new SwapResult(state, Component.literal("A wall needs a post or at least one side"));
         }
 
-        return result;
+        return result.locked();
     }
 
     private static SwapResult toggleAll(BlockState state) {

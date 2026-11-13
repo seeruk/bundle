@@ -68,7 +68,7 @@ public class StairSwapTest {
             final var result = SWAP.swap(new SwapInput(state, Direction.UP, Direction.NORTH, crouching));
 
             assertEquals(
-                SwapResult.changed(state.setValue(StairBlock.SHAPE, expected), StairBlock.SHAPE),
+                SwapResult.changed(state.setValue(StairBlock.SHAPE, expected), StairBlock.SHAPE).locked(),
                 result.orElseThrow()
             );
         }

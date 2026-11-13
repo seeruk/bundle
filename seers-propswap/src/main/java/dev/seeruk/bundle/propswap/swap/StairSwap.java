@@ -16,6 +16,6 @@ public final class StairSwap implements Swap {
 
     @Override
     public Optional<SwapResult> swap(SwapInput input) {
-        return Optional.of(SwapResult.cycled(input.state(), StairBlock.SHAPE, input.crouching()));
+        return Optional.of(SwapResult.cycled(input.state(), StairBlock.SHAPE, input.crouching()).locked());
     }
 }
