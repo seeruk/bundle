@@ -37,10 +37,19 @@ public class SeersPropSwap implements ModInitializer {
         UseBlockCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, LATE_PHASE);
         UseBlockCallback.EVENT.register(LATE_PHASE, PropSwapInteraction::interact);
 
-        ServerPlayConnectionEvents.DISCONNECT.register((listener, server) ->
-            PropSwapMode.disable(listener.getPlayer()));
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> PropSwapMode.clear());
-        ServerTickEvents.END_SERVER_TICK.register(server -> LockedBlocks.forgetRecentlyUnlocked());
+        ServerPlayConnectionEvents.DISCONNECT.register((listener, server) -> {
+            PropSwapMode.disable(listener.getPlayer());
+            PropSwapReminder.forget(listener.getPlayer());
+        });
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            PropSwapMode.clear();
+            PropSwapReminder.clear();
+        });
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            LockedBlocks.forgetRecentlyUnlocked();
+            PropSwapMode.expireIdle(server);
+            PropSwapReminder.remind(server);
+        });
 
         ServerLifecycleEvents.SERVER_STARTED.register(PropSwapStats::ensureObjectives);
         PropSwapEvents.SWAPPED.register(PropSwapStats::recordSwapped);

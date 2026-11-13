@@ -53,6 +53,7 @@ public final class PropSwapInteraction {
             PropSwapEvents.SWAPPED.invoker().onSwapped(player, level, pos, original, swapped);
         }
 
+        PropSwapMode.touch(player);
         player.sendOverlayMessage(result.get().message());
         return InteractionResult.SUCCESS;
     }

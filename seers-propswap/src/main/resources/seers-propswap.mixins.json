@@ -6,7 +6,8 @@
         "AbstractBedBlockMixin",
         "BarrelBlockEntityMixin",
         "BlockStateBaseMixin",
-        "LevelChunkMixin"
+        "LevelChunkMixin",
+        "ServerCommonPacketListenerImplMixin"
     ],
     "injectors": {
         "defaultRequire": 1

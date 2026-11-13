@@ -35,4 +35,8 @@ public enum PropSwapTool {
     public static boolean canChange(ItemStack stack, BlockState state) {
         return Arrays.stream(values()).anyMatch(tool -> stack.is(tool.items) && state.is(tool.blocks));
     }
+
+    public static boolean isTool(ItemStack stack) {
+        return Arrays.stream(values()).anyMatch(tool -> stack.is(tool.items));
+    }
 }

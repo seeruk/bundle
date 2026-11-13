@@ -9,7 +9,7 @@ behind them, and more!
 
 - **PropSwapping**: "Use" a block with the right tool to change how it's shaped or connected.
 - **Togglable**: PropSwap is not on all of the time, run a command to activate it for safer use.
-- **Locked Changes**: Changed blocks stay that way, even when the blocks around them change.
+- **Locked Changes**: Changed blocks stay that way, even when blocks around them change.
 - **Datapack-friendly Tools**: Which tools work on which blocks is driven by block tags.
 - **Event Hooks**: Fires an event when a block is PropSwapped, allowing other mods to react.
 
@@ -26,7 +26,7 @@ Changed blocks are locked in place, so they don't get undone as soon as somethin
 updates (the debug stick's biggest annoyance...). The lock is cleared when the block is broken or
 replaced.
 
-If you don't use PropSwap for a little while, it'll turn itself off. When you log into a server it
+If you don't use PropSwap for 5 minutes, it'll turn itself off. When you log into a server it
 will be disabled to begin with, and won't remember if you previously had it enabled. This is 
 primarily to prevent accidental changes to blocks!
 
