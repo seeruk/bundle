@@ -1,5 +1,6 @@
 {
     "values": [
-        "#minecraft:mineable/axe"
+        "#minecraft:mineable/axe",
+        "#minecraft:beds"
     ]
 }

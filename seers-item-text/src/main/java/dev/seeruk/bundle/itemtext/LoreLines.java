@@ -58,9 +58,9 @@ public final class LoreLines {
     }
 
     /**
-     * Inserts a line of lore. If the line is occupied, it will be shifted down. If the line does not
-     * exist, it will be inserted. If intermediate lines do not exist, they'll be created as blank
-     * lines.
+     * Inserts a line of lore. If the line is occupied, it will be shifted down. If the line does
+     * not exist, it will be inserted. If intermediate lines do not exist, they'll be created as
+     * blank lines.
      *
      * @param original   The existing lore lines
      * @param lineNumber The line number to insert lore at

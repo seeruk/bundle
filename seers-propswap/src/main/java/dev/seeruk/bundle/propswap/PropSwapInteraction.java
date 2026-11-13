@@ -38,7 +38,7 @@ public final class PropSwapInteraction {
         }
 
         final var input = new SwapInput(original, hit.getDirection(), player.getDirection(), player.isShiftKeyDown());
-        final var result = Swaps.find(original).flatMap(swap -> swap.swap(input));
+        final var result = Swaps.swap(input, player, pos);
         if (result.isEmpty()) {
             return InteractionResult.PASS;
         }

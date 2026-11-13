@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -14,6 +15,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A per-chunk store of which blocks PropSwap has locked. Locks are only needed for PropSwaps where
@@ -30,6 +33,11 @@ public final class LockedBlocks {
         SeersPropSwap.id("locked_blocks"),
         builder -> builder.persistent(CODEC)
     );
+
+    // Locks cleared this tick. Vanilla removes a broken block before working out its drops, so this
+    // is the only way drop logic can tell a broken block was locked. Concurrent, as some mods tick
+    // each dimension on its own thread.
+    private static final Map<ResourceKey<Level>, LongSet> RECENTLY_UNLOCKED = new ConcurrentHashMap<>();
 
     private LockedBlocks() {}
 
@@ -50,6 +58,18 @@ public final class LockedBlocks {
         return positions != null && positions.contains(pos.asLong());
     }
 
+    /**
+     * Whether the position is locked, or was until earlier this tick.
+     */
+    public static boolean wasLocked(Level level, BlockPos pos) {
+        if (isLocked(level, pos)) {
+            return true;
+        }
+
+        final var positions = RECENTLY_UNLOCKED.get(level.dimension());
+        return positions != null && positions.contains(pos.asLong());
+    }
+
     public static void lock(Level level, BlockPos pos) {
         final var chunk = level.getChunkAt(pos);
         if (chunk.getAttachedOrCreate(ATTACHMENT, LongOpenHashSet::new).add(pos.asLong())) {
@@ -57,13 +77,36 @@ public final class LockedBlocks {
         }
     }
 
+    public static void unlock(Level level, BlockPos pos) {
+        unlock(level.getChunkAt(pos), pos);
+    }
+
     /**
-     * Clears the position's lock if its block is being replaced by a different block.
+     * Clears the position's lock if its block is being replaced by a different block. Otherwise, it
+     * forgets any lock cleared there earlier this tick, so a new block can't be mistaken for a
+     * locked one.
      */
     public static void blockChanging(LevelChunk chunk, BlockPos pos, BlockState state) {
-        if (!chunk.getLevel().isClientSide() && isLocked(chunk, pos) && !chunk.getBlockState(pos).is(state.getBlock())) {
-            unlock(chunk, pos);
+        if (chunk.getLevel().isClientSide()) {
+            return;
         }
+
+        if (isLocked(chunk, pos)) {
+            if (!chunk.getBlockState(pos).is(state.getBlock())) {
+                unlock(chunk, pos);
+            }
+
+            return;
+        }
+
+        final var positions = RECENTLY_UNLOCKED.get(chunk.getLevel().dimension());
+        if (positions != null) {
+            positions.remove(pos.asLong());
+        }
+    }
+
+    public static void forgetRecentlyUnlocked() {
+        RECENTLY_UNLOCKED.clear();
     }
 
     private static void unlock(LevelChunk chunk, BlockPos pos) {
@@ -77,5 +120,6 @@ public final class LockedBlocks {
         }
 
         chunk.markUnsaved();
+        RECENTLY_UNLOCKED.computeIfAbsent(chunk.getLevel().dimension(), key -> new LongOpenHashSet()).add(pos.asLong());
     }
 }

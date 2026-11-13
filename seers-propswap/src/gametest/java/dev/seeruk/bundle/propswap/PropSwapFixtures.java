@@ -9,6 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -29,6 +30,8 @@ public final class PropSwapFixtures {
     @SuppressWarnings("removal")
     public static ServerPlayer player(GameTestHelper helper, Item tool) {
         final var player = helper.makeMockServerPlayerInLevel();
+        // Vanilla's mock player is in creative by default
+        player.setGameMode(GameType.SURVIVAL);
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(tool));
         PropSwapMode.enable(player);
         return player;
@@ -42,7 +45,7 @@ public final class PropSwapFixtures {
     }
 
     /**
-     * Uses the player's main hand on the given face of the block at {@link #POS}, via Fabric's event.
+     * Uses the player's main hand on a face of the block at {@link #POS}, via Fabric's event.
      */
     public static InteractionResult use(GameTestHelper helper, ServerPlayer player, Direction face) {
         final var pos = helper.absolutePos(POS);

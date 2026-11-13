@@ -3,6 +3,8 @@
     "package": "dev.seeruk.bundle.propswap.mixin",
     "compatibilityLevel": "JAVA_25",
     "mixins": [
+        "AbstractBedBlockMixin",
+        "BarrelBlockEntityMixin",
         "BlockStateBaseMixin",
         "LevelChunkMixin"
     ],

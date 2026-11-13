@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -90,9 +91,15 @@ public class SwapsGameTest {
     }
 
     @GameTest
-    public void doesNotSwapGlassPanesWithoutDatapack(GameTestHelper helper) {
-        // Glass panes have no tool in Vanilla, so they aren't in any of PropSwap's tool tags
-        assertSwapped(helper, crouching(player(helper, Items.IRON_PICKAXE)), Blocks.GLASS_PANE, UnaryOperator.identity());
+    public void swapsGlassPaneConnectionsWithPickaxe(GameTestHelper helper) {
+        assertSwapped(helper, crouching(player(helper, Items.IRON_PICKAXE)), Blocks.GLASS_PANE, SwapsGameTest::connectAll);
+        helper.succeed();
+    }
+
+    @GameTest
+    public void swapsStainedGlassPaneConnectionsWithPickaxe(GameTestHelper helper) {
+        final var pane = Blocks.STAINED_GLASS_PANE.pick(DyeColor.RED);
+        assertSwapped(helper, crouching(player(helper, Items.IRON_PICKAXE)), pane, SwapsGameTest::connectAll);
         helper.succeed();
     }
 

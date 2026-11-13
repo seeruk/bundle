@@ -11,8 +11,8 @@ public final class StatScores {
     private StatScores() {}
 
     /**
-     * Returns the player's current score for the given stat, or 0 if they don't have one yet. Throws
-     * if the stat's objective doesn't exist, so tests fail with a clear message.
+     * Returns the player's current score for the given stat, or 0 if they don't have one yet.
+     * Throws if the stat's objective doesn't exist, so tests fail with a clear message.
      */
     public static int score(Player player, ScoreboardStat stat) {
         final var scoreboard = player.level().getServer().getScoreboard();

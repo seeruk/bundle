@@ -12,8 +12,8 @@ public final class TestCommands {
     private TestCommands() {}
 
     /**
-     * Runs the given command (without a leading {@code /}) as the player, with feedback suppressed so
-     * it doesn't clutter the test logs.
+     * Runs the given command (without a leading {@code /}) as the player, with feedback suppressed
+     * so it doesn't clutter the test logs.
      *
      * @return The command's result, i.e. what its executor returned.
      */

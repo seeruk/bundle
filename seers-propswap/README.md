@@ -38,19 +38,26 @@ primarily to prevent accidental changes to blocks!
 
 ### Supported Blocks
 
-| Block                        | Click                                      | Crouch                                   |
-|------------------------------|--------------------------------------------|------------------------------------------|
-| Fences, glass panes, bars    | Toggles the connection on the clicked side | Toggles every side               |
-| Walls                        | Cycles the clicked side (none, low, tall)  | Toggles the post, or every side from top |
-| Stairs                       | Cycles the shape, corners included         | Cycles the shape backwards               |
-| Mushroom blocks and stems    | Toggles the clicked face (pores or skin)   | -                                        |
-| Pillars (logs, basalt, etc.) | Cycles the axis                            | Cycles the axis backwards                |
-| All furnaces and smokers     | Toggles whether it looks lit               | -                                        |
+| Block                        | Click                                                      | Crouch                                   |
+|------------------------------|------------------------------------------------------------|------------------------------------------|
+| Fences, glass panes, bars    | Toggles the connection on the clicked side                 | Toggles every side                       |
+| Walls                        | Cycles the clicked side (none, low, tall)                  | Toggles the post, or every side from top |
+| Stairs                       | Cycles the shape, corners included                         | Cycles the shape backwards               |
+| Mushroom blocks and stems    | Toggles the clicked face (pores or skin)                   | -                                        |
+| Pillars (logs, basalt, etc.) | Cycles the axis                                            | Cycles the axis backwards                |
+| All furnaces and smokers     | Toggles whether it looks lit                               | -                                        |
+| Barrels                      | Faces the clicked side, or flips it                        | Toggles whether it's forced open         |
+| Beds                         | Splits the bed, then flips the clicked half (head or foot) | -                                        |
 
 Clicking the top or bottom of a fence, pane, bar or wall changes the side you're facing instead. For
 walls, crouching on a side toggles the post, and crouch-clicking on the top or bottom toggles every 
 side. A wall always keeps its post if it would otherwise have nothing left, as an empty wall is 
 invisible and impossible for a player to then remove.
+
+Splitting a bed allows each half to be broken on its own. Splitting costs a bed of the same kind, 
+since you've basically got two beds now. Each half drops a bed when it's broken, so you always get 
+back what you put in. Flipping halves after that is free, and creative players don't have to pay to 
+split.
 
 ### Tools
 
@@ -59,8 +66,10 @@ include the Vanilla `minecraft:mineable/*` tags by default. So wood takes an axe
 pickaxe, and datapacks that add blocks to those tags (like making glass a pickaxe block) just work.
 PropSwap's tags can also be changed on their own, without touching Vanilla behaviour.
 
-Blocks with no tool in Vanilla (e.g. glass panes) won't do anything until a datapack adds them to a
-tag. This is not added by PropSwap itself!
+Some supported blocks have no tool in Vanilla, so PropSwap's tags give them one. Beds use an axe
+(straw beds already use a hoe in Vanilla, so they use a hoe here too), and glass panes use a pickaxe
+(via the `c:glass_panes` tag, so modded panes are included too). Any other block with no tool won't
+do anything until a datapack adds it to one of PropSwap's tags.
 
 ### Events
 

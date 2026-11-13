@@ -7,6 +7,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.resources.Identifier;
@@ -39,6 +40,7 @@ public class SeersPropSwap implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((listener, server) ->
             PropSwapMode.disable(listener.getPlayer()));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> PropSwapMode.clear());
+        ServerTickEvents.END_SERVER_TICK.register(server -> LockedBlocks.forgetRecentlyUnlocked());
 
         ServerLifecycleEvents.SERVER_STARTED.register(PropSwapStats::ensureObjectives);
         PropSwapEvents.SWAPPED.register(PropSwapStats::recordSwapped);

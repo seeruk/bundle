@@ -9,7 +9,7 @@ javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiEleme
 javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 
 dependencies {
-    // Test fixtures can use Minecraft classes, consumers' test classpaths already have them at runtime.
+    // Test fixtures can use Minecraft classes, as consumers already have them at runtime.
     testFixturesCompileOnly(files(sourceSets.main.map { it.compileClasspath }))
 
     // Core's own GameTests use the test fixtures too.

@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.state.properties.WallSide;
 import java.util.Optional;
 
 /**
- * Cycles the sides of walls, or toggles their post when crouching on a side. A wall always keeps its
- * post if it would otherwise have nothing, as an empty wall is invisible.
+ * Cycles the sides of walls, or toggles their post when crouching on a side. A wall always keeps
+ * its post if it would otherwise have nothing, as an empty wall is invisible.
  */
 public final class WallSwap implements Swap {
     @Override
