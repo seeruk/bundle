@@ -33,16 +33,19 @@ primarily to prevent accidental changes to blocks!
 
 ### Supported Blocks
 
-| Block                        | Click                                       | Crouch                     |
-|------------------------------|---------------------------------------------|----------------------------|
-| Fences, glass panes, bars    | Toggles the connection on the clicked side  | Removes or adds every side |
-| Walls                        | Cycles the clicked side, or the post on top | Removes or adds every side |
-| Stairs                       | Cycles the shape, corners included          | Cycles the shape backwards |
-| Mushroom blocks and stems    | Toggles the clicked face (pores or skin)    | -                          |
-| Pillars (logs, basalt, etc.) | Cycles the axis                             | Cycles the axis backwards  |
-| All furnaces and smokers     | Toggles whether it looks lit                | -                          |
+| Block                        | Click                                      | Crouch                                   |
+|------------------------------|--------------------------------------------|------------------------------------------|
+| Fences, glass panes, bars    | Toggles the connection on the clicked side | Toggles every side               |
+| Walls                        | Cycles the clicked side (none, low, tall)  | Toggles the post, or every side from top |
+| Stairs                       | Cycles the shape, corners included         | Cycles the shape backwards               |
+| Mushroom blocks and stems    | Toggles the clicked face (pores or skin)   | -                                        |
+| Pillars (logs, basalt, etc.) | Cycles the axis                            | Cycles the axis backwards                |
+| All furnaces and smokers     | Toggles whether it looks lit               | -                                        |
 
-Clicking the top or bottom of a fence, pane or bar toggles the side you're facing instead.
+Clicking the top or bottom of a fence, pane, bar or wall changes the side you're facing instead. For
+walls, crouching on a side toggles the post, and crouch-clicking on the top or bottom toggles every 
+side. A wall always keeps its post if it would otherwise have nothing left, as an empty wall is 
+invisible and impossible for a player to then remove.
 
 ### Tools
 

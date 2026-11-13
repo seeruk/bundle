@@ -38,8 +38,15 @@ public final class PropSwapFixtures {
      * Uses the player's main hand on top of the block at {@link #POS}, via Fabric's event.
      */
     public static InteractionResult use(GameTestHelper helper, ServerPlayer player) {
+        return use(helper, player, Direction.UP);
+    }
+
+    /**
+     * Uses the player's main hand on the given face of the block at {@link #POS}, via Fabric's event.
+     */
+    public static InteractionResult use(GameTestHelper helper, ServerPlayer player, Direction face) {
         final var pos = helper.absolutePos(POS);
-        final var hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+        final var hit = new BlockHitResult(Vec3.atCenterOf(pos), face, pos, false);
         return UseBlockCallback.EVENT.invoker().interact(player, helper.getLevel(), InteractionHand.MAIN_HAND, hit);
     }
 }

@@ -4,6 +4,7 @@ import dev.seeruk.bundle.core.testing.EventLog;
 import dev.seeruk.bundle.propswap.api.PropSwapEvents;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -45,6 +46,22 @@ public class PropSwapInteractionGameTest {
             List.of(new Swapped(player, helper.absolutePos(POS), original, swapped)),
             "events"
         );
+        helper.succeed();
+    }
+
+    @GameTest
+    public void refusedSwapDoesNotFireEvent(GameTestHelper helper) {
+        // Crouching on a side toggles the post, but a wall with only a post can't lose it
+        final var player = player(helper, Items.IRON_PICKAXE);
+        player.setShiftKeyDown(true);
+        helper.setBlock(POS, Blocks.COBBLESTONE_WALL);
+        final var original = helper.getBlockState(POS);
+
+        final var result = use(helper, player, Direction.NORTH);
+
+        helper.assertValueEqual(result, InteractionResult.SUCCESS, "interaction result");
+        helper.assertValueEqual(helper.getBlockState(POS), original, "block state");
+        helper.assertTrue(eventsFor(player).isEmpty(), "Event fired for a refused swap");
         helper.succeed();
     }
 

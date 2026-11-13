@@ -11,9 +11,11 @@ import java.util.Optional;
 public final class Swaps {
     private static final List<Swap> ALL = List.of(
         new AxisSwap(),
+        new ConnectionSwap(),
         new LitSwap(),
         new MushroomSwap(),
-        new StairSwap()
+        new StairSwap(),
+        new WallSwap()
     );
 
     private Swaps() {}

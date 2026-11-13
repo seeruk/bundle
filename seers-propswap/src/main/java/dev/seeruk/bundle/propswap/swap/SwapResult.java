@@ -12,15 +12,19 @@ import net.minecraft.world.level.block.state.properties.Property;
  */
 public record SwapResult(BlockState state, Component message) {
     /**
-     * A property was changed, with the same message as the debug stick (e.g. {@code "lit" to true}).
+     * A property was changed, with the same message as the debug stick (e.g.
+     * {@code "lit" to true}).
      */
     public static <T extends Comparable<T>> SwapResult changed(BlockState state, Property<T> property) {
-        final var message = Component.translatable(
-            "item.minecraft.debug_stick.update",
-            property.getName(),
-            property.getName(state.getValue(property))
-        );
-        return new SwapResult(state, message);
+        return changed(state, property.getName(), property.getName(state.getValue(property)));
+    }
+
+    /**
+     * Several properties were changed at once, with a made-up name in the debug stick's message
+     * (e.g. {@code "sides" to none}).
+     */
+    public static SwapResult changed(BlockState state, String name, String value) {
+        return new SwapResult(state, Component.translatable("item.minecraft.debug_stick.update", name, value));
     }
 
     /**
