@@ -29,6 +29,11 @@ public final class TextParsers {
         .remove("suggest_command")
         .build();
 
+    // Only the safe tags that change the colour of text, e.g. named colours, hex colours, rainbows,
+    // and gradients. Shadows are a separate effect, so they're left out. A little more complex to
+    // build than some other tag sets.
+    private static final TagRegistry COLOUR_TAGS = colourTags();
+
     /**
      * Supports basic markdown, colours, formatting tags, placeholders, and interactive tags like
      * click and hover. Intended to be used by trusted sources; for example, in mod configuration,
@@ -51,6 +56,16 @@ public final class TextParsers {
         .requireSafe()
         .build();
 
+    /**
+     * Supports colour tags only, without markdown or any other kind of formatting (e.g. bold or
+     * italic). Intended for untrusted text that should only ever be coloured, like nicknames.
+     */
+    public static final NodeParser COLOURS = ParserBuilder.of()
+        .customTagRegistry(COLOUR_TAGS)
+        .quickText()
+        .requireSafe()
+        .build();
+
     private TextParsers() {}
 
     /**
@@ -65,5 +80,22 @@ public final class TextParsers {
      */
     public static Component parseAsUntrusted(String text) {
         return UNTRUSTED.parseNode(text).toComponent();
+    }
+
+    /**
+     * Parses untrusted text with the {@link #COLOURS} profile.
+     */
+    public static Component parseAsColours(String text) {
+        return COLOURS.parseNode(text).toComponent();
+    }
+
+    private static TagRegistry colourTags() {
+        final var builder = TagRegistry.builder();
+        TagRegistry.copySafe().getTags().stream()
+            .filter(tag -> tag.type().equals("color") || tag.type().equals("gradient"))
+            .filter(tag -> !tag.name().equals("shadow"))
+            .forEach(builder::add);
+
+        return builder.build();
     }
 }

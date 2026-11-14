@@ -107,4 +107,47 @@ public class TextParsersTest {
             assertEquals(Component.literal(input), TextParsers.parseAsUntrusted(input));
         }
     }
+
+    @Nested
+    class ParseAsColours {
+        static Stream<Arguments> shouldParse() {
+            return Stream.of(
+                Arguments.of("<red>Hello</red>"),
+                Arguments.of("<#ff0000>Hello</#ff0000>"),
+                Arguments.of("<color:blue>Hello</color>"),
+                Arguments.of("<rainbow>Hello</rainbow>"),
+                Arguments.of("<gradient:red:blue>Hello</gradient>"),
+                Arguments.of("<hard_gradient:red:blue>Hello</hard_gradient>")
+            );
+        }
+
+        static Stream<Arguments> shouldNotParse() {
+            return Stream.of(
+                Arguments.of("<b>Hello</b>"),
+                Arguments.of("<i>Hello</i>"),
+                Arguments.of("<u>Hello</u>"),
+                Arguments.of("<st>Hello</st>"),
+                Arguments.of("<obf>Hello</obf>"),
+                Arguments.of("<shadow:red>Hello</shadow>"),
+                Arguments.of("**Hello**"),
+                Arguments.of("*Hello*"),
+                Arguments.of("<run_cmd '/say hi'>Hello</run_cmd>"),
+                Arguments.of("<hover 'Hi'>Hello</hover>")
+            );
+        }
+
+        // Colours look exactly as they would for trusted text, which supports everything. The parsers
+        // can nest components differently, so this compares the flattened, styled text.
+        @ParameterizedTest(name = "shouldParse({0})")
+        @MethodSource
+        void shouldParse(final String input) {
+            assertEquals(TextParsers.parseAsTrusted(input).toFlatList(), TextParsers.parseAsColours(input).toFlatList());
+        }
+
+        @ParameterizedTest(name = "shouldNotParse({0})")
+        @MethodSource
+        void shouldNotParse(final String input) {
+            assertEquals(Component.literal(input), TextParsers.parseAsColours(input));
+        }
+    }
 }
