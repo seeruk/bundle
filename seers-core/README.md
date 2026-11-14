@@ -6,6 +6,8 @@ Shared core library mod for my mods.
 
 - **Command Registration Helpers**: Provides utilities for registering commands along with a 
   namespaced alias, ensuring commands remain accessible even if another mod takes the original name.
+- **Config**: Utilities for loading and parsing config, with opinionated behaviour around filenames,
+  and merging defaults with overrides, etc.
 - **Scoreboard Stat Helpers**: Utilities for registering and interacting with scoreboard objectives.
   Keeps names consistent, and mod code compact.
 

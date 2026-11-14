@@ -1,0 +1,2 @@
+# Config for core's GameTests, to allow checking that a mod's dist file is properly read.
+greeting: Hello from the dist file
