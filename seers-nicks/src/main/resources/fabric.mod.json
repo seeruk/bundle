@@ -15,11 +15,11 @@
     "entrypoints": {
         "main": [
             "dev.seeruk.bundle.nicks.SeersNicks"
-        ],
-        "client": [
-            "dev.seeruk.bundle.nicks.client.SeersNicksClient"
         ]
     },
+    "mixins": [
+        "seers-nicks.mixins.json"
+    ],
     "depends": {
         "java": ">=25",
         "minecraft": "~26.3",

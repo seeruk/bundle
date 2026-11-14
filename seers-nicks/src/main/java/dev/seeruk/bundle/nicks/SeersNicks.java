@@ -1,6 +1,10 @@
 package dev.seeruk.bundle.nicks;
 
+import dev.seeruk.bundle.nicks.api.NicksEvents;
+import dev.seeruk.bundle.nicks.command.NickCommand;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +19,15 @@ public class SeersNicks implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Hello, World! From {}", MOD_ID);
+        CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
+            NickCommand.register(dispatcher));
+
+        ServerLifecycleEvents.SERVER_STARTED.register(Nicknames::load);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> Nicknames.clear());
+
+        ServerLifecycleEvents.SERVER_STARTED.register(NicksStats::ensureObjectives);
+        NicksEvents.CHANGED.register(NicksStats::recordNickChanged);
+
+        LOGGER.info("Initialized");
     }
 }

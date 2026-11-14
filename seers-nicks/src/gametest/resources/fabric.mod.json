@@ -7,10 +7,10 @@
     "environment": "*",
     "entrypoints": {
         "fabric-gametest": [
-            "dev.seeruk.bundle.nicks.SeersNicksGameTest"
-        ],
-        "fabric-client-gametest": [
-            "dev.seeruk.bundle.nicks.client.SeersNicksClientGameTest"
+            "dev.seeruk.bundle.nicks.NicknamesGameTest",
+            "dev.seeruk.bundle.nicks.NicksStatsGameTest",
+            "dev.seeruk.bundle.nicks.NicksTabListGameTest",
+            "dev.seeruk.bundle.nicks.command.NickCommandGameTest"
         ]
     },
     "depends": {
