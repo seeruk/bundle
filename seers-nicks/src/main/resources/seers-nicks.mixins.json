@@ -4,9 +4,7 @@
     "compatibilityLevel": "JAVA_25",
     "mixins": [
         "CachedUserNameToIdResolverAccessor",
-        "PlayerMixin",
-        "ServerPlayerMixin",
-        "ServerScoreboardMixin"
+        "PlayerMixin"
     ],
     "injectors": {
         "defaultRequire": 1

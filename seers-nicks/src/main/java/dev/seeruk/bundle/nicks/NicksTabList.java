@@ -1,32 +1,30 @@
 package dev.seeruk.bundle.nicks;
 
+import dev.seeruk.bundle.core.tablist.TabList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Utilities for formatting and refreshing the tab list nicknames.
+ * Shows nicknames in the tab list, through core's {@link TabList}.
  */
 public final class NicksTabList {
     private NicksTabList() {}
 
     /**
-     * The player's nickname in the tab list with their real name in parentheses, or empty.
+     * Returns a nicknamed player's tab list name with their nickname, followed by their real name
+     * in parentheses.
      */
-    public static Optional<Component> name(ServerPlayer player) {
-        return Nicknames.displayName(player.getUUID()).map(nickname -> Component.empty()
-            .append(PlayerTeam.formatNameForTeam(player.getTeam(), nickname))
-            .append(Component.literal(" (" + player.getGameProfile().name() + ")").withStyle(ChatFormatting.GRAY)));
+    public static Component name(ServerPlayer player, Component name) {
+        return Nicknames.displayName(player.getUUID())
+            .<Component>map(nickname -> Component.empty()
+                .append(PlayerTeam.formatNameForTeam(player.getTeam(), nickname))
+                .append(Component.literal(" (" + player.getGameProfile().name() + ")").withStyle(ChatFormatting.GRAY)))
+            .orElse(name);
     }
 
     /**
@@ -35,34 +33,7 @@ public final class NicksTabList {
     public static void refresh(MinecraftServer server, UUID id) {
         final var player = server.getPlayerList().getPlayer(id);
         if (player != null) {
-            send(server, List.of(player));
+            TabList.refresh(player);
         }
-    }
-
-    /**
-     * Sends everyone the current tab list names of any named players that are online and have
-     * a nickname (e.g. after their team changed).
-     */
-    public static void refreshByName(MinecraftServer server, Collection<String> names) {
-        // Teams can change while the world is still loading, before there are any players
-        final var playerList = server.getPlayerList();
-        if (playerList == null) {
-            return;
-        }
-
-        final var players = names.stream()
-            .map(playerList::getPlayerByName)
-            .filter(Objects::nonNull)
-            .filter(player -> Nicknames.get(player.getUUID()).isPresent())
-            .toList();
-
-        if (!players.isEmpty()) {
-            send(server, players);
-        }
-    }
-
-    private static void send(MinecraftServer server, Collection<ServerPlayer> players) {
-        final var actions = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME);
-        server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(actions, players));
     }
 }

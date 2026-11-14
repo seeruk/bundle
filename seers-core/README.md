@@ -10,6 +10,9 @@ Shared core library mod for my mods.
   and merging defaults with overrides, etc.
 - **Scoreboard Stat Helpers**: Utilities for registering and interacting with scoreboard objectives.
   Keeps names consistent, and mod code compact.
+- **Tab List Names**: Shared functionality to allow several mods change how players are shown in the
+  tab list (e.g. adding a nickname, or an AFK marker), and where they're shown, without overriding 
+  each other.
 
 This mod must also be installed on servers using any mods depending on it.
 

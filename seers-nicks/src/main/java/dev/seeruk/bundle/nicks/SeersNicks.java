@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.nicks;
 
+import dev.seeruk.bundle.core.tablist.TabList;
 import dev.seeruk.bundle.nicks.api.NicksEvents;
 import dev.seeruk.bundle.nicks.command.NickCommand;
 import net.fabricmc.api.ModInitializer;
@@ -30,6 +31,8 @@ public class SeersNicks implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
             Nicknames.releaseUsername(server,
                 new NameAndId(handler.player.getUUID(), handler.player.getGameProfile().name())));
+
+        TabList.NAME.register(TabList.REPLACE, NicksTabList::name);
 
         ServerLifecycleEvents.SERVER_STARTED.register(NicksStats::ensureObjectives);
         NicksEvents.CHANGED.register(NicksStats::recordNickChanged);

@@ -13,7 +13,8 @@
             "dev.seeruk.bundle.core.command.NamespacedCommandsGameTest",
             "dev.seeruk.bundle.core.config.ModConfigGameTest",
             "dev.seeruk.bundle.core.stats.ScoreboardStatGameTest",
-            "dev.seeruk.bundle.core.storage.WorldStorageGameTest"
+            "dev.seeruk.bundle.core.storage.WorldStorageGameTest",
+            "dev.seeruk.bundle.core.tablist.TabListGameTest"
         ]
     },
     "depends": {
