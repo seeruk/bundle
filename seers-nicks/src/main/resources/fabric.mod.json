@@ -3,7 +3,7 @@
     "id": "seers-nicks",
     "version": "${version}",
     "name": "Seer's Nicks",
-    "description": "A template repository",
+    "description": "A simple and opinionated nickname mod",
     "authors": [
         "Elliot Wright"
     ],
