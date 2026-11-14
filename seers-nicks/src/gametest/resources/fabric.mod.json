@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-nicks-gametest",
+    "version": "${version}",
+    "name": "Seer's Nicks GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.nicks.SeersNicksGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.nicks.client.SeersNicksClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-nicks": "*"
+    }
+}
