@@ -136,8 +136,8 @@ public class TextParsersTest {
             );
         }
 
-        // Colours look exactly as they would for trusted text, which supports everything. The parsers
-        // can nest components differently, so this compares the flattened, styled text.
+        // Colours look exactly as they would for trusted text, which supports everything. The
+        // parsers can nest components differently, so this compares the flattened, styled text.
         @ParameterizedTest(name = "shouldParse({0})")
         @MethodSource
         void shouldParse(final String input) {

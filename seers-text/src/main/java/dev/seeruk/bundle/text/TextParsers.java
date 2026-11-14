@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 public final class TextParsers {
     // Tags for trusted use-cases, for example, text written by the server, taken from config, or
     // written by very trusted players (e.g. operators).
-    private static final TagRegistry TRUSTED_TAGS = TagRegistry.builderCopyDefault()
+    static final TagRegistry TRUSTED_TAGS = TagRegistry.builderCopyDefault()
         .build();
 
     // The tags for untrusted use-cases, for example, player-written text. Currently, we rely mostly

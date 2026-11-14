@@ -11,6 +11,8 @@ of this mod, and drastically simplifies the code here!
   for other mods to consume, for various use-cases; for example, player-safe formatting, extended 
   functionality for ops or very trusted players, or formatting that can be used by mods or in 
   configuration.
+- **Text Templates**: Trusted text with named placeholders (e.g. `${player}`), parsed once and
+  filled in each time it's used. Useful for configurable messages.
 
 Planned:
 
