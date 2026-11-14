@@ -5,14 +5,15 @@ import dev.seeruk.bundle.nicks.api.NicksEvents;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.players.NameAndId;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static dev.seeruk.bundle.nicks.NicksFixtures.player;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nameAndId;
+import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
+import static dev.seeruk.bundle.nicks.NicksFixtures.offline;
+import static dev.seeruk.bundle.nicks.NicksFixtures.player;
 
 public class NicknamesGameTest {
     private static final EventLog<Changed> EVENTS = new EventLog<>();
@@ -25,42 +26,46 @@ public class NicknamesGameTest {
     @GameTest
     public void setStoresNicknameAndFiresEvent(GameTestHelper helper) {
         final var player = player(helper);
+        final var nickname = nickname("Seer");
 
-        Nicknames.set(helper.getLevel().getServer(), nameAndId(player), "Seer", false);
+        Nicknames.set(helper.getLevel().getServer(), nameAndId(player), nickname, false);
 
-        helper.assertValueEqual(text(Nicknames.get(player.getUUID())), Optional.of("Seer"), "nickname");
-        helper.assertValueEqual(eventsFor(player.getUUID()), List.of(new Changed(player.getUUID(), Optional.empty(), Optional.of("Seer"))), "events");
+        helper.assertValueEqual(text(Nicknames.get(player.getUUID())), Optional.of(nickname), "nickname");
+        helper.assertValueEqual(eventsFor(player.getUUID()), List.of(new Changed(player.getUUID(), Optional.empty(), Optional.of(nickname))), "events");
         helper.succeed();
     }
 
     @GameTest
     public void displayNameShowsPrefixedNickname(GameTestHelper helper) {
         final var player = player(helper);
+        final var nickname = nickname("Seer");
 
-        Nicknames.set(helper.getLevel().getServer(), nameAndId(player), "Seer", false);
+        Nicknames.set(helper.getLevel().getServer(), nameAndId(player), nickname, false);
 
-        helper.assertValueEqual(player.getDisplayName().getString(), Nickname.PREFIX + "Seer", "display name");
+        helper.assertValueEqual(player.getDisplayName().getString(), Nickname.PREFIX + nickname, "display name");
         helper.succeed();
     }
 
     @GameTest
     public void playersCanOnlyUseColours(GameTestHelper helper) {
         final var player = player(helper);
+        final var nickname = "<b>" + nickname("Seer") + "</b>";
 
-        Nicknames.set(helper.getLevel().getServer(), nameAndId(player), "<b>Seer</b>", false);
+        Nicknames.set(helper.getLevel().getServer(), nameAndId(player), nickname, false);
 
-        helper.assertValueEqual(text(Nicknames.get(player.getUUID())), Optional.of("<b>Seer</b>"), "nickname");
+        helper.assertValueEqual(text(Nicknames.get(player.getUUID())), Optional.of(nickname), "nickname");
         helper.succeed();
     }
 
     @GameTest
     public void adminsCanUseAnyFormatting(GameTestHelper helper) {
         final var player = player(helper);
+        final var name = nickname("Seer");
 
-        Nicknames.set(helper.getLevel().getServer(), nameAndId(player), "<b>Seer</b>", true);
+        Nicknames.set(helper.getLevel().getServer(), nameAndId(player), "<b>" + name + "</b>", true);
 
         final var nickname = Nicknames.get(player.getUUID()).orElseThrow();
-        helper.assertValueEqual(nickname.getString(), "Seer", "nickname");
+        helper.assertValueEqual(nickname.getString(), name, "nickname");
         helper.assertTrue(nickname.toFlatList().getFirst().getStyle().isBold(), "Nickname wasn't bold");
         helper.succeed();
     }
@@ -69,10 +74,11 @@ public class NicknamesGameTest {
     public void unchangedNicknameSucceedsWithoutFiringEvent(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
         final var player = player(helper);
-        Nicknames.set(server, nameAndId(player), "Seer", false);
+        final var nickname = nickname("Seer");
+        Nicknames.set(server, nameAndId(player), nickname, false);
         final var mark = EVENTS.mark();
 
-        final var result = Nicknames.set(server, nameAndId(player), "Seer", false);
+        final var result = Nicknames.set(server, nameAndId(player), nickname, false);
 
         helper.assertTrue(result instanceof NickEditResult.Edited, "Edit didn't succeed");
         helper.assertTrue(EVENTS.matchingSince(mark, event -> event.id().equals(player.getUUID())).isEmpty(), "Event fired for an unchanged nickname");
@@ -83,13 +89,14 @@ public class NicknamesGameTest {
     public void resetRemovesNicknameAndFiresEvent(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
         final var player = player(helper);
-        Nicknames.set(server, nameAndId(player), "Seer", false);
+        final var nickname = nickname("Seer");
+        Nicknames.set(server, nameAndId(player), nickname, false);
 
         Nicknames.reset(server, nameAndId(player));
 
         helper.assertValueEqual(Nicknames.get(player.getUUID()), Optional.empty(), "nickname");
         helper.assertValueEqual(player.getDisplayName().getString(), player.getGameProfile().name(), "display name");
-        helper.assertValueEqual(eventsFor(player.getUUID()).getLast(), new Changed(player.getUUID(), Optional.of("Seer"), Optional.empty()), "event");
+        helper.assertValueEqual(eventsFor(player.getUUID()).getLast(), new Changed(player.getUUID(), Optional.of(nickname), Optional.empty()), "event");
         helper.succeed();
     }
 
@@ -107,9 +114,9 @@ public class NicknamesGameTest {
     @GameTest
     public void ownUsernameIsAllowed(GameTestHelper helper) {
         // Mock players' usernames are too long to be nicknames, so this uses an offline player
-        final var player = new NameAndId(UUID.randomUUID(), "Seer");
+        final var player = offline("Seer");
 
-        final var result = Nicknames.set(helper.getLevel().getServer(), player, "seer", false);
+        final var result = Nicknames.set(helper.getLevel().getServer(), player, player.name().toLowerCase(), false);
 
         helper.assertTrue(result instanceof NickEditResult.Edited, "Edit didn't succeed");
         helper.succeed();
@@ -117,11 +124,55 @@ public class NicknamesGameTest {
 
     @GameTest
     public void offlinePlayersCanBeGivenNicknames(GameTestHelper helper) {
-        final var offline = new NameAndId(UUID.randomUUID(), "OfflinePlayer");
+        final var player = offline("Offline");
+        final var nickname = nickname("Seer");
 
-        Nicknames.set(helper.getLevel().getServer(), offline, "<red>Seer</red>", true);
+        Nicknames.set(helper.getLevel().getServer(), player, "<red>" + nickname + "</red>", true);
 
-        helper.assertValueEqual(text(Nicknames.get(offline.id())), Optional.of("Seer"), "nickname");
+        helper.assertValueEqual(text(Nicknames.get(player.id())), Optional.of(nickname), "nickname");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void anotherPlayersNicknameIsRefused(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var nicked = offline("Nicked");
+        final var player = offline("Player");
+        final var nickname = nickname("Seer");
+        Nicknames.set(server, nicked, "<red>" + nickname + "</red>", false);
+
+        final var result = Nicknames.set(server, player, nickname.toUpperCase(), false);
+
+        helper.assertTrue(result instanceof NickEditResult.NicknameTaken, "Edit didn't fail with NicknameTaken");
+        helper.assertValueEqual(Nicknames.get(player.id()), Optional.empty(), "nickname");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void joiningPlayerReleasesTheirUsername(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var joined = offline("Joined");
+        final var player = offline("Player");
+        final var admin = offline("Admin");
+        Nicknames.set(server, player, "<red>" + joined.name() + "</red>", false);
+        Nicknames.set(server, admin, joined.name(), true);
+
+        Nicknames.releaseUsername(server, joined);
+
+        helper.assertValueEqual(Nicknames.get(player.id()), Optional.empty(), "player's nickname");
+        helper.assertValueEqual(text(Nicknames.get(admin.id())), Optional.of(joined.name()), "admin-set nickname");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void joiningPlayerKeepsTheirOwnUsernameAsNickname(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var joined = offline("Joined");
+        Nicknames.set(server, joined, joined.name(), false);
+
+        Nicknames.releaseUsername(server, joined);
+
+        helper.assertValueEqual(text(Nicknames.get(joined.id())), Optional.of(joined.name()), "nickname");
         helper.succeed();
     }
 

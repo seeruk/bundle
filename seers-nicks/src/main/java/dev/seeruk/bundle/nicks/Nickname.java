@@ -29,24 +29,47 @@ public record Nickname(String input, boolean trusted) {
 
     /**
      * @param name      The formatted nickname.
-     * @param trusted   Whether an admin is setting it, who can use other players' usernames.
+     * @param trusted   Whether an admin is setting it, who can use other players' usernames and
+     *                  nicknames.
      * @param usernames Whether some text is another player's username.
+     * @param nicknames Whether some text is another player's nickname.
      */
-    public static Optional<NickEditResult.Failure> validate(Component name, boolean trusted, Predicate<String> usernames) {
-        final var plain = name.getString();
+    public static Optional<NickEditResult.Failure> validate(
+        Component name,
+        boolean trusted,
+        Predicate<String> usernames,
+        Predicate<String> nicknames
+    ) {
+        final var text = name.getString();
 
-        if (plain.isBlank()) {
+        if (text.isBlank()) {
             return Optional.of(new NickEditResult.BlankName());
         }
 
-        if (plain.length() > MAX_LENGTH) {
+        if (!text.equals(text.strip())) {
+            return Optional.of(new NickEditResult.SurroundingWhitespace());
+        }
+
+        if (length(name) > MAX_LENGTH) {
             return Optional.of(new NickEditResult.MaxLengthExceeded(MAX_LENGTH, name));
         }
 
-        if (!trusted && usernames.test(plain)) {
-            return Optional.of(new NickEditResult.UsernameTaken(plain));
+        if (!trusted && usernames.test(text)) {
+            return Optional.of(new NickEditResult.UsernameTaken(text));
+        }
+
+        if (!trusted && nicknames.test(text)) {
+            return Optional.of(new NickEditResult.NicknameTaken(text));
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * How many characters the nickname shows, so characters like emoji only count once.
+     */
+    public static int length(Component name) {
+        final var text = name.getString();
+        return text.codePointCount(0, text.length());
     }
 }

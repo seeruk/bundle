@@ -23,8 +23,10 @@ else the server shows their name. Hovering over a nickname in chat still shows w
 the tab list shows their real name next to their nickname. Name tags above players' heads aren't
 changed.
 
-Nicknames can be up to 15 characters long, not counting formatting tags or the `≈`, and can't be
-another player's username. Admins (permission level 2) can ignore the username rule, and can change
+Nicknames can be up to 15 characters long, not counting formatting tags or the `≈`, can't start or
+end with spaces, and can't be another player's username or nickname (ignoring case and formatting).
+If a new player joins with a username someone's already using as their nickname, that nickname is
+reset. Admins (permission level 2) can ignore the username and nickname rules, and can change
 anyone's nickname, even if they're offline.
 
 ### Commands

@@ -14,6 +14,7 @@ import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import java.util.Optional;
 
 import static dev.seeruk.bundle.core.testing.TestCommands.execute;
+import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
 import static dev.seeruk.bundle.nicks.NicksFixtures.player;
 
 public class NickCommandGameTest {
@@ -38,23 +39,36 @@ public class NickCommandGameTest {
     public void setsOwnNickname(GameTestHelper helper) throws CommandSyntaxException {
         final var player = player(helper);
 
+        final var nickname = nickname("Seer is ");
+
         // We can also cheekily check that spaces are supported here too...
-        final var result = execute(helper, player, NickCommand.NAME + " set Seer is Testing");
+        final var result = execute(helper, player, NickCommand.NAME + " set " + nickname);
 
         helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(text(player), Optional.of("Seer is Testing"), "nickname");
+        helper.assertValueEqual(nicknameFor(player), Optional.of(nickname), "nickname");
         helper.succeed();
     }
 
     @GameTest
     public void resetsOwnNickname(GameTestHelper helper) throws CommandSyntaxException {
         final var player = player(helper);
-        execute(helper, player, NickCommand.NAME + " set Seer");
+        execute(helper, player, NickCommand.NAME + " set " + nickname("Seer"));
 
         final var result = execute(helper, player, NickCommand.NAME + " reset");
 
         helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(text(player), Optional.empty(), "nickname");
+        helper.assertValueEqual(nicknameFor(player), Optional.empty(), "nickname");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void subcommandNamesCanBeNicknames(GameTestHelper helper) throws CommandSyntaxException {
+        final var player = player(helper);
+        final var nickname = nickname("reset ");
+
+        execute(helper, player, NickCommand.NAME + " set " + nickname);
+
+        helper.assertValueEqual(nicknameFor(player), Optional.of(nickname), "nickname");
         helper.succeed();
     }
 
@@ -65,7 +79,7 @@ public class NickCommandGameTest {
         final var result = execute(helper, player, NickCommand.NAME + " set " + "a".repeat(Nickname.MAX_LENGTH+1));
 
         helper.assertValueEqual(result, 0, "command result");
-        helper.assertValueEqual(text(player), Optional.empty(), "nickname");
+        helper.assertValueEqual(nicknameFor(player), Optional.empty(), "nickname");
         helper.succeed();
     }
 
@@ -74,10 +88,12 @@ public class NickCommandGameTest {
         final var admin = player(helper);
         final var target = player(helper);
 
-        final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + selector(target) + " set <b>Seer</b>");
+        final var nickname = nickname("Seer");
+
+        final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + selector(target) + " set <b>" + nickname + "</b>");
 
         helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(text(target), Optional.of("Seer"), "nickname");
+        helper.assertValueEqual(nicknameFor(target), Optional.of(nickname), "nickname");
         helper.succeed();
     }
 
@@ -85,12 +101,12 @@ public class NickCommandGameTest {
     public void adminsCanResetOtherPlayersNicknames(GameTestHelper helper) throws CommandSyntaxException {
         final var admin = player(helper);
         final var target = player(helper);
-        execute(helper, target, NickCommand.NAME + " set Seer");
+        execute(helper, target, NickCommand.NAME + " set " + nickname("Seer"));
 
         final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + selector(target) + " reset");
 
         helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(text(target), Optional.empty(), "nickname");
+        helper.assertValueEqual(nicknameFor(target), Optional.empty(), "nickname");
         helper.succeed();
     }
 
@@ -136,7 +152,7 @@ public class NickCommandGameTest {
         return "@a[tag=" + tag + "]";
     }
 
-    private static Optional<String> text(ServerPlayer player) {
+    private static Optional<String> nicknameFor(ServerPlayer player) {
         return Nicknames.get(player.getUUID()).map(Component::getString);
     }
 }

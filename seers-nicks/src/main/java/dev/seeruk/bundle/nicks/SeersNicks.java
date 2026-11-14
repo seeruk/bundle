@@ -5,7 +5,9 @@ import dev.seeruk.bundle.nicks.command.NickCommand;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.players.NameAndId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,10 @@ public class SeersNicks implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register(Nicknames::load);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> Nicknames.clear());
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+            Nicknames.releaseUsername(server,
+                new NameAndId(handler.player.getUUID(), handler.player.getGameProfile().name())));
 
         ServerLifecycleEvents.SERVER_STARTED.register(NicksStats::ensureObjectives);
         NicksEvents.CHANGED.register(NicksStats::recordNickChanged);

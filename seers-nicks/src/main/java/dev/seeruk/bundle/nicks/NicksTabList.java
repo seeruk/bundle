@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Utilities for formatting and refreshing the tab-list nicknames.
+ * Utilities for formatting and refreshing the tab list nicknames.
  */
 public final class NicksTabList {
     private NicksTabList() {}

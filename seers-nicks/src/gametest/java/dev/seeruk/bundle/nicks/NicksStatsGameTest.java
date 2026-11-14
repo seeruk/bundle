@@ -7,6 +7,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import static dev.seeruk.bundle.core.testing.StatScores.score;
 import static dev.seeruk.bundle.nicks.NicksFixtures.player;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nameAndId;
+import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
 
 public class NicksStatsGameTest {
     private static final String OBJECTIVE_ID = NicksStats.NICKNAMES_SET.objectiveId();
@@ -43,8 +44,8 @@ public class NicksStatsGameTest {
         final var player = player(helper);
         final var before = score(player, NicksStats.NICKNAMES_SET);
 
-        Nicknames.set(server, nameAndId(player), "Seer", false);
-        Nicknames.set(server, nameAndId(player), "Seer 2", false);
+        Nicknames.set(server, nameAndId(player), nickname("Seer"), false);
+        Nicknames.set(server, nameAndId(player), nickname("Seer"), false);
 
         helper.assertValueEqual(score(player, NicksStats.NICKNAMES_SET) - before, 2, "score increase");
         helper.succeed();
@@ -54,10 +55,11 @@ public class NicksStatsGameTest {
     public void unchangedOrResetNicknameDoesNotAddToScore(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
         final var player = player(helper);
-        Nicknames.set(server, nameAndId(player), "Seer", false);
+        final var nickname = nickname("Seer");
+        Nicknames.set(server, nameAndId(player), nickname, false);
         final var before = score(player, NicksStats.NICKNAMES_SET);
 
-        Nicknames.set(server, nameAndId(player), "Seer", false);
+        Nicknames.set(server, nameAndId(player), nickname, false);
         Nicknames.reset(server, nameAndId(player));
 
         helper.assertValueEqual(score(player, NicksStats.NICKNAMES_SET) - before, 0, "score increase");

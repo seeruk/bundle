@@ -18,12 +18,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.NameAndId;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
- * {@code /nick}: commands for players to change their own nickname, and for admins to change anyone's.
+ * {@code /nick}: commands for players to change their own nickname, and for admins to change
+ * anyone's.
  */
 public final class NickCommand {
     static final String NAME = "nick";
+
+    // Admins can change anyone's nickname, and use any formatting
+    private static final Predicate<CommandSourceStack> ADMIN = Commands.hasPermission(Commands.LEVEL_GAMEMASTERS);
 
     private NickCommand() {}
 
@@ -35,7 +40,7 @@ public final class NickCommand {
             .then(Commands.literal("reset")
                 .executes(CommandExecutors.logged(NickCommand::reset)))
             .then(Commands.literal("player")
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .requires(ADMIN)
                 .then(Commands.argument("player", GameProfileArgument.gameProfile())
                     .then(Commands.literal("set")
                         .then(Commands.argument("nickname", StringArgumentType.greedyString())
@@ -47,7 +52,7 @@ public final class NickCommand {
     private static int set(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var player = context.getSource().getPlayerOrException();
         final var input = StringArgumentType.getString(context, "nickname");
-        final var trusted = Commands.hasPermission(Commands.LEVEL_GAMEMASTERS).test(context.getSource());
+        final var trusted = ADMIN.test(context.getSource());
         final var target = new NameAndId(player.getUUID(), player.getGameProfile().name());
 
         return feedback(context, Nicknames.set(context.getSource().getServer(), target, input, trusted), target, true);
@@ -103,11 +108,17 @@ public final class NickCommand {
                 ));
                 yield 0;
             }
+            case NickEditResult.SurroundingWhitespace _ -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>Nicknames can't start or end with spaces</red>"
+                ));
+                yield 0;
+            }
             case NickEditResult.MaxLengthExceeded failure -> {
                 context.getSource().sendFailure(TextParsers.parseAsTrusted(
                     "<red>Nicknames can't be longer than %d characters (yours is %d)</red>".formatted(
                         failure.maxNameLength(),
-                        failure.name().getString().length()
+                        Nickname.length(failure.name())
                     )
                 ));
                 yield 0;
@@ -115,6 +126,12 @@ public final class NickCommand {
             case NickEditResult.UsernameTaken _ -> {
                 context.getSource().sendFailure(TextParsers.parseAsTrusted(
                     "<red>That's another player's username</red>"
+                ));
+                yield 0;
+            }
+            case NickEditResult.NicknameTaken _ -> {
+                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                    "<red>That's another player's nickname</red>"
                 ));
                 yield 0;
             }

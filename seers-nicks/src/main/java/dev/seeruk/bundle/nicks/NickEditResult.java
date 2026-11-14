@@ -29,6 +29,11 @@ public sealed interface NickEditResult {
     record BlankName() implements Failure {}
 
     /**
+     * A {@link Failure} returned when a provided nickname starts or ends with whitespace.
+     */
+    record SurroundingWhitespace() implements Failure {}
+
+    /**
      * A {@link Failure} returned when a provided nickname's length is invalid.
      *
      * @param maxNameLength The maximum nickname length.
@@ -42,6 +47,13 @@ public sealed interface NickEditResult {
      * @param username The username it matches.
      */
     record UsernameTaken(String username) implements Failure {}
+
+    /**
+     * A {@link Failure} returned when a provided nickname is another player's nickname.
+     *
+     * @param nickname The nickname it matches.
+     */
+    record NicknameTaken(String nickname) implements Failure {}
 
     /**
      * A {@link Failure} returned when the player does not have a nickname.

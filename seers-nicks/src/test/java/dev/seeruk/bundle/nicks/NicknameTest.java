@@ -17,7 +17,8 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NicknameTest {
-    private static final Predicate<String> TAKEN = name -> name.equalsIgnoreCase("Taken");
+    private static final Predicate<String> USERNAMES = name -> name.equalsIgnoreCase("Taken");
+    private static final Predicate<String> NICKNAMES = name -> name.equalsIgnoreCase("Nicked");
 
     @BeforeAll
     static void bootstrap() {
@@ -36,14 +37,17 @@ public class NicknameTest {
                     Component.literal("a".repeat(Nickname.MAX_LENGTH)).withStyle(ChatFormatting.RED),
                     false
                 ),
-                Arguments.of("Allows admins to use other players' usernames", Component.literal("Taken"), true)
+                Arguments.of("Emoji only count once towards the length", Component.literal("😀".repeat(Nickname.MAX_LENGTH)), false),
+                Arguments.of("Allows whitespace inside a nickname", Component.literal("Seer is Testing"), false),
+                Arguments.of("Allows admins to use other players' usernames", Component.literal("Taken"), true),
+                Arguments.of("Allows admins to use other players' nicknames", Component.literal("Nicked"), true)
             );
         }
 
         @ParameterizedTest(name = "{0}")
         @MethodSource
         void shouldAllow(final String description, final Component name, final boolean trusted) {
-            assertEquals(Optional.empty(), Nickname.validate(name, trusted, TAKEN));
+            assertEquals(Optional.empty(), Nickname.validate(name, trusted, USERNAMES, NICKNAMES));
         }
 
         static Stream<Arguments> shouldRefuse() {
@@ -51,6 +55,16 @@ public class NicknameTest {
             return Stream.of(
                 Arguments.of("Refuses an empty nickname", Component.empty(), new NickEditResult.BlankName()),
                 Arguments.of("Refuses a blank nickname", Component.literal("   "), new NickEditResult.BlankName()),
+                Arguments.of(
+                    "Refuses leading whitespace",
+                    Component.literal(" Seer"),
+                    new NickEditResult.SurroundingWhitespace()
+                ),
+                Arguments.of(
+                    "Refuses trailing whitespace, even from formatting",
+                    Component.literal("Seer").append(Component.literal(" ").withStyle(ChatFormatting.RED)),
+                    new NickEditResult.SurroundingWhitespace()
+                ),
                 Arguments.of(
                     "Refuses a nickname over the maximum length",
                     tooLong,
@@ -65,6 +79,11 @@ public class NicknameTest {
                     "Refuses another player's username in a different case",
                     Component.literal("TAKEN"),
                     new NickEditResult.UsernameTaken("TAKEN")
+                ),
+                Arguments.of(
+                    "Refuses another player's nickname in a different case",
+                    Component.literal("NICKED"),
+                    new NickEditResult.NicknameTaken("NICKED")
                 )
             );
         }
@@ -72,7 +91,7 @@ public class NicknameTest {
         @ParameterizedTest(name = "{0}")
         @MethodSource
         void shouldRefuse(final String description, final Component name, final NickEditResult.Failure expected) {
-            assertEquals(Optional.of(expected), Nickname.validate(name, false, TAKEN));
+            assertEquals(Optional.of(expected), Nickname.validate(name, false, USERNAMES, NICKNAMES));
         }
     }
 }
