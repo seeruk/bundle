@@ -1,0 +1,20 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-afk-gametest",
+    "version": "${version}",
+    "name": "Seer's AFK GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.afk.AfkConfigGameTest",
+            "dev.seeruk.bundle.afk.AfkMessagesGameTest",
+            "dev.seeruk.bundle.afk.AfkStatusGameTest",
+            "dev.seeruk.bundle.afk.command.AfkCommandGameTest",
+            "dev.seeruk.bundle.afk.ActivityGameTest"
+        ]
+    },
+    "depends": {
+        "seers-afk": "*"
+    }
+}

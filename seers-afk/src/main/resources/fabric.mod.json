@@ -1,0 +1,29 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-afk",
+    "version": "${version}",
+    "name": "Seer's AFK",
+    "description": "A simple AFK mod",
+    "authors": [
+        "Elliot Wright"
+    ],
+    "contact": {
+        "sources": "https://github.com/seeruk/bundle"
+    },
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "dev.seeruk.bundle.afk.SeersAFK"
+        ]
+    },
+    "mixins": [
+        "seers-afk.mixins.json"
+    ],
+    "depends": {
+        "java": ">=25",
+        "minecraft": "~26.3",
+        "fabricloader": ">=0.20.1",
+        "fabric-api": "*"
+    }
+}
