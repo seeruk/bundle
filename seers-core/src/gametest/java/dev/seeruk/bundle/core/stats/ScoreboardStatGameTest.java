@@ -6,6 +6,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import static dev.seeruk.bundle.core.testing.StatScores.score;
@@ -90,6 +91,26 @@ public class ScoreboardStatGameTest {
 
             stat.add(player, 27);
             helper.assertValueEqual(score(player, stat), 69, "score after second add");
+        } finally {
+            removeObjective(server, stat);
+        }
+
+        helper.succeed();
+    }
+
+    @GameTest
+    public void addIncrementsScoreForHoldersByName(GameTestHelper helper) {
+        // Offline players don't have a player to pass in, so they're scored by name instead
+        final var server = helper.getLevel().getServer();
+        final var stat = newStat(server, "test_stat_by_name", "Test Stat");
+        final var holder = ScoreHolder.forNameOnly("offline_player");
+
+        try {
+            stat.ensureObjective(server);
+            stat.add(server, holder, 3);
+
+            final var info = server.getScoreboard().getPlayerScoreInfo(holder, objective(server, stat));
+            helper.assertValueEqual(info == null ? 0 : info.value(), 3, "score");
         } finally {
             removeObjective(server, stat);
         }

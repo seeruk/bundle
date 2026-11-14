@@ -3,6 +3,7 @@ package dev.seeruk.bundle.core.stats;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 /**
@@ -40,13 +41,21 @@ public record ScoreboardStat(String modId, String objectiveName, String displayN
      * the objective to exist.
      */
     public void add(Player player, int amount) {
-        final var scoreboard = player.level().getServer().getScoreboard();
+        add(player.level().getServer(), player, amount);
+    }
+
+    /**
+     * Like {@link #add(Player, int)}, for any score holder, e.g. an offline player via
+     * {@link ScoreHolder#forNameOnly(String)}.
+     */
+    public void add(MinecraftServer server, ScoreHolder holder, int amount) {
+        final var scoreboard = server.getScoreboard();
         final var scoreObjective = scoreboard.getObjective(objectiveId());
         if (scoreObjective == null) {
             return; // Either removed, or failed to initialize.
         }
 
-        scoreboard.getOrCreatePlayerScore(player, scoreObjective).add(amount);
+        scoreboard.getOrCreatePlayerScore(holder, scoreObjective).add(amount);
     }
 
     /**
