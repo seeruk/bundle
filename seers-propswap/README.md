@@ -107,7 +107,7 @@ void onSwapped(Player player, Level level, BlockPos pos, BlockState original, Bl
 
 | Scoreboard Objective            | Description                                         |
 |---------------------------------|-----------------------------------------------------|
-| `seers-propswap.blocks_swapped` | The total number of blocks a player has PropSwapped |
+| `seers_propswap.blocks_swapped` | The total number of blocks a player has PropSwapped |
 
 Objectives can be removed while the server is running, but will be recreated on server restart.
 Removing an objective will reset it for all players.

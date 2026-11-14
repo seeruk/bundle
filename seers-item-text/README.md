@@ -42,19 +42,19 @@ counts as 5 characters).
 
 ### Events
 
-#### ItemNameEvents.EDITED
+#### ItemNameEvents.CHANGED
 
 Fired when an item's name is set or reset, providing both the old and new name. Only fired when the
 name has actually changed.
 
 ```
-dev.seeruk.bundle.itemtext.api.ItemNameEvents.EDITED
+dev.seeruk.bundle.itemtext.api.ItemNameEvents.CHANGED
 ```
 
 **Callback signature:**
 
 ```java
-void onEdited(Player player, ItemStack item, Optional<Component> original, Optional<Component> edited);
+void onNameChanged(Player player, ItemStack item, Optional<Component> original, Optional<Component> edited);
 ```
 
 | Parameter  | Description                                      |
@@ -64,19 +64,19 @@ void onEdited(Player player, ItemStack item, Optional<Component> original, Optio
 | `original` | The original custom name of the item, if present |
 | `edited`   | The new custom name of the item, if present      |
 
-#### ItemLoreEvents.EDITED
+#### ItemLoreEvents.CHANGED
 
 Fired when an item's lore is modified in any way, providing both the old and new lore. Only fired
 when the lore has actually changed.
 
 ```
-dev.seeruk.bundle.itemtext.api.ItemLoreEvents.EDITED
+dev.seeruk.bundle.itemtext.api.ItemLoreEvents.CHANGED
 ```
 
 **Callback signature:**
 
 ```java
-void onEdited(Player player, ItemStack item, List<Component> original, List<Component> edited);
+void onLoreChanged(Player player, ItemStack item, List<Component> original, List<Component> edited);
 ```
 
 | Parameter  | Description                                   |
@@ -93,8 +93,8 @@ lines of lore. Removing names, or removing or clearing lines of lore doesn't aff
 
 | Scoreboard Objective           | Description                                                       |
 |--------------------------------|-------------------------------------------------------------------|
-| `seers-item-text.name_written` | The total number of characters a player has written in item names |
-| `seers-item-text.lore_written` | The total number of characters a player has written in item lore  |
+| `seers_item_text.name_written` | The total number of characters a player has written in item names |
+| `seers_item_text.lore_written` | The total number of characters a player has written in item lore  |
 
 Objectives can be removed while the server is running, but will be recreated on server restart.
 Removing an objective will reset it for all players.

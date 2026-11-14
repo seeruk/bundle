@@ -60,7 +60,7 @@ void onDisposed(Player player, List<ItemStack> items);
 
 | Scoreboard Objective            | Description                                        |
 |---------------------------------|----------------------------------------------------|
-| `seers-disposal.items_disposed` | The total number of items a player has disposed of |
+| `seers_disposal.items_disposed` | The total number of items a player has disposed of |
 
 Objectives can be removed while the server is running, but will be recreated on server restart.
 Removing an objective will reset it for all players.

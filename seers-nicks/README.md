@@ -53,7 +53,7 @@ Statics only count nicknames that have changed, and actually been set (not reset
 
 | Scoreboard Objective        | Description                                            |
 |-----------------------------|--------------------------------------------------------|
-| `seers-nicks.nicknames_set` | The number of times the player's nickname has been set |
+| `seers_nicks.nicknames_set` | The number of times the player's nickname has been set |
 
 Objectives can be removed while the server is running, but will be recreated on server restart.
 Removing an objective will reset it for all players.

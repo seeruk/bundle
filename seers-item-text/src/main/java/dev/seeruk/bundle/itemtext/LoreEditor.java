@@ -78,6 +78,6 @@ public final class LoreEditor {
         final var lore = result.edited().isEmpty() ? ItemLore.EMPTY : new ItemLore(result.edited());
 
         stack.set(DataComponents.LORE, lore);
-        ItemLoreEvents.EDITED.invoker().onEdited(player, stack, result.original(), result.edited());
+        ItemLoreEvents.CHANGED.invoker().onLoreChanged(player, stack, result.original(), result.edited());
     }
 }

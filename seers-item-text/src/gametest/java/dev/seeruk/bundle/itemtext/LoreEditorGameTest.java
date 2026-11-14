@@ -16,11 +16,11 @@ import static dev.seeruk.bundle.itemtext.LoreFixtures.literals;
 import static dev.seeruk.bundle.itemtext.LoreFixtures.withLore;
 
 public class LoreEditorGameTest {
-    private static final EventLog<Edited> EVENTS = new EventLog<>();
+    private static final EventLog<Changed> EVENTS = new EventLog<>();
 
     static {
-        ItemLoreEvents.EDITED.register((player, item, original, edited) ->
-            EVENTS.record(new Edited(player, item, original, edited)));
+        ItemLoreEvents.CHANGED.register((player, item, original, edited) ->
+            EVENTS.record(new Changed(player, item, original, edited)));
     }
 
     @SuppressWarnings("removal")
@@ -33,7 +33,7 @@ public class LoreEditorGameTest {
 
         final var expected = literals("Testing 1", "Testing 2");
         helper.assertValueEqual(LoreEditor.lines(stack), expected, "lore");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, literals("Testing 1"), expected)), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literals("Testing 1"), expected)), "events");
         helper.succeed();
     }
 
@@ -47,7 +47,7 @@ public class LoreEditorGameTest {
 
         final var expected = literals("Testing 1", "Testing 3");
         helper.assertValueEqual(LoreEditor.lines(stack), expected, "lore");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, literals("Testing 1", "Testing 2"), expected)), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literals("Testing 1", "Testing 2"), expected)), "events");
         helper.succeed();
     }
 
@@ -61,7 +61,7 @@ public class LoreEditorGameTest {
 
         final var expected = literals("Testing 3", "Testing 1", "Testing 2");
         helper.assertValueEqual(LoreEditor.lines(stack), expected, "lore");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, literals("Testing 1", "Testing 2"), expected)), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literals("Testing 1", "Testing 2"), expected)), "events");
         helper.succeed();
     }
 
@@ -75,7 +75,7 @@ public class LoreEditorGameTest {
 
         final var expected = literals("Testing 2");
         helper.assertValueEqual(LoreEditor.lines(stack), expected, "lore");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, literals("Testing 1", "Testing 2"), expected)), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literals("Testing 1", "Testing 2"), expected)), "events");
         helper.succeed();
     }
 
@@ -88,7 +88,7 @@ public class LoreEditorGameTest {
         LoreEditor.removeAll(player, stack);
 
         helper.assertValueEqual(LoreEditor.lines(stack), List.of(), "lore");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, literals("Testing 1", "Testing 2"), List.of())), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literals("Testing 1", "Testing 2"), List.of())), "events");
         helper.succeed();
     }
 
@@ -102,7 +102,7 @@ public class LoreEditorGameTest {
 
         final List<Component> expected = List.of(Component.empty(), Component.literal("Testing 2"));
         helper.assertValueEqual(LoreEditor.lines(stack), expected, "lore");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, literals("Testing 1", "Testing 2"), expected)), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literals("Testing 1", "Testing 2"), expected)), "events");
         helper.succeed();
     }
 
@@ -175,9 +175,9 @@ public class LoreEditorGameTest {
         helper.succeed();
     }
 
-    private record Edited(Player player, ItemStack stack, List<Component> original, List<Component> edited) {}
+    private record Changed(Player player, ItemStack stack, List<Component> original, List<Component> edited) {}
 
-    private static List<Edited> eventsFor(Player player) {
+    private static List<Changed> eventsFor(Player player) {
         return EVENTS.matching(event -> event.player() == player);
     }
 }

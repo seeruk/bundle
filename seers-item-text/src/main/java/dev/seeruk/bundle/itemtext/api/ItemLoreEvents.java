@@ -16,10 +16,10 @@ public final class ItemLoreEvents {
      * Fired when a player edits an item's lore. Only fired when an edit is successful, and the lore
      * has actually changed.
      */
-    public static final Event<Edited> EDITED = EventFactory.createArrayBacked(Edited.class,
+    public static final Event<Changed> CHANGED = EventFactory.createArrayBacked(Changed.class,
         (listeners) -> (player, item, original, edited) -> {
-            for (Edited listener : listeners) {
-                listener.onEdited(player, item, original, edited);
+            for (Changed listener : listeners) {
+                listener.onLoreChanged(player, item, original, edited);
             }
         }
     );
@@ -27,13 +27,13 @@ public final class ItemLoreEvents {
     private ItemLoreEvents() {}
 
     @FunctionalInterface
-    public interface Edited {
+    public interface Changed {
         /**
          * @param player   The player that modified the lore
          * @param item     The item that had its lore modified
          * @param original The original lore of the item, before editing
          * @param edited   The new lore of the item, after editing
          */
-        void onEdited(Player player, ItemStack item, List<Component> original, List<Component> edited);
+        void onLoreChanged(Player player, ItemStack item, List<Component> original, List<Component> edited);
     }
 }

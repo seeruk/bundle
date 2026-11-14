@@ -49,7 +49,11 @@ public record ScoreboardStat(String modId, String objectiveName, String displayN
         scoreboard.getOrCreatePlayerScore(player, scoreObjective).add(amount);
     }
 
+    /**
+     * The objective's full name, e.g. {@code seers_disposal.items_disposed}. Mod IDs use hyphens,
+     * but objective names conventionally use underscores, so they're swapped.
+     */
     public String objectiveId() {
-        return "%s.%s".formatted(modId, objectiveName);
+        return "%s.%s".formatted(modId.replace('-', '_'), objectiveName);
     }
 }

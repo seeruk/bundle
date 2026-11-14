@@ -57,7 +57,7 @@ public final class NameEditor {
     private static NameEditResult.Edited save(Player player, ItemStack stack, NameEditResult.Edited result) {
         // Setting `null` will properly remove the custom name.
         stack.set(DataComponents.CUSTOM_NAME, result.edited().orElse(null));
-        ItemNameEvents.EDITED.invoker().onEdited(player, stack, result.original(), result.edited());
+        ItemNameEvents.CHANGED.invoker().onNameChanged(player, stack, result.original(), result.edited());
 
         return result;
     }

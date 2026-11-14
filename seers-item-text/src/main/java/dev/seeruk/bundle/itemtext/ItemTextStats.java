@@ -45,7 +45,7 @@ public final class ItemTextStats {
 
     /**
      * Adds the length of the new name to the player's score. Listens to
-     * {@link ItemNameEvents#EDITED}.
+     * {@link ItemNameEvents#CHANGED}.
      */
     public static void recordNameWritten(
         Player player,
@@ -67,7 +67,7 @@ public final class ItemTextStats {
 
     /**
      * Adds the length of any new lines of lore to the player's score. Listens to
-     * {@link ItemLoreEvents#EDITED}.
+     * {@link ItemLoreEvents#CHANGED}.
      */
     public static void recordLoreWritten(
         Player player,

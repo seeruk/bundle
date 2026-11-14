@@ -18,11 +18,11 @@ import static dev.seeruk.bundle.itemtext.NameFixtures.literal;
 import static dev.seeruk.bundle.itemtext.NameFixtures.withName;
 
 public class NameEditorGameTest {
-    private static final EventLog<Edited> EVENTS = new EventLog<>();
+    private static final EventLog<Changed> EVENTS = new EventLog<>();
 
     static {
-        ItemNameEvents.EDITED.register((player, item, original, edited) ->
-            EVENTS.record(new Edited(player, item, original, edited)));
+        ItemNameEvents.CHANGED.register((player, item, original, edited) ->
+            EVENTS.record(new Changed(player, item, original, edited)));
     }
 
     @SuppressWarnings("removal")
@@ -35,7 +35,7 @@ public class NameEditorGameTest {
 
         final var expected = literal("Testing");
         helper.assertValueEqual(NameEditor.customName(stack), expected, "name");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, Optional.empty(), expected)), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, Optional.empty(), expected)), "events");
         helper.succeed();
     }
 
@@ -49,7 +49,7 @@ public class NameEditorGameTest {
 
         final var expected = literal("Testing 2");
         helper.assertValueEqual(NameEditor.customName(stack), expected, "name");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, literal("Testing 1"), expected)), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literal("Testing 1"), expected)), "events");
         helper.succeed();
     }
 
@@ -109,7 +109,7 @@ public class NameEditorGameTest {
         NameEditor.reset(player, stack);
 
         helper.assertValueEqual(NameEditor.customName(stack), Optional.empty(), "name");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, literal("Testing"), Optional.empty())), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literal("Testing"), Optional.empty())), "events");
         helper.succeed();
     }
 
@@ -124,7 +124,7 @@ public class NameEditorGameTest {
         NameEditor.reset(player, stack);
 
         helper.assertValueEqual(NameEditor.customName(stack), Optional.empty(), "name");
-        helper.assertValueEqual(eventsFor(player), List.of(new Edited(player, stack, Optional.empty(), Optional.empty())), "events");
+        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, Optional.empty(), Optional.empty())), "events");
         helper.succeed();
     }
 
@@ -202,9 +202,9 @@ public class NameEditorGameTest {
         helper.succeed();
     }
 
-    private record Edited(Player player, ItemStack stack, Optional<Component> original, Optional<Component> edited) {}
+    private record Changed(Player player, ItemStack stack, Optional<Component> original, Optional<Component> edited) {}
 
-    private static List<Edited> eventsFor(Player player) {
+    private static List<Changed> eventsFor(Player player) {
         return EVENTS.matching(event -> event.player() == player);
     }
 }

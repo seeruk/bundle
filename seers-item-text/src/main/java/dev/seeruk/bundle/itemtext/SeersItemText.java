@@ -27,8 +27,8 @@ public class SeersItemText implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(ItemTextStats::ensureObjectives);
-        ItemNameEvents.EDITED.register(ItemTextStats::recordNameWritten);
-        ItemLoreEvents.EDITED.register(ItemTextStats::recordLoreWritten);
+        ItemNameEvents.CHANGED.register(ItemTextStats::recordNameWritten);
+        ItemLoreEvents.CHANGED.register(ItemTextStats::recordLoreWritten);
 
         LOGGER.info("Initialized");
     }

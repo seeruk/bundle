@@ -16,10 +16,10 @@ public final class ItemNameEvents {
      * Fired when a player modifies an item's name. Only fired when an edit is successful, and the
      * name has actually changed.
      */
-    public static final Event<Edited> EDITED = EventFactory.createArrayBacked(Edited.class,
+    public static final Event<Changed> CHANGED = EventFactory.createArrayBacked(Changed.class,
         (listeners) -> (player, item, original, edited) -> {
-            for (Edited listener : listeners) {
-                listener.onEdited(player, item, original, edited);
+            for (Changed listener : listeners) {
+                listener.onNameChanged(player, item, original, edited);
             }
         }
     );
@@ -27,13 +27,13 @@ public final class ItemNameEvents {
     private ItemNameEvents() {}
 
     @FunctionalInterface
-    public interface Edited {
+    public interface Changed {
         /**
          * @param player   The player that modified the name
          * @param item     The item that had its name modified
          * @param original The original custom name of the item, if present
          * @param edited   The new custom name of the item, if present
          */
-        void onEdited(Player player, ItemStack item, Optional<Component> original, Optional<Component> edited);
+        void onNameChanged(Player player, ItemStack item, Optional<Component> original, Optional<Component> edited);
     }
 }
