@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-chat-gametest",
+    "version": "${version}",
+    "name": "Seer's Chat GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.chat.SeersChatGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.chat.client.SeersChatClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-chat": "*"
+    }
+}
