@@ -24,99 +24,105 @@ public class ItemTextStatsTest {
     }
 
     @Nested
-    class NewLoreLength {
-        static Stream<Arguments> shouldCountNewLoreLength() {
+    class NewLoreLines {
+        static Stream<Arguments> shouldFindNewLoreLines() {
             return Stream.of(
                 Arguments.of(
-                    "Counts nothing when both are empty",
+                    "Finds nothing when both are empty",
                     List.of(),
                     List.of(),
-                    0
+                    List.of()
                 ),
                 Arguments.of(
-                    "Counts every line when there was no lore",
+                    "Finds every line when there was no lore",
                     List.of(),
                     List.of(literal("Testing 1"), literal("Testing 2")),
-                    18
+                    List.of("Testing 1", "Testing 2")
                 ),
                 Arguments.of(
-                    "Counts nothing when all lore is removed",
+                    "Finds nothing when all lore is removed",
                     List.of(literal("Testing 1"), literal("Testing 2")),
                     List.of(),
-                    0
+                    List.of()
                 ),
                 Arguments.of(
-                    "Counts nothing when the lore is unchanged",
+                    "Finds nothing when the lore is unchanged",
                     List.of(literal("Testing 1"), literal("Testing 2")),
                     List.of(literal("Testing 1"), literal("Testing 2")),
-                    0
+                    List.of()
                 ),
                 Arguments.of(
-                    "Counts only the appended line",
+                    "Finds only the appended line",
                     List.of(literal("Testing 1")),
                     List.of(literal("Testing 1"), literal("Test")),
-                    4
+                    List.of("Test")
                 ),
                 Arguments.of(
-                    "Counts only the replaced line",
+                    "Finds only the replaced line",
                     List.of(literal("Testing 1"), literal("Testing 2")),
                     List.of(literal("Testing 1"), literal("Test")),
-                    4
+                    List.of("Test")
                 ),
                 Arguments.of(
-                    "Doesn't count lines shifted down by an insert",
+                    "Doesn't find lines shifted down by an insert",
                     List.of(literal("Testing 1"), literal("Testing 2")),
                     List.of(literal("Test"), literal("Testing 1"), literal("Testing 2")),
-                    4
+                    List.of("Test")
                 ),
                 Arguments.of(
-                    "Doesn't count reordered lines",
+                    "Finds blank lines added by inserting past the end",
+                    List.of(literal("Testing 1")),
+                    List.of(literal("Testing 1"), literal(""), literal("Test")),
+                    List.of("", "Test")
+                ),
+                Arguments.of(
+                    "Doesn't find reordered lines",
                     List.of(literal("Testing 1"), literal("Testing 2")),
                     List.of(literal("Testing 2"), literal("Testing 1")),
-                    0
+                    List.of()
                 ),
                 Arguments.of(
-                    "Counts nothing for removed or cleared lines",
+                    "Finds only a blank line for removed or cleared lines",
                     List.of(literal("Testing 1"), literal("Testing 2"), literal("Testing 3")),
                     List.of(literal(""), literal("Testing 3")),
-                    0
+                    List.of("")
                 ),
                 Arguments.of(
-                    "Counts duplicates of existing lines",
+                    "Finds duplicates of existing lines",
                     List.of(literal("Testing")),
                     List.of(literal("Testing"), literal("Testing")),
-                    7
+                    List.of("Testing")
                 ),
                 Arguments.of(
-                    "Styling doesn't count towards length",
+                    "Finds lines as plain text, without their styling",
                     List.of(),
                     List.of(styledLine()),
-                    13
+                    List.of("Red with bold")
                 ),
                 Arguments.of(
-                    "Doesn't count restyled lines",
+                    "Doesn't find restyled lines",
                     List.of(literal("Testing")),
                     List.of(literal("Testing").withStyle(ChatFormatting.RED)),
-                    0
+                    List.of()
                 ),
                 Arguments.of(
-                    "Doesn't count unchanged styled lines",
+                    "Doesn't find unchanged styled lines",
                     List.of(styledLine()),
                     List.of(styledLine(), literal("Test")),
-                    4
+                    List.of("Test")
                 )
             );
         }
 
         @ParameterizedTest(name = "{0}")
         @MethodSource
-        void shouldCountNewLoreLength(
+        void shouldFindNewLoreLines(
             final String description,
             final List<Component> original,
             final List<Component> edited,
-            final int expected
+            final List<String> expected
         ) {
-            assertEquals(expected, ItemTextStats.newLoreLength(original, edited));
+            assertEquals(expected, ItemTextStats.newLoreLines(original, edited));
         }
     }
 

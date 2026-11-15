@@ -12,7 +12,7 @@ public class ScoreboardStatTest {
     static Stream<Arguments> shouldBuildObjectiveId() {
         return Stream.of(
             Arguments.of("Joins the mod ID and name with a dot", "seers", "items_disposed", "seers.items_disposed"),
-            Arguments.of("Swaps hyphens in the mod ID for underscores", "seers-item-text", "name_written", "seers_item_text.name_written")
+            Arguments.of("Swaps hyphens in the mod ID for underscores", "seers-item-text", "name_characters", "seers_item_text.name_characters")
         );
     }
 
