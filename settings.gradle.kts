@@ -21,3 +21,6 @@ val modules = providers.gradleProperty("bundle.modules").get()
     .filter { it.isNotEmpty() }
 
 include(modules)
+
+// Runs every included mod together, but isn't a mod itself
+include("bundle-all")

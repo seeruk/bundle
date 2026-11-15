@@ -15,12 +15,12 @@ val bundleJarFiles = configurations.resolvable("bundleJarFiles") {
 
 dependencies {
     subprojects
-        // Ignore the template mod.
-        .filter { it.name != "seers-template" }
-        .forEach { bundleJars(project(it.path)) }
+        // Only mods, and not the template mod.
+        .filter { it.name.startsWith("seers-") && it.name != "seers-template" }
+        .forEach { bundleJars(dependencies.project(it.path)) }
 }
 
-val collectJars by tasks.registering(Sync::class) {
+val collectJars = tasks.register<Sync>("collectJars") {
     group = "build"
     description = "Collects every mod jar into the root build/libs directory."
     from(bundleJarFiles)

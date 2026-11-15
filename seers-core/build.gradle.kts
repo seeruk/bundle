@@ -18,5 +18,5 @@ dependencies {
     testFixturesCompileOnly(files(sourceSets.main.map { it.compileClasspath }))
 
     // Core's own GameTests use the test fixtures too.
-    gametestImplementation(testFixtures(project))
+    gametestImplementation(testFixtures(project(path)))
 }
