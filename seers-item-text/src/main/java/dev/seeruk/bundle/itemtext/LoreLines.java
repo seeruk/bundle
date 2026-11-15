@@ -4,7 +4,6 @@ import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -14,6 +13,7 @@ import java.util.stream.Collectors;
  */
 public final class LoreLines {
     public static final int MAX_LINES = 10;
+    // Longer lines are wrapped when lore is written (see LoreEditor#parse)
     public static final int MAX_LINE_LENGTH = 60;
 
     private LoreLines() {}
@@ -25,13 +25,6 @@ public final class LoreLines {
      * @param lines    The lines of lore to replace them with
      */
     public static LoreEditResult replace(List<Component> original, List<Component> lines) {
-        for (final var line : lines) {
-            final var failure = validateLine(line);
-            if (failure.isPresent()) {
-                return failure.get();
-            }
-        }
-
         return ensureWithinMaxLines(original, copyLines(lines));
     }
 
@@ -44,15 +37,6 @@ public final class LoreLines {
         return lines.stream()
             .map(Component::copy)
             .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private static Optional<LoreEditResult.Failure> validateLine(Component line) {
-        final var text = line.getString();
-        if (text.length() > MAX_LINE_LENGTH) {
-            return Optional.of(new LoreEditResult.MaxLineLengthExceeded(MAX_LINE_LENGTH, line));
-        }
-
-        return Optional.empty();
     }
 
     private static LoreEditResult ensureWithinMaxLines(List<Component> original, List<Component> edited) {

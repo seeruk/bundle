@@ -3,6 +3,7 @@ package dev.seeruk.bundle.disposal.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.seeruk.bundle.core.command.CommandExecutors;
 import dev.seeruk.bundle.core.command.NamespacedCommands;
 import dev.seeruk.bundle.disposal.DisposalMenu;
 import dev.seeruk.bundle.disposal.SeersDisposal;
@@ -23,7 +24,7 @@ public final class DisposalCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         NamespacedCommands.register(dispatcher, SeersDisposal.MOD_ID, NAME,
-            name -> Commands.literal(name).executes(DisposalCommand::open)
+            name -> Commands.literal(name).executes(CommandExecutors.logged(DisposalCommand::open))
         );
     }
 

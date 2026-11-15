@@ -76,6 +76,15 @@ public class LoreDialogGameTest {
         helper.succeed();
     }
 
+    @GameTest
+    public void dialogTextIsNotCutInsideAnEmoji(GameTestHelper helper) {
+        // The emoji is two UTF-16 units, so the limit falls between them
+        final var text = "a".repeat(LoreDialog.MAX_INPUT_LENGTH - 1) + "😀";
+
+        helper.assertValueEqual(initialText(LoreDialog.create(text, Optional.empty())), "a".repeat(LoreDialog.MAX_INPUT_LENGTH - 1), "initial text");
+        helper.succeed();
+    }
+
     private static String initialText(Dialog dialog) {
         return dialog.common().inputs().stream()
             .filter(input -> input.key().equals(LoreDialog.INPUT))

@@ -46,27 +46,6 @@ public class LoreLinesTest {
                 LoreLines.replace(List.of(), replacement)
             );
         }
-
-        @Test
-        void countsEveryPartOfALineTowardsItsLength() {
-            final var line = literal("a".repeat(LoreLines.MAX_LINE_LENGTH / 2))
-                .append(literal("a".repeat((LoreLines.MAX_LINE_LENGTH / 2) + 1)));
-
-            assertEquals(
-                new LoreEditResult.MaxLineLengthExceeded(LoreLines.MAX_LINE_LENGTH, line),
-                LoreLines.replace(List.of(), List.of(line))
-            );
-        }
-
-        @Test
-        void refusesALineBeyondTheMaximumLength() {
-            final var line = literal("a".repeat(LoreLines.MAX_LINE_LENGTH + 1));
-
-            assertEquals(
-                new LoreEditResult.MaxLineLengthExceeded(LoreLines.MAX_LINE_LENGTH, line),
-                LoreLines.replace(List.of(), List.of(literal("Testing"), line))
-            );
-        }
     }
 
     private static MutableComponent literal(String text) {

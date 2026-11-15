@@ -94,17 +94,17 @@ void onLoreChanged(Player player, ItemStack item, List<Component> original, List
 
 ### Statistics
 
-Statistics only count new text written by players, i.e. the plain text of a new name, or of new
-lines of lore. Removing names, or removing or clearing lines of lore doesn't affect them, and nor
-does restyling them. Blank lines (e.g. ones added to fill a gap when inserting lore past the end)
-don't count as lines written.
+Statistics only count new text written by players, i.e. the plain text of a new name, or new words
+of lore. Words that only move (e.g. to another line, as lore wraps differently) aren't new, and
+spaces between words aren't counted. Removing names or lore doesn't affect them, and nor does
+restyling them. A line of lore counts as written if it has any new words in it.
 
 | Scoreboard Objective                 | Description                                                       |
 |--------------------------------------|-------------------------------------------------------------------|
 | `seers_item_text.name_characters`    | The total number of characters a player has written in item names |
 | `seers_item_text.lore_characters`    | The total number of characters a player has written in item lore  |
 | `seers_item_text.items_renamed`      | The number of times a player has renamed an item                  |
-| `seers_item_text.lore_lines_written` | The number of new lines of lore a player has written              |
+| `seers_item_text.lore_lines_written` | The number of lines of lore with new words a player has written   |
 
 Objectives can be removed while the server is running, but will be recreated on server restart.
 Removing an objective will reset it for all players.

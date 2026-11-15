@@ -23,12 +23,6 @@ public final class LoreEditMessages {
             case LoreEditResult.Edited edited -> Component.empty()
                 .append(TextParsers.parseAsTrusted("<green>Lore updated:</green>\n"))
                 .append(preview(edited.edited()));
-            case LoreEditResult.MaxLineLengthExceeded failure -> TextParsers.parseAsTrusted(
-                "<red>A line of lore cannot be longer than %d characters (yours is %d)</red>".formatted(
-                    failure.maxLineLength(),
-                    failure.line().getString().length()
-                )
-            );
             case LoreEditResult.MaxLinesExceeded failure -> TextParsers.parseAsTrusted(
                 "<red>Lore can't be more than %d lines (yours is %d)</red>".formatted(
                     failure.maxLines(),

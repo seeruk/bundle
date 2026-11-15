@@ -110,14 +110,33 @@ public class ItemTextStatsGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
-    public void addingLoreAddsLineLength(GameTestHelper helper) {
+    public void addingLoreAddsNewWordsLength(GameTestHelper helper) {
+        // "Testing" is new as well as "2", as the original's only "Testing" is used by the first line
         final var player = helper.makeMockServerPlayerInLevel();
         final var stack = withLore("Testing 1");
         final var before = score(player, ItemTextStats.LORE_CHARACTERS);
 
         LoreEditor.replace(player, stack, "Testing 1\nTesting 2");
 
-        helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - before, 9, "score increase");
+        helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - before, 8, "score increase");
+        helper.succeed();
+    }
+
+    @SuppressWarnings("removal")
+    @GameTest
+    public void rewrappedLoreOnlyCountsNewWords(GameTestHelper helper) {
+        // Adding a word to the start of a long line moves where every wrapped line breaks
+        final var player = helper.makeMockServerPlayerInLevel();
+        final var stack = new ItemStack(Items.NETHERITE_SWORD);
+        final var paragraph = "word ".repeat(30).strip();
+        LoreEditor.replace(player, stack, paragraph);
+        final var characters = score(player, ItemTextStats.LORE_CHARACTERS);
+        final var lines = score(player, ItemTextStats.LORE_LINES_WRITTEN);
+
+        LoreEditor.replace(player, stack, "New " + paragraph);
+
+        helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - characters, 3, "characters score increase");
+        helper.assertValueEqual(score(player, ItemTextStats.LORE_LINES_WRITTEN) - lines, 1, "lines score increase");
         helper.succeed();
     }
 

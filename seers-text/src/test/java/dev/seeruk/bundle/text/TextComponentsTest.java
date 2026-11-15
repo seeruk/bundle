@@ -113,6 +113,24 @@ public class TextComponentsTest {
                     literal("One two three four", RED),
                     10,
                     List.of(List.of(chunk("One two", RED)), List.of(chunk("three four", RED)))
+                ),
+                Arguments.of(
+                    "Counts an emoji as one character",
+                    Component.literal("😀".repeat(10)),
+                    10,
+                    List.of(List.of(chunk("😀".repeat(10), Style.EMPTY)))
+                ),
+                Arguments.of(
+                    "Never breaks inside an emoji",
+                    Component.literal("a" + "😀".repeat(10)),
+                    10,
+                    List.of(List.of(chunk("a" + "😀".repeat(9), Style.EMPTY)), List.of(chunk("😀", Style.EMPTY)))
+                ),
+                Arguments.of(
+                    "Never breaks inside an emoji made of others",
+                    Component.literal("a".repeat(9) + FAMILY),
+                    9,
+                    List.of(List.of(chunk("a".repeat(9), Style.EMPTY)), List.of(chunk(FAMILY, Style.EMPTY)))
                 )
             );
         }
@@ -123,6 +141,27 @@ public class TextComponentsTest {
             assertEquals(expected, TextComponents.wrap(line, maxLength).stream().map(TextComponentsTest::chunks).toList());
         }
     }
+
+    @Nested
+    class Length {
+        static Stream<Arguments> shouldCountCharactersAsShown() {
+            return Stream.of(
+                Arguments.of("Counts letters", "Testing", 7),
+                Arguments.of("Counts an emoji as one", "😀", 1),
+                Arguments.of("Counts an emoji made of others as one", FAMILY, 1),
+                Arguments.of("Counts nothing in empty text", "", 0)
+            );
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource
+        void shouldCountCharactersAsShown(final String description, final String text, final int expected) {
+            assertEquals(expected, TextComponents.length(text));
+        }
+    }
+
+    // A family emoji, made of three people joined together
+    private static final String FAMILY = "👨‍👩‍👧";
 
     // Each run of text and its style, so tests don't depend on how components are nested
     record Chunk(String text, Style style) {}

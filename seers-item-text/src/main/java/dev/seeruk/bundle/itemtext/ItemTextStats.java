@@ -1,12 +1,14 @@
 package dev.seeruk.bundle.itemtext;
 
 import dev.seeruk.bundle.core.stats.ScoreboardStat;
+import dev.seeruk.bundle.text.TextComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,8 +80,8 @@ public final class ItemTextStats {
     }
 
     /**
-     * Adds the length of any new lines of lore to the player's score, and the number of those lines
-     * that aren't blank.
+     * Adds the length of any new words of lore to the player's score, and the number of lines with
+     * new words in them.
      */
     public static void recordLoreWritten(
         Player player,
@@ -87,39 +89,53 @@ public final class ItemTextStats {
         List<Component> original,
         List<Component> edited
     ) {
-        final var newLines = newLoreLines(original, edited);
+        final var written = loreWritten(original, edited);
 
-        final var characters = newLines.stream().mapToInt(String::length).sum();
-        if (characters > 0) {
-            LORE_CHARACTERS.add(player, characters);
+        if (written.characters() > 0) {
+            LORE_CHARACTERS.add(player, written.characters());
         }
 
-        final var lines = (int) newLines.stream().filter(line -> !line.isBlank()).count();
-        if (lines > 0) {
-            LORE_LINES_WRITTEN.add(player, lines);
+        if (written.lines() > 0) {
+            LORE_LINES_WRITTEN.add(player, written.lines());
         }
     }
 
     /**
-     * Compares lines of lore to find the new lines written, as plain text. Lines are matched by
-     * value instead of position so that lines that have moved (e.g. on insert / removal of a line)
-     * aren't new.
+     * @param characters How many characters the new words have, not counting spaces.
+     * @param lines      How many lines have new words in them.
      */
-    static List<String> newLoreLines(List<Component> original, List<Component> edited) {
-        final var remaining = asPlainText(original);
-        final var written = new ArrayList<String>();
+    record LoreWritten(int characters, int lines) {}
 
-        for (final var line : asPlainText(edited)) {
-            // Each original line can only be matched once, so duplicate new lines still count
-            if (!remaining.remove(line)) {
-                written.add(line);
+    /**
+     * Compares lore word by word, as plain text, to find what's new. Words are matched by value
+     * instead of position, so words that have moved (e.g. to another line, as the lore wraps
+     * differently) aren't new.
+     */
+    static LoreWritten loreWritten(List<Component> original, List<Component> edited) {
+        final var remaining = new ArrayList<String>();
+        original.forEach(line -> remaining.addAll(words(line)));
+
+        var characters = 0;
+        var lines = 0;
+        for (final var line : edited) {
+            var written = false;
+            for (final var word : words(line)) {
+                // Each original word can only be matched once, so duplicate new words still count
+                if (!remaining.remove(word)) {
+                    characters += TextComponents.length(word);
+                    written = true;
+                }
+            }
+
+            if (written) {
+                lines++;
             }
         }
 
-        return written;
+        return new LoreWritten(characters, lines);
     }
 
-    private static ArrayList<String> asPlainText(List<Component> lines) {
-        return new ArrayList<>(lines.stream().map(Component::getString).toList());
+    private static List<String> words(Component line) {
+        return Arrays.stream(line.getString().split("\\s+")).filter(word -> !word.isEmpty()).toList();
     }
 }
