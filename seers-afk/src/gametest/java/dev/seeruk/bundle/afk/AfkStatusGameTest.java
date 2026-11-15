@@ -4,7 +4,10 @@ import dev.seeruk.bundle.afk.AfkFixtures.Changed;
 import dev.seeruk.bundle.afk.api.AfkReason;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
+import net.minecraft.network.protocol.game.ServerboundPlayerInputPacket;
+import net.minecraft.world.entity.player.Input;
 
 import java.util.List;
 
@@ -47,9 +50,9 @@ public class AfkStatusGameTest {
         AfkStatus.update(player, tick, TIMEOUT);
         AfkStatus.update(player, tick + TIMEOUT, TIMEOUT);
 
-        // A tick later, so the action happens at a different time to the one before going AFK
+        // A tick later, so pressing a key happens at a different time to the last action
         helper.runAfterDelay(1, () -> {
-            player.resetLastActionTime();
+            player.connection.handlePlayerInput(new ServerboundPlayerInputPacket(new Input(true, false, false, false, false, false, false)));
             AfkStatus.update(player, tick + TIMEOUT + 1, TIMEOUT);
 
             helper.assertFalse(AfkStatus.isAfk(player), "Player was still AFK");
@@ -83,11 +86,11 @@ public class AfkStatusGameTest {
     }
 
     @GameTest
-    public void forgettingPlayerDoesntAnnounceIt(GameTestHelper helper) {
+    public void disconnectingForgetsPlayerWithoutAnnouncingIt(GameTestHelper helper) {
         final var player = player(helper);
         AfkStatus.toggle(player, helper.getLevel().getServer().getTickCount(), AfkReason.COMMAND);
 
-        AfkStatus.forget(player);
+        player.connection.disconnect(Component.literal("Left the game"));
 
         helper.assertFalse(AfkStatus.isAfk(player), "Player was still AFK");
         helper.assertValueEqual(eventsFor(player).size(), 1, "event count");

@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.core.tablist;
 
+import dev.seeruk.bundle.core.testing.TestPlayers;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
@@ -56,9 +57,8 @@ public class TabListGameTest {
         helper.succeed();
     }
 
-    @SuppressWarnings("removal")
     private static ServerPlayer player(GameTestHelper helper, String... tags) {
-        final var player = helper.makeMockServerPlayerInLevel();
+        final var player = TestPlayers.player(helper);
         for (final var tag : tags) {
             player.addTag(tag);
         }

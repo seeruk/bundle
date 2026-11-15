@@ -30,10 +30,12 @@ abstract class BlockStateBaseMixin {
 
     // Vanilla's update still runs, so its other effects (e.g. scheduling fluid ticks) still happen.
     // If the block is locked, its new state is thrown away, even if it would be removed (e.g. one
-    // half of a split bed when the other half is broken).
+    // half of a split bed when the other half is broken). Most updates don't change the state, so
+    // those skip looking for a lock, as this runs for every neighbour update.
     @ModifyReturnValue(method = "updateShape", at = @At("RETURN"))
     private BlockState propswap$keepLockedShape(BlockState updated, LevelReader level, ScheduledTickAccess ticks, BlockPos pos) {
-        return LockedBlocks.isLocked(level, pos) ? asState() : updated;
+        final var current = asState();
+        return updated != current && LockedBlocks.isLocked(level, pos) ? current : updated;
     }
 
     @Inject(method = "getDrops", at = @At("HEAD"), cancellable = true)

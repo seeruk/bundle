@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerLoadedPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.level.GameType;
 
 import java.util.UUID;
@@ -26,7 +27,16 @@ public final class TestPlayers {
      */
     public static ServerPlayer player(GameTestHelper helper) {
         final var id = UUID.randomUUID();
-        final var cookie = CommonListenerCookie.createInitial(new GameProfile(id, "test_" + id.toString().substring(0, 8)), false);
+        return player(helper, new NameAndId(id, "test_" + id.toString().substring(0, 8)));
+    }
+
+    /**
+     * Like {@link #player(GameTestHelper)}, with a given UUID and name, e.g. so something can be
+     * set up for the player before they join. The name should be unique, so the player doesn't
+     * share scores or name lookups with another.
+     */
+    public static ServerPlayer player(GameTestHelper helper, NameAndId nameAndId) {
+        final var cookie = CommonListenerCookie.createInitial(new GameProfile(nameAndId.id(), nameAndId.name()), false);
         final var server = helper.getLevel().getServer();
         final var player = new ServerPlayer(server, helper.getLevel(), cookie.gameProfile(), cookie.clientInformation());
 

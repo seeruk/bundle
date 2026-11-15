@@ -150,28 +150,28 @@ public class NicknamesGameTest {
     @GameTest
     public void joiningPlayerReleasesTheirUsername(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
-        final var joined = offline("Joined");
+        final var joining = offline("Joining");
         final var player = offline("Player");
         final var admin = offline("Admin");
-        Nicknames.set(server, player, "<red>" + joined.name() + "</red>", false);
-        Nicknames.set(server, admin, joined.name(), true);
+        Nicknames.set(server, player, "<red>" + joining.name() + "</red>", false);
+        Nicknames.set(server, admin, joining.name(), true);
 
-        Nicknames.releaseUsername(server, joined);
+        player(helper, joining);
 
         helper.assertValueEqual(Nicknames.get(player.id()), Optional.empty(), "player's nickname");
-        helper.assertValueEqual(text(Nicknames.get(admin.id())), Optional.of(joined.name()), "admin-set nickname");
+        helper.assertValueEqual(text(Nicknames.get(admin.id())), Optional.of(joining.name()), "admin-set nickname");
         helper.succeed();
     }
 
     @GameTest
     public void joiningPlayerKeepsTheirOwnUsernameAsNickname(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
-        final var joined = offline("Joined");
-        Nicknames.set(server, joined, joined.name(), false);
+        final var joining = offline("Joining");
+        Nicknames.set(server, joining, joining.name(), false);
 
-        Nicknames.releaseUsername(server, joined);
+        player(helper, joining);
 
-        helper.assertValueEqual(text(Nicknames.get(joined.id())), Optional.of(joined.name()), "nickname");
+        helper.assertValueEqual(text(Nicknames.get(joining.id())), Optional.of(joining.name()), "nickname");
         helper.succeed();
     }
 

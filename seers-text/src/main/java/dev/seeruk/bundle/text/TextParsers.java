@@ -42,7 +42,7 @@ public final class TextParsers {
     public static final NodeParser TRUSTED = ParserBuilder.of()
         .customTagRegistry(TRUSTED_TAGS)
         .quickText()
-        .markdown() // TODO: Verify this is sane.
+        .markdown()
         .build();
 
     /**
