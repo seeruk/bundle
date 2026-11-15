@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nameAndId;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
 import static dev.seeruk.bundle.nicks.NicksFixtures.offline;
-import static dev.seeruk.bundle.nicks.NicksFixtures.player;
 
 public class NicknamesGameTest {
     private static final EventLog<Changed> EVENTS = new EventLog<>();
@@ -113,10 +113,9 @@ public class NicknamesGameTest {
 
     @GameTest
     public void ownUsernameIsAllowed(GameTestHelper helper) {
-        // Mock players' usernames are too long to be nicknames, so this uses an offline player
-        final var player = offline("Seer");
+        final var player = nameAndId(player(helper));
 
-        final var result = Nicknames.set(helper.getLevel().getServer(), player, player.name().toLowerCase(), false);
+        final var result = Nicknames.set(helper.getLevel().getServer(), player, player.name().toUpperCase(), false);
 
         helper.assertTrue(result instanceof NickEditResult.Edited, "Edit didn't succeed");
         helper.succeed();

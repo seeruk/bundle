@@ -4,9 +4,9 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 
+import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nameAndId;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
-import static dev.seeruk.bundle.nicks.NicksFixtures.player;
 
 public class NicksTabListGameTest {
     @GameTest

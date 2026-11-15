@@ -14,8 +14,8 @@ import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import java.util.Optional;
 
 import static dev.seeruk.bundle.core.testing.TestCommands.execute;
+import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
-import static dev.seeruk.bundle.nicks.NicksFixtures.player;
 
 public class NickCommandGameTest {
     @GameTest
@@ -90,7 +90,7 @@ public class NickCommandGameTest {
 
         final var nickname = nickname("Seer");
 
-        final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + selector(target) + " set <b>" + nickname + "</b>");
+        final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + target.getGameProfile().name() + " set <b>" + nickname + "</b>");
 
         helper.assertValueEqual(result, 1, "command result");
         helper.assertValueEqual(nicknameFor(target), Optional.of(nickname), "nickname");
@@ -103,7 +103,7 @@ public class NickCommandGameTest {
         final var target = player(helper);
         execute(helper, target, NickCommand.NAME + " set " + nickname("Seer"));
 
-        final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + selector(target) + " reset");
+        final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + target.getGameProfile().name() + " reset");
 
         helper.assertValueEqual(result, 1, "command result");
         helper.assertValueEqual(nicknameFor(target), Optional.empty(), "nickname");
@@ -142,14 +142,6 @@ public class NickCommandGameTest {
 
     private static CommandSourceStack adminSource(ServerPlayer player) {
         return player.createCommandSourceStack().withPermission(LevelBasedPermissionSet.GAMEMASTER).withSuppressedOutput();
-    }
-
-    // Mock players all share the same name, and the GameTest server makes up a player for any name
-    // it doesn't know, so this picks the player out with a selector instead
-    private static String selector(ServerPlayer player) {
-        final var tag = "nicks_" + player.getUUID().toString().substring(0, 8);
-        player.addTag(tag);
-        return "@a[tag=" + tag + "]";
     }
 
     private static Optional<String> nicknameFor(ServerPlayer player) {
