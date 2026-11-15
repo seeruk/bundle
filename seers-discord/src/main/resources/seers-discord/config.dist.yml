@@ -1,0 +1,21 @@
+# Seer's Discord config. To change a setting, copy it into config.yml in this folder. Anything
+# that's not in config.yml uses the default from this file.
+#
+# Discord stays off until both bot_token and channel_id are set. See the mod's README for how to set
+# up a bot.
+
+# The bot's token, from your application's Bot page in the Discord developer portal
+# (https://discord.com/developers/applications). Keep it secret: anyone with it can use the bot.
+bot_token: ""
+
+# The ID of the channel to bridge chat with. To copy it, turn on Developer Mode in Discord's
+# advanced settings, then right-click the channel and choose Copy Channel ID.
+channel_id: ""
+
+# How players' messages are written in Discord, where they're sent as the player, with their name
+# and face. ${message} is the message, with any formatting from the game (e.g. bold) turned into
+# Discord's. ${display_name} is the player's name, as it's shown in chat (e.g. with a nickname).
+# Both can use Discord's formatting, e.g. _italics_.
+formats:
+  chat: "${message}"
+  emote: "_${display_name} ${message}_"

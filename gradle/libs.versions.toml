@@ -12,6 +12,9 @@ placeholder-api = "3.2.0+26.3"
 # https://central.sonatype.com/artifact/org.snakeyaml/snakeyaml-engine
 snakeyaml-engine = "3.2"
 
+# https://central.sonatype.com/artifact/net.dv8tion/JDA
+jda = "6.7.0"
+
 # Check https://fabricmc.net/develop for the latest Fabric versions.
 
 [libraries]
@@ -22,4 +25,5 @@ fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fab
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 loom-plugin = { module = "net.fabricmc.fabric-loom:net.fabricmc.fabric-loom.gradle.plugin", version.ref = "loom" }
 placeholder-api = { module = "eu.pb4:placeholder-api", version.ref = "placeholder-api" }
+jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyaml-engine" }
