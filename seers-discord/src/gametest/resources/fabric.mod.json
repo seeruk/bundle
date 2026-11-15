@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-discord-gametest",
+    "version": "${version}",
+    "name": "Seer's Discord GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.discord.SeersDiscordGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.discord.client.SeersDiscordClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-discord": "*"
+    }
+}

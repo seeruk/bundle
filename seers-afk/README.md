@@ -21,7 +21,7 @@ as AFK immediately by using the `/afk` command.
 ### Config
 
 Settings live in `config/seers-afk/config.yml` (see `config.dist.yml` next to it for every setting,
-and its default).
+and their defaults).
 
 | Setting           | Default                                             | Description                                          |
 |-------------------|-----------------------------------------------------|------------------------------------------------------|
