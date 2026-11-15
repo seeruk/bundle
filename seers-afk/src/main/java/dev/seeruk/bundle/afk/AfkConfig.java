@@ -3,6 +3,7 @@ package dev.seeruk.bundle.afk;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.seeruk.bundle.text.TextTemplate;
+import net.minecraft.SharedConstants;
 
 /**
  * @param timeoutSeconds How long a player can go without doing anything before they're AFK.
@@ -17,8 +18,8 @@ public record AfkConfig(int timeoutSeconds, TextTemplate tabListName, Messages m
         Messages.CODEC.fieldOf("messages").forGetter(AfkConfig::messages)
     ).apply(instance, AfkConfig::new));
 
-    public long timeoutMillis() {
-        return timeoutSeconds * 1000L;
+    public int timeoutTicks() {
+        return timeoutSeconds * SharedConstants.TICKS_PER_SECOND;
     }
 
     /**

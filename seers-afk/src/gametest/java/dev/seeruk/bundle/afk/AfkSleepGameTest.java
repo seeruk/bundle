@@ -7,14 +7,15 @@ import net.minecraft.server.players.SleepStatus;
 
 import java.util.List;
 
-import static dev.seeruk.bundle.afk.AfkFixtures.player;
+import static dev.seeruk.bundle.core.testing.TestPlayers.player;
+
 
 public class AfkSleepGameTest {
     @GameTest
     public void afkPlayersArentCountedForSleeping(GameTestHelper helper) {
         final var awake = player(helper);
         final var afk = player(helper);
-        AfkStatus.toggle(afk, AfkReason.COMMAND);
+        AfkStatus.toggle(afk, helper.getLevel().getServer().getTickCount(), AfkReason.COMMAND);
 
         final var sleepStatus = new SleepStatus();
         sleepStatus.update(List.of(awake, afk));

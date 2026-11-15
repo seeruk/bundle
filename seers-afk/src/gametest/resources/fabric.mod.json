@@ -6,10 +6,14 @@
     "license": "MPL-2.0",
     "environment": "*",
     "entrypoints": {
+        "main": [
+            "dev.seeruk.bundle.afk.AfkFixtures"
+        ],
         "fabric-gametest": [
             "dev.seeruk.bundle.afk.AfkConfigGameTest",
             "dev.seeruk.bundle.afk.AfkMessagesGameTest",
             "dev.seeruk.bundle.afk.AfkSleepGameTest",
+            "dev.seeruk.bundle.afk.AfkStatsGameTest",
             "dev.seeruk.bundle.afk.AfkStatusGameTest",
             "dev.seeruk.bundle.afk.AfkTabListGameTest",
             "dev.seeruk.bundle.afk.command.AfkCommandGameTest",

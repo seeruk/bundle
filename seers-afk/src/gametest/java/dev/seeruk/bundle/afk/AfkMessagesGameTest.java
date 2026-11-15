@@ -4,7 +4,8 @@ import dev.seeruk.bundle.text.TextTemplate;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 
-import static dev.seeruk.bundle.afk.AfkFixtures.player;
+import static dev.seeruk.bundle.core.testing.TestPlayers.player;
+
 
 public class AfkMessagesGameTest {
     @GameTest

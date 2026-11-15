@@ -26,7 +26,8 @@ public final class AfkCommand {
     }
 
     private static int toggle(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        AfkStatus.toggle(context.getSource().getPlayerOrException(), AfkReason.COMMAND);
+        final var source = context.getSource();
+        AfkStatus.toggle(source.getPlayerOrException(), source.getServer().getTickCount(), AfkReason.COMMAND);
         return 1;
     }
 
