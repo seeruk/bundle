@@ -1,6 +1,5 @@
 package dev.seeruk.bundle.afk;
 
-import dev.seeruk.bundle.afk.api.AfkEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -12,15 +11,12 @@ import java.util.Map;
 public final class AfkMessages {
     private AfkMessages() {}
 
-    /**
-     * Called for {@link AfkEvents#STATUS_CHANGED}.
-     */
     public static void announce(ServerPlayer player, boolean isAfk, AfkConfig.Messages messages) {
         player.level().getServer().getPlayerList().broadcastSystemMessage(message(player, isAfk, messages), false);
     }
 
     static Component message(ServerPlayer player, boolean isAfk, AfkConfig.Messages messages) {
         final var template = isAfk ? messages.afk() : messages.back();
-        return template.format(Map.of("player", player.getDisplayName()));
+        return template.format(Map.of("display_name", player.getDisplayName()));
     }
 }

@@ -1,13 +1,19 @@
 # Seer's AFK config. To change a setting, copy it into config.yml in this folder. Anything that's
 # not in config.yml uses the default from this file.
+#
+# Settings that show text (tab_list_name, and the messages) can use any of Text Placeholder API's
+# formatting, see: https://placeholders.pb4.eu/user/text-format/
 
 # How long a player can go without doing anything before they're marked as AFK, in seconds. Being
 # moved by something else (e.g. by water, or a piston) doesn't count as doing something.
 timeout_seconds: 300
 
-# The messages shown to everyone when a player goes AFK, or comes back. ${player} is the player's
-# name, as it's shown in chat. Any of Text Placeholder API's formatting can be used, see:
-# https://placeholders.pb4.eu/user/text-format/
+# How AFK players are shown in the tab list, where they're also moved to the bottom.
+# ${tab_list_name} is how they'd be shown otherwise (e.g. with their nickname, or team colours).
+tab_list_name: "${tab_list_name} <gray>[AFK]</gray>"
+
+# The messages shown to everyone when a player goes AFK, or comes back. ${display_name} is the
+# player's name, as it's shown in chat.
 messages:
-  afk: "<yellow>${player} is now AFK</yellow>"
-  back: "<yellow>${player} is no longer AFK</yellow>"
+  afk: "<yellow>${display_name} is now AFK</yellow>"
+  back: "<yellow>${display_name} is no longer AFK</yellow>"

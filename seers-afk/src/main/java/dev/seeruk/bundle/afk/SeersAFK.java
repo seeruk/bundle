@@ -3,6 +3,7 @@ package dev.seeruk.bundle.afk;
 import dev.seeruk.bundle.afk.api.AfkEvents;
 import dev.seeruk.bundle.afk.command.AfkCommand;
 import dev.seeruk.bundle.core.config.ModConfig;
+import dev.seeruk.bundle.core.tablist.TabList;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -31,8 +32,14 @@ public class SeersAFK implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> AfkStatus.forget(handler.player));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> AfkStatus.clear());
 
-        AfkEvents.STATUS_CHANGED.register((player, isAfk, reason) ->
-            AfkMessages.announce(player, isAfk, config.messages()));
+        TabList.NAME.register((player, name) -> AfkTabList.name(player, name, config.tabListName()));
+        TabList.ORDER.register(AfkTabList::order);
+
+        AfkEvents.STATUS_CHANGED.register((player, isAfk, reason) -> {
+            AfkMessages.announce(player, isAfk, config.messages());
+            TabList.refresh(player);
+            player.level().updateSleepingPlayerList();
+        });
 
         LOGGER.info("Initialized");
     }

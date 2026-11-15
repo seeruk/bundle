@@ -4,9 +4,10 @@ A simple AFK mod.
 
 ## Features
 
-- **AFK detection**: Automatically detects when players are AFK, uses the configured timeout.
-- **AFK status**: Shows AFK status in the tab list.
 - **AFK Command**: Allows players to toggle their AFK status.
+- **AFK Detection**: Automatically detects when players are AFK, uses the configured timeout.
+- **AFK Status**: Shows AFK status in the tab list, with AFK players moved to the bottom.
+- **Sleeping**: AFK players aren't counted for skipping the night, so they can't hold everyone up.
 
 ## Usage
 
@@ -22,14 +23,17 @@ as AFK immediately by using the `/afk` command.
 Settings live in `config/seers-afk/config.yml` (see `config.dist.yml` next to it for every setting,
 and its default).
 
-| Setting           | Default                                       | Description                                                |
-|-------------------|-----------------------------------------------|------------------------------------------------------------|
-| `timeout_seconds` | `300`                                         | How long a player can do nothing before they're AFK.       |
-| `messages.afk`    | `<yellow>${player} is now AFK</yellow>`       | Shown to everyone when a player goes AFK.                  |
-| `messages.back`   | `<yellow>${player} is no longer AFK</yellow>` | Shown to everyone when a player comes back.                |
+| Setting           | Default                                             | Description                                          |
+|-------------------|-----------------------------------------------------|------------------------------------------------------|
+| `timeout_seconds` | `300`                                               | How long a player can do nothing before they're AFK. |
+| `tab_list_name`   | `${tab_list_name} <gray>[AFK]</gray>`               | How AFK players are shown in the tab list.           |
+| `messages.afk`    | `<yellow>${display_name} is now AFK</yellow>`       | Shown to everyone when a player goes AFK.            |
+| `messages.back`   | `<yellow>${display_name} is no longer AFK</yellow>` | Shown to everyone when a player comes back.          |
 
-Messages can use any of [Text Placeholder API's formatting][1], and `${player}` is replaced with the
-player's name, as it's shown in chat (so it includes any nickname or team colours).
+Message configs can all use any of [Text Placeholder API's formatting][1]. It may not be super 
+obvious from the names, so `${tab_list_name}` is how the player would be shown in the tab list 
+otherwise (e.g. with their nickname), and `${display_name}` is how their name is shown in chat (so 
+it includes any nickname or team colours).
 
 ### Commands
 

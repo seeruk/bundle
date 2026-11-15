@@ -10,8 +10,9 @@ public class AfkConfigGameTest {
         final var config = ModConfig.load(SeersAFK.MOD_ID, AfkConfig.CODEC);
 
         helper.assertValueEqual(config.timeoutSeconds(), 300, "timeout");
-        helper.assertValueEqual(config.messages().afk().template(), "<yellow>${player} is now AFK</yellow>", "AFK message");
-        helper.assertValueEqual(config.messages().back().template(), "<yellow>${player} is no longer AFK</yellow>", "back message");
+        helper.assertValueEqual(config.tabListName().template(), "${tab_list_name} <gray>[AFK]</gray>", "tab list name");
+        helper.assertValueEqual(config.messages().afk().template(), "<yellow>${display_name} is now AFK</yellow>", "AFK message");
+        helper.assertValueEqual(config.messages().back().template(), "<yellow>${display_name} is no longer AFK</yellow>", "back message");
         helper.succeed();
     }
 }
