@@ -6,11 +6,14 @@
     "license": "MPL-2.0",
     "environment": "*",
     "entrypoints": {
-        "fabric-gametest": [
-            "dev.seeruk.bundle.chat.SeersChatGameTest"
+        "main": [
+            "dev.seeruk.bundle.chat.ChatFixtures"
         ],
-        "fabric-client-gametest": [
-            "dev.seeruk.bundle.chat.client.SeersChatClientGameTest"
+        "fabric-gametest": [
+            "dev.seeruk.bundle.chat.ChatStatsGameTest",
+            "dev.seeruk.bundle.chat.ChatTagsGameTest",
+            "dev.seeruk.bundle.chat.EmoteStyleGameTest",
+            "dev.seeruk.bundle.chat.MessageFormatterGameTest"
         ]
     },
     "depends": {
