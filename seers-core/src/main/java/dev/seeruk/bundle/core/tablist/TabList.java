@@ -44,6 +44,9 @@ public final class TabList {
     /**
      * Changes a player's position in the tab list. Players with a higher order are shown first, and
      * Vanilla's order is 0.
+     *
+     * <p>Listeners should adjust the order they're given (e.g. {@code order - 1}) rather than
+     * replace it, so changes from different listeners add up the same in any order.
      */
     public static final Event<Order> ORDER = EventFactory.createArrayBacked(Order.class,
         (listeners) -> (player, order) -> {
