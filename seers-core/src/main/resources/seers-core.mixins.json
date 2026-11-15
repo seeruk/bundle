@@ -3,6 +3,7 @@
     "package": "dev.seeruk.bundle.core.mixin",
     "compatibilityLevel": "JAVA_25",
     "mixins": [
+        "ServerCommonPacketListenerImplMixin",
         "ServerPlayerMixin",
         "ServerScoreboardMixin"
     ],

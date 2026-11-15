@@ -1,9 +1,11 @@
 package dev.seeruk.bundle.itemtext;
 
+import dev.seeruk.bundle.core.action.CustomActions;
 import dev.seeruk.bundle.itemtext.api.ItemLoreEvents;
 import dev.seeruk.bundle.itemtext.api.ItemNameEvents;
 import dev.seeruk.bundle.itemtext.command.ItemLoreCommand;
 import dev.seeruk.bundle.itemtext.command.ItemNameCommand;
+import dev.seeruk.bundle.itemtext.dialog.LoreDialog;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -29,6 +31,8 @@ public class SeersItemText implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(ItemTextStats::ensureObjectives);
         ItemNameEvents.CHANGED.register(ItemTextStats::recordNameWritten);
         ItemLoreEvents.CHANGED.register(ItemTextStats::recordLoreWritten);
+
+        CustomActions.register(LoreDialog.SAVE_ACTION, LoreDialog::save);
 
         LOGGER.info("Initialized");
     }

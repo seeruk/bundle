@@ -18,16 +18,22 @@ formatting options in the [Text Placeholder API documentation][2].
 
 ### Commands
 
-| Command                            | Description                                             |
-|------------------------------------|---------------------------------------------------------|
-| `/itemname set <name>`             | Sets the name of an item                                |
-| `/itemname reset`                  | Resets the name of an item to its default               |
-| `/itemlore`                        | Shows the lore of an item, with line numbers            |
-| `/itemlore add <lore>`             | Adds a line to the end of an item's lore                |
-| `/itemlore set <line> <lore>`      | Sets a line of an item's lore                           |
-| `/itemlore insert <line> [<lore>]` | Inserts a line of lore, moving the lines below it down  |
-| `/itemlore remove [<line>]`        | Removes a line of lore, or all lore if no line is given |
-| `/itemlore clear <line>`           | Clears a line of lore, leaving an empty line behind     |
+| Command                | Description                                       |
+|------------------------|---------------------------------------------------|
+| `/itemname set <name>` | Sets the name of an item                          |
+| `/itemname reset`      | Resets the name of an item to its default         |
+| `/itemlore`            | Opens an editor dialog for very easy lore editing |
+| `/itemlore edit`       | Also opens the lore editor dialog                 |
+| `/itemlore remove`     | Removes all of an item's lore                     |
+
+### Lore Editor
+
+`/itemlore` (or `/itemlore edit`) opens a Vanilla dialog with a form that allows players to easily
+edit an item's lore. No client mod is needed for this. Items remember the raw input used to set
+their lore, so a player can pick up where they left off without having to retype everything. This
+editor has support for formatting tags just like `/itemname` does, but will also automatically wrap
+long lines and words, and supports editing multiple lines at once. It even supports formatting tags
+spanning multiple lines!
 
 ### Limits
 
@@ -37,7 +43,7 @@ counts as 5 characters).
 | Limit                        | Value |
 |------------------------------|-------|
 | Maximum item name length     | 50    |
-| Maximum number of Lore lines | 10    |
+| Maximum number of lore lines | 10    |
 | Maximum lore line length     | 60    |
 
 ### Events

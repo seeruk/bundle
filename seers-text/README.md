@@ -13,12 +13,13 @@ of this mod, and drastically simplifies the code here!
   configuration.
 - **Text Templates**: Trusted text with named placeholders (e.g. `${player}`), parsed once and
   filled in each time it's used. Useful for configurable messages.
+- **Component Helpers**: Utilities for working with `Component` trees, such as splitting styled
+  text into lines, or wrapping it, while keeping its styling.
 
 Planned:
 
 - **Text Conversion**: Conversion of Minecraft text into other formats, such as Markdown, ready for
   use in other contexts (e.g. Discord).
-- **Component Helpers**: Utilities for working with `Component` trees, such as merging two 
-  separately formatted trees into one, or wrapping text, etc.
+- **More Component Helpers**: e.g. merging two separately formatted `Component` trees into one.
 
 [1]: https://github.com/Patbox/TextPlaceholderAPI

@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.seeruk.bundle.core.command.CommandExecutors;
 import dev.seeruk.bundle.core.command.NamespacedCommands;
+import dev.seeruk.bundle.itemtext.EditableItem;
 import dev.seeruk.bundle.itemtext.NameEditResult;
 import dev.seeruk.bundle.itemtext.NameEditor;
 import dev.seeruk.bundle.itemtext.SeersItemText;
@@ -21,7 +22,7 @@ import java.util.function.BiFunction;
 /**
  * {@code /itemname}: commands and subcommands for modifying item names.
  */
-public class ItemNameCommand extends ItemTextCommand {
+public class ItemNameCommand {
     static final String NAME = "itemname";
 
     private ItemNameCommand() {}
@@ -53,7 +54,7 @@ public class ItemNameCommand extends ItemTextCommand {
         BiFunction<Player, ItemStack, NameEditResult> callback
     ) throws CommandSyntaxException {
         final var player = context.getSource().getPlayerOrException();
-        final var stack = mainHandItem(context, player);
+        final var stack = EditableItem.inMainHand(player, context.getSource()::sendFailure);
         if (stack.isEmpty()) {
             return 0;
         }

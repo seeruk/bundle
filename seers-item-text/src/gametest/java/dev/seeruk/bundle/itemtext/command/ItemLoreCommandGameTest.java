@@ -36,11 +36,23 @@ public class ItemLoreCommandGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
-    public void listsLoreWithoutChangingIt(GameTestHelper helper) throws CommandSyntaxException {
+    public void commandOnItsOwnOpensTheEditor(GameTestHelper helper) throws CommandSyntaxException {
         final var player = helper.makeMockServerPlayerInLevel();
         player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing"));
 
         final var result = execute(helper, player, ItemLoreCommand.NAME);
+
+        helper.assertValueEqual(result, 1, "command result");
+        helper.succeed();
+    }
+
+    @SuppressWarnings("removal")
+    @GameTest
+    public void editOpensForTheHeldItem(GameTestHelper helper) throws CommandSyntaxException {
+        final var player = helper.makeMockServerPlayerInLevel();
+        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing"));
+
+        final var result = execute(helper, player, ItemLoreCommand.NAME + " edit");
 
         helper.assertValueEqual(result, 1, "command result");
         helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing"), "lore");
@@ -49,126 +61,26 @@ public class ItemLoreCommandGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
-    public void addAppendsLore(GameTestHelper helper) throws CommandSyntaxException {
+    public void editRefusesEmptyHand(GameTestHelper helper) throws CommandSyntaxException {
         final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1"));
 
-        // We can also cheekily check that spaces are supported here too...
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " add Testing with spaces");
+        final var result = execute(helper, player, ItemLoreCommand.NAME + " edit");
 
-        helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing 1", "Testing with spaces"), "lore");
+        helper.assertValueEqual(result, 0, "command result");
         helper.succeed();
     }
 
     @SuppressWarnings("removal")
     @GameTest
-    public void setReplacesGivenLine(GameTestHelper helper) throws CommandSyntaxException {
+    public void removeRemovesAllLore(GameTestHelper helper) throws CommandSyntaxException {
         final var player = helper.makeMockServerPlayerInLevel();
         player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
-
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " set 2 Testing 3");
-
-        helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing 1", "Testing 3"), "lore");
-        helper.succeed();
-    }
-
-    @SuppressWarnings("removal")
-    @GameTest
-    public void setWithSameLoreSucceeds(GameTestHelper helper) throws CommandSyntaxException {
-        final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
-
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " set 1 Testing 1");
-
-        helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing 1", "Testing 2"), "lore");
-        helper.succeed();
-    }
-
-    @SuppressWarnings("removal")
-    @GameTest
-    public void insertInsertsLoreAtGivenLine(GameTestHelper helper) throws CommandSyntaxException {
-        final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
-
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " insert 2 Testing 3");
-
-        helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing 1", "Testing 3", "Testing 2"), "lore");
-        helper.succeed();
-    }
-
-    @SuppressWarnings("removal")
-    @GameTest
-    public void insertWithoutLoreInsertsBlankLine(GameTestHelper helper) throws CommandSyntaxException {
-        final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
-
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " insert 2");
-
-        helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(
-            LoreEditor.lines(player.getMainHandItem()),
-            List.of(Component.literal("Testing 1"), Component.empty(), Component.literal("Testing 2")),
-            "lore"
-        );
-        helper.succeed();
-    }
-
-    @SuppressWarnings("removal")
-    @GameTest
-    public void removeRemovesGivenLine(GameTestHelper helper) throws CommandSyntaxException {
-        final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
-
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " remove 1");
-
-        helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing 2"), "lore");
-        helper.succeed();
-    }
-
-    @SuppressWarnings("removal")
-    @GameTest
-    public void removeWithoutLineRemovesAllLore(GameTestHelper helper) throws CommandSyntaxException {
-        final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
+        player.setItemInHand(InteractionHand.OFF_HAND, withLore("Testing 1"));
 
         final var result = execute(helper, player, ItemLoreCommand.NAME + " remove");
 
         helper.assertValueEqual(result, 1, "command result");
         helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), List.of(), "lore");
-        helper.succeed();
-    }
-
-    @SuppressWarnings("removal")
-    @GameTest
-    public void clearEmptiesGivenLine(GameTestHelper helper) throws CommandSyntaxException {
-        final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
-
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " clear 1");
-
-        helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(
-            LoreEditor.lines(player.getMainHandItem()),
-            List.of(Component.empty(), Component.literal("Testing 2")),
-            "lore"
-        );
-        helper.succeed();
-    }
-
-    @SuppressWarnings("removal")
-    @GameTest
-    public void editsMainHandItemOnly(GameTestHelper helper) throws CommandSyntaxException {
-        final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1"));
-        player.setItemInHand(InteractionHand.OFF_HAND, withLore("Testing 1"));
-
-        execute(helper, player, ItemLoreCommand.NAME + " add Testing 2");
-
         helper.assertValueEqual(LoreEditor.lines(player.getOffhandItem()), literals("Testing 1"), "off hand lore");
         helper.succeed();
     }
@@ -178,22 +90,9 @@ public class ItemLoreCommandGameTest {
     public void refusesEmptyHand(GameTestHelper helper) throws CommandSyntaxException {
         final var player = helper.makeMockServerPlayerInLevel();
 
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " add Testing");
+        final var result = execute(helper, player, ItemLoreCommand.NAME + " remove");
 
         helper.assertValueEqual(result, 0, "command result");
-        helper.succeed();
-    }
-
-    @SuppressWarnings("removal")
-    @GameTest
-    public void failedEditReturnsZeroAndDoesNotModifyLore(GameTestHelper helper) throws CommandSyntaxException {
-        final var player = helper.makeMockServerPlayerInLevel();
-        player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1", "Testing 2"));
-
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " set 3 Testing 3");
-
-        helper.assertValueEqual(result, 0, "command result");
-        helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing 1", "Testing 2"), "lore");
         helper.succeed();
     }
 
@@ -202,7 +101,7 @@ public class ItemLoreCommandGameTest {
         final var player = (ServerPlayer) helper.makeMockServerPlayer(GameType.SPECTATOR);
         player.setItemInHand(InteractionHand.MAIN_HAND, withLore("Testing 1"));
 
-        final var result = execute(helper, player, ItemLoreCommand.NAME + " add Testing 2");
+        final var result = execute(helper, player, ItemLoreCommand.NAME + " remove");
 
         helper.assertValueEqual(result, 0, "command result");
         helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing 1"), "lore");
@@ -215,7 +114,7 @@ public class ItemLoreCommandGameTest {
         final var source = server.createCommandSourceStack().withSuppressedOutput();
 
         try {
-            server.getCommands().getDispatcher().execute(ItemLoreCommand.NAME + " add Testing", source);
+            server.getCommands().getDispatcher().execute(ItemLoreCommand.NAME + " remove", source);
             helper.fail("Command didn't fail for a non-player");
         } catch (CommandSyntaxException e) {
             helper.succeed();

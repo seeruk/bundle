@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.itemtext;
 
 import dev.seeruk.bundle.itemtext.api.ItemLoreEvents;
+import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -8,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -36,31 +38,45 @@ public final class LoreEditor {
         return lore.lines();
     }
 
-    public static LoreEditResult add(Player player, ItemStack stack, String input) {
-        final var parsed = TextParsers.parseAsUntrusted(input);
-        return edit(player, stack, () -> LoreLines.add(lines(stack), parsed));
+    /**
+     * Replaces all the lore with lines written as one piece of text (see {@link #parse}), and
+     * remembers the text so it can be edited again as it was written.
+     */
+    public static LoreEditResult replace(Player player, ItemStack stack, String input) {
+        final var lines = parse(input);
+        final var result = edit(player, stack, () -> LoreLines.replace(lines(stack), lines));
+        if (result instanceof LoreEditResult.Edited) {
+            LoreInput.set(stack, input);
+        }
+
+        return result;
     }
 
-    public static LoreEditResult set(Player player, ItemStack stack, int lineNumber, String input) {
-        final var parsed = TextParsers.parseAsUntrusted(input);
-        return edit(player, stack, () -> LoreLines.set(lines(stack), lineNumber, parsed));
+    /**
+     * Turns one continuous piece of text into appropriately split lines of lore, after parsing.
+     * It's important the parsing happens first, so formatting tags are applied across the whole
+     * text (and not just per line). Text is wrapped as needed.
+     */
+    public static List<Component> parse(String input) {
+        final var lines = new ArrayList<Component>();
+        for (final var line : TextComponents.splitLines(TextParsers.parseAsUntrusted(input))) {
+            lines.addAll(TextComponents.wrap(line, LoreLines.MAX_LINE_LENGTH));
+        }
+
+        while (!lines.isEmpty() && lines.getLast().getString().isBlank()) {
+            lines.removeLast();
+        }
+
+        return lines;
     }
 
-    public static LoreEditResult insert(Player player, ItemStack stack, int lineNumber, String input) {
-        final var parsed = TextParsers.parseAsUntrusted(input);
-        return edit(player, stack, () -> LoreLines.insert(lines(stack), lineNumber, parsed));
-    }
-
-    public static LoreEditResult remove(Player player, ItemStack stack, int lineNumber) {
-        return edit(player, stack, () -> LoreLines.remove(lines(stack), lineNumber));
-    }
-
-    public static LoreEditResult removeAll(Player player, ItemStack stack) {
-        return edit(player, stack, () -> new LoreEditResult.Edited(lines(stack), ItemLore.EMPTY.lines()));
-    }
-
-    public static LoreEditResult clear(Player player, ItemStack stack, int lineNumber) {
-        return edit(player, stack, () -> LoreLines.clear(lines(stack), lineNumber));
+    /**
+     * Removes all the lore, and the raw input stored on the input.
+     */
+    public static LoreEditResult remove(Player player, ItemStack stack) {
+        final var result = edit(player, stack, () -> new LoreEditResult.Edited(lines(stack), ItemLore.EMPTY.lines()));
+        LoreInput.clear(stack);
+        return result;
     }
 
     private static LoreEditResult edit(Player player, ItemStack stack, Supplier<LoreEditResult> operation) {

@@ -115,7 +115,7 @@ public class ItemTextStatsGameTest {
         final var stack = withLore("Testing 1");
         final var before = score(player, ItemTextStats.LORE_CHARACTERS);
 
-        LoreEditor.add(player, stack, "Testing 2");
+        LoreEditor.replace(player, stack, "Testing 1\nTesting 2");
 
         helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - before, 9, "score increase");
         helper.succeed();
@@ -123,12 +123,12 @@ public class ItemTextStatsGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
-    public void settingLoreOnlyCountsNewLine(GameTestHelper helper) {
+    public void changingALineOnlyCountsThatLine(GameTestHelper helper) {
         final var player = helper.makeMockServerPlayerInLevel();
         final var stack = withLore("Testing 1", "Testing 2");
         final var before = score(player, ItemTextStats.LORE_CHARACTERS);
 
-        LoreEditor.set(player, stack, 2, "Test");
+        LoreEditor.replace(player, stack, "Testing 1\nTest");
 
         helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - before, 4, "score increase");
         helper.succeed();
@@ -136,13 +136,13 @@ public class ItemTextStatsGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
-    public void insertingLoreOnlyCountsNewLine(GameTestHelper helper) {
-        // The existing lines are shifted down, but they shouldn't count again
+    public void movedLinesDoNotCount(GameTestHelper helper) {
+        // The existing lines are moved down, but they shouldn't count again
         final var player = helper.makeMockServerPlayerInLevel();
         final var stack = withLore("Testing 1", "Testing 2");
         final var before = score(player, ItemTextStats.LORE_CHARACTERS);
 
-        LoreEditor.insert(player, stack, 1, "Test");
+        LoreEditor.replace(player, stack, "Test\nTesting 1\nTesting 2");
 
         helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - before, 4, "score increase");
         helper.succeed();
@@ -155,7 +155,7 @@ public class ItemTextStatsGameTest {
         final var stack = withLore("Testing");
         final var before = score(player, ItemTextStats.LORE_CHARACTERS);
 
-        LoreEditor.add(player, stack, "Testing");
+        LoreEditor.replace(player, stack, "Testing\nTesting");
 
         helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - before, 7, "score increase");
         helper.succeed();
@@ -168,9 +168,8 @@ public class ItemTextStatsGameTest {
         final var stack = withLore("Testing 1", "Testing 2", "Testing 3");
         final var before = score(player, ItemTextStats.LORE_CHARACTERS);
 
-        LoreEditor.remove(player, stack, 1);
-        LoreEditor.clear(player, stack, 1);
-        LoreEditor.removeAll(player, stack);
+        LoreEditor.replace(player, stack, "\nTesting 3");
+        LoreEditor.remove(player, stack);
 
         helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - before, 0, "score increase");
         helper.succeed();
@@ -212,7 +211,7 @@ public class ItemTextStatsGameTest {
         final var stack = withLore("Testing 1");
         final var before = score(player, ItemTextStats.LORE_LINES_WRITTEN);
 
-        LoreEditor.add(player, stack, "Testing 2");
+        LoreEditor.replace(player, stack, "Testing 1\nTesting 2");
 
         helper.assertValueEqual(score(player, ItemTextStats.LORE_LINES_WRITTEN) - before, 1, "score increase");
         helper.succeed();
@@ -220,15 +219,14 @@ public class ItemTextStatsGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
-    public void insertingLoreOnlyCountsNewLineAsWritten(GameTestHelper helper) {
-        // The existing lines are shifted down, and blank lines fill the gap past the end, but only
-        // the inserted line was written
+    public void movedAndBlankLinesDoNotCountAsWritten(GameTestHelper helper) {
+        // The existing lines are moved down, and blank lines are added, but only the lines with text
+        // in them were written
         final var player = helper.makeMockServerPlayerInLevel();
         final var stack = withLore("Testing 1", "Testing 2");
         final var before = score(player, ItemTextStats.LORE_LINES_WRITTEN);
 
-        LoreEditor.insert(player, stack, 1, "Test");
-        LoreEditor.insert(player, stack, 6, "Test 2");
+        LoreEditor.replace(player, stack, "Test\nTesting 1\nTesting 2\n\n\nTest 2");
 
         helper.assertValueEqual(score(player, ItemTextStats.LORE_LINES_WRITTEN) - before, 2, "score increase");
         helper.succeed();
@@ -241,9 +239,8 @@ public class ItemTextStatsGameTest {
         final var stack = withLore("Testing 1", "Testing 2", "Testing 3");
         final var before = score(player, ItemTextStats.LORE_LINES_WRITTEN);
 
-        LoreEditor.remove(player, stack, 1);
-        LoreEditor.clear(player, stack, 1);
-        LoreEditor.removeAll(player, stack);
+        LoreEditor.replace(player, stack, "\nTesting 3");
+        LoreEditor.remove(player, stack);
 
         helper.assertValueEqual(score(player, ItemTextStats.LORE_LINES_WRITTEN) - before, 0, "score increase");
         helper.succeed();
