@@ -3,7 +3,7 @@
     "id": "seers-chat",
     "version": "${version}",
     "name": "Seer's Chat",
-    "description": "A template repository",
+    "description": "A simple and opinionated chat mod, with formatting and item linking",
     "authors": [
         "Elliot Wright"
     ],
