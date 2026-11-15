@@ -21,8 +21,9 @@ public final class PropSwapInteraction {
     private PropSwapInteraction() {}
 
     /**
-     * Listens to {@link net.fabricmc.fabric.api.event.player.UseBlockCallback}.
-     * Returns a {@code PASS} whenever PropSwap shouldn't do anything, leaving it for Vanilla.
+     * Swaps the block the player used, if PropSwap is enabled for them and the block can be
+     * swapped. Returns a {@code PASS} whenever PropSwap shouldn't do anything, leaving it for
+     * Vanilla.
      */
     public static InteractionResult interact(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide() || player.isSpectator() || !PropSwapMode.isEnabled(player)) {

@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 /**
  * The outcome of a {@link Swap}.
  *
+ * @param state   The block state after the swap.
  * @param message Shown to the player in the action bar.
  * @param lock    Whether to lock the block (see {@link LockedBlocks}).
  */

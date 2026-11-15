@@ -37,7 +37,7 @@ public final class Nicknames {
     private Nicknames() {}
 
     /**
-     * Formats every stored nickname. Called when the server starts.
+     * Formats every stored nickname, replacing any formatted before.
      */
     public static void load(MinecraftServer server) {
         FORMATTED.clear();

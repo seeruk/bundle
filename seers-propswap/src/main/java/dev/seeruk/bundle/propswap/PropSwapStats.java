@@ -1,7 +1,6 @@
 package dev.seeruk.bundle.propswap;
 
 import dev.seeruk.bundle.core.stats.ScoreboardStat;
-import dev.seeruk.bundle.propswap.api.PropSwapEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
@@ -25,15 +24,14 @@ public final class PropSwapStats {
     private PropSwapStats() {}
 
     /**
-     * Creates any missing objectives. Called when the server starts, and safe to call more than
-     * once.
+     * Creates any missing objectives. Safe to call more than once.
      */
     public static void ensureObjectives(MinecraftServer server) {
         SWAPPED.ensureObjective(server);
     }
 
     /**
-     * Adds one to the player's score. Listens to {@link PropSwapEvents#SWAPPED}.
+     * Adds one to the player's score.
      */
     public static void recordSwapped(Player player, Level level, BlockPos pos, BlockState original, BlockState swapped) {
         SWAPPED.add(player, 1);

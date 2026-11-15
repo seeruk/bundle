@@ -1,7 +1,6 @@
 package dev.seeruk.bundle.nicks;
 
 import dev.seeruk.bundle.core.stats.ScoreboardStat;
-import dev.seeruk.bundle.nicks.api.NicksEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.NameAndId;
@@ -26,16 +25,14 @@ public final class NicksStats {
     private NicksStats() {}
 
     /**
-     * Creates any missing objectives. Called when the server starts, and safe to call more than
-     * once.
+     * Creates any missing objectives. Safe to call more than once.
      */
     public static void ensureObjectives(MinecraftServer server) {
         NICKNAMES_SET.ensureObjective(server);
     }
 
     /**
-     * Adds one to the player's score when their nickname is set, but not reset. Listens to
-     * {@link NicksEvents#CHANGED}.
+     * Adds one to the player's score when their nickname is set, but not reset.
      */
     public static void recordNickChanged(
         MinecraftServer server,

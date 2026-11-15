@@ -1,8 +1,6 @@
 package dev.seeruk.bundle.itemtext;
 
 import dev.seeruk.bundle.core.stats.ScoreboardStat;
-import dev.seeruk.bundle.itemtext.api.ItemLoreEvents;
-import dev.seeruk.bundle.itemtext.api.ItemNameEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
@@ -35,8 +33,7 @@ public final class ItemTextStats {
     private ItemTextStats() {}
 
     /**
-     * Creates any missing objectives. Called when the server starts, and safe to call more than
-     * once.
+     * Creates any missing objectives. Safe to call more than once.
      */
     public static void ensureObjectives(MinecraftServer server) {
         NAME_WRITTEN.ensureObjective(server);
@@ -44,8 +41,7 @@ public final class ItemTextStats {
     }
 
     /**
-     * Adds the length of the new name to the player's score. Listens to
-     * {@link ItemNameEvents#CHANGED}.
+     * Adds the length of the new name to the player's score.
      */
     public static void recordNameWritten(
         Player player,
@@ -66,8 +62,7 @@ public final class ItemTextStats {
     }
 
     /**
-     * Adds the length of any new lines of lore to the player's score. Listens to
-     * {@link ItemLoreEvents#CHANGED}.
+     * Adds the length of any new lines of lore to the player's score.
      */
     public static void recordLoreWritten(
         Player player,

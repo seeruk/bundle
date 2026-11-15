@@ -28,7 +28,8 @@ public final class DisposalEvents {
     @FunctionalInterface
     public interface Disposed {
         /**
-         * @param items Copies of the disposed item stacks
+         * @param player The player who disposed of the items
+         * @param items  Copies of the disposed item stacks
          */
         void onDisposed(Player player, List<ItemStack> items);
     }

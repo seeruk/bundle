@@ -47,7 +47,7 @@ public class PropSwapTargetsGameTest {
 
     @GameTest
     public void itemThatCountsAsSeveralToolsWorksAsEach(GameTestHelper helper) {
-        // The GameTest data pack puts tridents in both the axes and pickaxes tags, like a modded paxel
+        // The GameTest data pack tags tridents as both axes and pickaxes, like a modded paxel
         final var trident = new ItemStack(Items.TRIDENT);
 
         helper.assertTrue(PropSwapTargets.supports(trident, Blocks.OAK_LOG.defaultBlockState()), "Didn't work as an axe");
