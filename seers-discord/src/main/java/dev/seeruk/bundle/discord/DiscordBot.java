@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jspecify.annotations.NonNull;
 
 import java.time.Duration;
 import java.util.EnumSet;
@@ -145,7 +148,15 @@ public final class DiscordBot {
             .setUsername(message.username())
             .setAvatarUrl(message.avatarUrl())
             .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
-            .queue(null, error -> LOGGER.warn("Couldn't send a message to Discord", error));
+            .queue(null, error -> {
+                if (error instanceof ErrorResponseException response
+                    && response.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK) {
+                    // Resend the message that failed once there's a new webhook
+                    replaceWebhook(current, () -> send(message));
+                } else {
+                    LOGGER.warn("Couldn't send a message to Discord", error);
+                }
+            });
     }
 
     /**
@@ -161,13 +172,45 @@ public final class DiscordBot {
                 .findFirst()
                 .orElseGet(() -> channel.createWebhook(WEBHOOK_NAME).complete()));
         } catch (RuntimeException e) {
-            LOGGER.error(
-                "Couldn't set up a webhook in #{}, so messages can't be sent to Discord",
-                channel.getName(),
-                e
-            );
+            // If we're signalling some kind of change to our JDA instance (e.g. shutting down),
+            // then it's not worth logging an error.
+            if (isCurrent(connected)) {
+                LOGGER.error(
+                    "Couldn't set up a webhook in #{}, so messages can't be sent to Discord",
+                    channel.getName(),
+                    e
+                );
+            }
             return Optional.empty();
         }
+    }
+
+    /**
+     * Replaces a stale webhook reference with a new one. How can one become stale? If the webhook
+     * has been deleted in Discord, but we still have a reference to it here.
+     *
+     * @param deleted  The webhook that's been deleted.
+     * @param replaced Run once the replacement is set, unless something else is already replacing
+     *                 it, or the server's stopped.
+     */
+    private static void replaceWebhook(Webhook deleted, @NonNull Runnable replaced) {
+        synchronized (LOCK) {
+            // Unless it's already being replaced, or the server's stopped
+            if (webhook != deleted) {
+                return;
+            }
+            webhook = null;
+        }
+
+        LOGGER.warn("The bot's webhook in #{} was deleted, so it's making a new one", deleted.getChannel().getName());
+
+        final var connected = deleted.getJDA();
+        final var channel = deleted.getChannel().asTextChannel();
+        Thread.ofVirtual().name("seers-discord-webhook").start(() ->
+            findOrCreateWebhook(connected, channel).ifPresent(found -> {
+                setWebhook(connected, found);
+                replaced.run();
+            }));
     }
 
     /**
@@ -179,6 +222,17 @@ public final class DiscordBot {
             if (jda == connected) {
                 webhook = found;
             }
+        }
+    }
+
+    /**
+     * Compares the given JDA instance with the bot's current one, returning true if they match.
+     * The instance is modified when stopping and starting the server, so this can detect that a
+     * change is occurring.
+     */
+    private static boolean isCurrent(JDA connected) {
+        synchronized (LOCK) {
+            return jda == connected;
         }
     }
 

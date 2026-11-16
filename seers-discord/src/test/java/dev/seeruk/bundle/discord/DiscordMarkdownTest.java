@@ -37,6 +37,12 @@ public class DiscordMarkdownTest {
                 literal("See https://example.com/a_b-c", Style.EMPTY),
                 "See https://example.com/a_b-c"
             ),
+            Arguments.of("Escapes numbered lists", literal("10. Get wood", Style.EMPTY), "10\\. Get wood"),
+            Arguments.of(
+                "Leaves other numbers with full stops as they are",
+                literal("Version 1.2, step 3. Done", Style.EMPTY),
+                "Version 1.2, step 3. Done"
+            ),
             Arguments.of("Writes bold", literal("hi", BOLD), "**hi**"),
             Arguments.of("Writes italics", literal("hi", ITALIC), "*hi*"),
             Arguments.of("Writes underlines", literal("hi", Style.EMPTY.withUnderlined(true)), "__hi__"),

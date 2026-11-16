@@ -16,6 +16,9 @@ public final class DiscordMarkdown {
     // backslash before it as it is.
     private static final Pattern SPECIAL = Pattern.compile("[\\\\*_~`|<>#\\-\\[\\]]");
 
+    // A number and a full stop at the start of a line, which Discord turns into a numbered list
+    private static final Pattern NUMBERED_LIST = Pattern.compile("(?m)^(\\s*\\d+)\\.(?=\\s)");
+
     private static final Pattern LINK = Pattern.compile("https?://\\S+");
 
     // Keeps markers from neighbouring runs of text apart, so for example, bold then italic isn't
@@ -42,7 +45,8 @@ public final class DiscordMarkdown {
     }
 
     private static String escapeAll(String text) {
-        return SPECIAL.matcher(text).replaceAll("\\\\$0");
+        final var escaped = SPECIAL.matcher(text).replaceAll("\\\\$0");
+        return NUMBERED_LIST.matcher(escaped).replaceAll("$1\\\\.");
     }
 
     /**
