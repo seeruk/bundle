@@ -85,6 +85,18 @@ public class ItemTextStatsGameTest {
 
     @SuppressWarnings("removal")
     @GameTest
+    public void emojiCountAsOneCharacterInNames(GameTestHelper helper) {
+        final var player = helper.makeMockServerPlayerInLevel();
+        final var before = score(player, ItemTextStats.NAME_CHARACTERS);
+
+        NameEditor.set(player, new ItemStack(Items.NETHERITE_SWORD), "Sword 😀");
+
+        helper.assertValueEqual(score(player, ItemTextStats.NAME_CHARACTERS) - before, 7, "score increase");
+        helper.succeed();
+    }
+
+    @SuppressWarnings("removal")
+    @GameTest
     public void restyledNameDoesNotAddToScore(GameTestHelper helper) {
         final var player = helper.makeMockServerPlayerInLevel();
         final var stack = withName("Testing");

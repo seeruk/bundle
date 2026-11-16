@@ -84,7 +84,7 @@ public final class ItemTextStats {
             return;
         }
 
-        final int written = plain.map(String::length).orElse(0);
+        final int written = plain.map(TextComponents::length).orElse(0);
         if (written > 0) {
             NAME_CHARACTERS.add(player, written);
             ITEMS_RENAMED.add(player, 1);
