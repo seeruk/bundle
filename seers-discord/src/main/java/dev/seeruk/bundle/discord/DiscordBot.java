@@ -9,9 +9,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import org.jspecify.annotations.NonNull;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -44,9 +44,15 @@ public final class DiscordBot {
     private static JDA jda;
     private static boolean stopped;
 
-    // The webhook messages are sent through, once the bot's ready. Volatile, as it's used from the
-    // server thread, and set from the login thread.
-    private static volatile Webhook webhook;
+    // The webhook messages are sent through, once the bot's ready. Guarded by LOCK.
+    private static Webhook webhook;
+
+    // Messages sent while the webhook is being replaced, to send once it has been, and how many
+    // didn't fit. Only set while it's being replaced, and capped, in case that takes a while.
+    // Guarded by LOCK.
+    private static final int MAX_PENDING = 50;
+    private static List<WebhookMessage> pending;
+    private static int dropped;
 
     private DiscordBot() {}
 
@@ -76,6 +82,7 @@ public final class DiscordBot {
             current = jda;
             jda = null;
             webhook = null;
+            pending = null;
         }
 
         // If the bot was never connected, we're done!
@@ -135,11 +142,20 @@ public final class DiscordBot {
     }
 
     /**
-     * Sends the message through the bot's webhook, if it's connected. Mentions are turned off, so
-     * players can't ping anyone (e.g. with {@code @everyone}).
+     * Sends the message through the bot's webhook, if it's connected, or once the webhook's been
+     * replaced, if it's being replaced. Mentions are turned off, so players can't ping anyone (e.g.
+     * with {@code @everyone}).
      */
     public static void send(WebhookMessage message) {
-        final var current = webhook;
+        final Webhook current;
+        synchronized (LOCK) {
+            if (pending != null) {
+                addPending(message);
+                return;
+            }
+            current = webhook;
+        }
+
         if (current == null) {
             return;
         }
@@ -148,15 +164,16 @@ public final class DiscordBot {
             .setUsername(message.username())
             .setAvatarUrl(message.avatarUrl())
             .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
-            .queue(null, error -> {
-                if (error instanceof ErrorResponseException response
-                    && response.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK) {
-                    // Resend the message that failed once there's a new webhook
-                    replaceWebhook(current, () -> send(message));
-                } else {
-                    LOGGER.warn("Couldn't send a message to Discord", error);
+            .queue(
+                null, error -> {
+                    if (error instanceof ErrorResponseException response
+                        && response.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK) {
+                        replaceWebhook(current, message);
+                    } else {
+                        LOGGER.warn("Couldn't send a message to Discord", error);
+                    }
                 }
-            });
+            );
     }
 
     /**
@@ -189,28 +206,80 @@ public final class DiscordBot {
      * Replaces a stale webhook reference with a new one. How can one become stale? If the webhook
      * has been deleted in Discord, but we still have a reference to it here.
      *
-     * @param deleted  The webhook that's been deleted.
-     * @param replaced Run once the replacement is set, unless something else is already replacing
-     *                 it, or the server's stopped.
+     * <p>Messages sent while it's being replaced wait in {@link #pending}, and are sent once it's
+     * been successfully replaced.
+     *
+     * @param deleted The webhook that's been deleted.
+     * @param unsent  The message that couldn't be sent through it.
      */
-    private static void replaceWebhook(Webhook deleted, @NonNull Runnable replaced) {
+    private static void replaceWebhook(Webhook deleted, WebhookMessage unsent) {
+        final Webhook current;
         synchronized (LOCK) {
-            // Unless it's already being replaced, or the server's stopped
-            if (webhook != deleted) {
-                return;
+            current = webhook;
+            if (current == deleted) {
+                webhook = null;
+                pending = new ArrayList<>();
+                dropped = 0;
             }
-            webhook = null;
+            if (pending != null) {
+                addPending(unsent);
+            }
         }
 
-        LOGGER.warn("The bot's webhook in #{} was deleted, so it's making a new one", deleted.getChannel().getName());
+        if (current != deleted) {
+            // If it's already been replaced, send the unsent message through the new webhook. If
+            // there isn't a webhook in place, it's being replaced (so it's waiting), or the
+            // server's stopped.
+            if (current != null) {
+                send(unsent);
+            }
+            return;
+        }
+
+        LOGGER.warn("The bot's webhook in #{} was deleted. Creating a new one", deleted.getChannel().getName());
 
         final var connected = deleted.getJDA();
         final var channel = deleted.getChannel().asTextChannel();
-        Thread.ofVirtual().name("seers-discord-webhook").start(() ->
-            findOrCreateWebhook(connected, channel).ifPresent(found -> {
-                setWebhook(connected, found);
-                replaced.run();
-            }));
+
+        Thread.ofVirtual().name("seers-discord-webhook").start(() -> {
+            final var found = findOrCreateWebhook(connected, channel);
+
+            // Set together, so nothing sent in between is lost. If the server's stopped since this
+            // connection was made, the webhook's left as it is, and nothing waiting is sent.
+            final List<WebhookMessage> waiting;
+            final int overflow;
+            synchronized (LOCK) {
+                if (jda != connected) {
+                    return;
+                }
+                waiting = pending;
+                overflow = dropped;
+                pending = null;
+                webhook = found.orElse(null);
+            }
+
+            if (found.isEmpty()) {
+                LOGGER.warn("{} messages weren't sent to Discord, as there's no webhook", waiting.size() + overflow);
+                return;
+            }
+            if (overflow > 0) {
+                LOGGER.warn("{} messages weren't sent to Discord, as too many were waiting", overflow);
+            }
+
+            waiting.forEach(DiscordBot::send);
+        });
+    }
+
+    /**
+     * Adds the message to those waiting for a new webhook, or counts it as dropped if there are
+     * already too many.
+     */
+    private static void addPending(WebhookMessage message) {
+        if (pending.size() < MAX_PENDING) {
+            pending.add(message);
+        } else {
+            dropped++;
+        }
     }
 
     /**
