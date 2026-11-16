@@ -126,7 +126,9 @@ public final class DiscordBot {
             return;
         }
 
-        usableChannel(connected, config.channelId()).ifPresent(channel -> useWebhook(connected, channel));
+        usableChannel(connected, config.channelId())
+            .flatMap(channel -> findOrCreateWebhook(connected, channel))
+            .ifPresent(found -> setWebhook(connected, found));
     }
 
     /**
@@ -147,24 +149,29 @@ public final class DiscordBot {
     }
 
     /**
-     * Uses the webhook the bot made in the channel before, or makes one.
+     * The webhook the bot made in the channel before, or a new one if there isn't one.
+     * Logs what went wrong if neither works.
      */
-    private static void useWebhook(JDA connected, TextChannel channel) {
-        final Webhook found;
+    private static Optional<Webhook> findOrCreateWebhook(JDA connected, TextChannel channel) {
         try {
             final var self = connected.getSelfUser().getIdLong();
-            found = channel.retrieveWebhooks().complete().stream()
+            return Optional.of(channel.retrieveWebhooks().complete().stream()
                 .filter(existing -> existing.getOwnerAsUser() != null && existing.getOwnerAsUser().getIdLong() == self)
                 .filter(existing -> existing.getToken() != null)
                 .findFirst()
-                .orElseGet(() -> channel.createWebhook(WEBHOOK_NAME).complete());
+                .orElseGet(() -> channel.createWebhook(WEBHOOK_NAME).complete()));
         } catch (RuntimeException e) {
             LOGGER.error("Couldn't set up a webhook in #{}, so messages can't be sent to Discord", channel.getName(), e);
-            return;
+            return Optional.empty();
         }
+    }
 
+    /**
+     * Sets the webhook messages are sent through, unless the server's stopped since the connection
+     * it belongs to was made.
+     */
+    private static void setWebhook(JDA connected, Webhook found) {
         synchronized (LOCK) {
-            // Unless the server's stopped since
             if (jda == connected) {
                 webhook = found;
             }
