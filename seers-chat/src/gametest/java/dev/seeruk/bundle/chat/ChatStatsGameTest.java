@@ -69,6 +69,19 @@ public class ChatStatsGameTest {
     }
 
     @GameTest
+    public void emojiCountAsOneCharacter(GameTestHelper helper) {
+        final var player = player(helper);
+
+        chat(player, "Hi 😀");
+
+        helper.succeedWhen(() -> helper.assertValueEqual(
+            score(player, ChatStats.MESSAGE_CHARACTERS),
+            4,
+            "message characters"
+        ));
+    }
+
+    @GameTest
     public void emotesCountWithoutTags(GameTestHelper helper) throws CommandSyntaxException {
         final var player = player(helper);
 

@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.chat;
 
 import dev.seeruk.bundle.core.stats.ScoreboardStat;
+import dev.seeruk.bundle.text.TextComponents;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.MinecraftServer;
@@ -59,8 +60,9 @@ public final class ChatStats {
 
     /**
      * Adds one to the player's chat messages or emotes sent, and the message's length to their
-     * characters. The length is of the message as shown, so formatting tags don't count. Other
-     * kinds of message (e.g. {@code /say}) don't count.
+     * characters. The length is of the message as shown (see {@link TextComponents#length}), so
+     * formatting tags don't count, and an emoji counts as one character. Other kinds of message
+     * (e.g. {@code /say}) don't count.
      *
      * @param player   The player who sent the message.
      * @param message  The message.
@@ -77,6 +79,6 @@ public final class ChatStats {
     }
 
     private static int length(PlayerChatMessage message) {
-        return message.decoratedContent().getString().length();
+        return TextComponents.length(message.decoratedContent().getString());
     }
 }
