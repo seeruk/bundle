@@ -167,6 +167,31 @@ public class TextComponentsTest {
         }
     }
 
+    @Nested
+    class Truncate {
+        static Stream<Arguments> shouldCutTextDownWithoutSplittingCharacters() {
+            return Stream.of(
+                Arguments.of("Leaves short text alone", "Testing", 10, "Testing"),
+                Arguments.of("Leaves text of exactly the length alone", "Testing", 7, "Testing"),
+                Arguments.of("Cuts long text", "Testing", 4, "Test"),
+                // The emoji is two UTF-16 units, so the limit falls between them
+                Arguments.of("Leaves out an emoji that doesn't fit", "Hi😀", 3, "Hi"),
+                Arguments.of("Leaves out an emoji made of others that doesn't fit", "Hi" + FAMILY, 5, "Hi")
+            );
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource
+        void shouldCutTextDownWithoutSplittingCharacters(
+            final String description,
+            final String text,
+            final int maxLength,
+            final String expected
+        ) {
+            assertEquals(expected, TextComponents.truncate(text, maxLength));
+        }
+    }
+
     // A family emoji, made of three people joined together
     private static final String FAMILY = "👨‍👩‍👧";
 

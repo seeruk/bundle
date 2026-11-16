@@ -87,6 +87,21 @@ public final class TextComponents {
         return characterBreaks(text).length - 1;
     }
 
+    /**
+     * Truncates the given text to the given maximum length. Length is not measured by
+     * {@link String#length}, but by {@link #length(String)}, so it factors in multibyte characters
+     * without cutting them in half.
+     */
+    public static String truncate(String text, int maxLength) {
+        if (text.length() <= maxLength) {
+            return text;
+        }
+
+        final var characters = BreakIterator.getCharacterInstance(Locale.ROOT);
+        characters.setText(text);
+        return text.substring(0, characters.preceding(maxLength + 1));
+    }
+
     private static int[] characterBreaks(String text) {
         final var iterator = BreakIterator.getCharacterInstance(Locale.ROOT);
         iterator.setText(text);
