@@ -53,7 +53,9 @@ public final class TextTemplate {
      * placeholder without a value is left as it was written, so mistakes are easy to spot.
      */
     public Component format(Map<String, Component> values) {
-        return node.toComponent(ParserContext.of(VALUES, name ->
-            values.getOrDefault(name, Component.literal("${" + name + "}"))));
+        return node.toComponent(ParserContext.of(
+            VALUES, name ->
+                values.getOrDefault(name, Component.literal("${" + name + "}"))
+        ));
     }
 }

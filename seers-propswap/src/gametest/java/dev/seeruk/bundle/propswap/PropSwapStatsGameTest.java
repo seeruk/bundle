@@ -7,9 +7,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 import static dev.seeruk.bundle.core.testing.StatScores.score;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.POS;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.player;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.use;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.*;
 
 public class PropSwapStatsGameTest {
     private static final String OBJECTIVE_ID = PropSwapStats.SWAPPED.objectiveId();

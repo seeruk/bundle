@@ -17,10 +17,10 @@ A mod that adds Discord integration to a server.
 
 This mod is server-side.
 
-The mod is entirely configuration driven, with no in-game commands or configuration options. Once 
+The mod is entirely configuration driven, with no in-game commands or configuration options. Once
 configured successfully, the mod will just do its thing!
 
-Behind the scenes this mod uses the excellent [JDA][1] library, ensuring smooth integration with 
+Behind the scenes this mod uses the excellent [JDA][1] library, ensuring smooth integration with
 Discord, including properly handling things like rate limits.
 
 ### Setup

@@ -28,12 +28,14 @@ public class ItemNameCommand {
     private ItemNameCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        NamespacedCommands.register(dispatcher, SeersItemText.MOD_ID, NAME, name -> Commands.literal(name)
-            .then(Commands.literal("set")
-                .then(Commands.argument("name", nameArg())
-                    .executes(CommandExecutors.logged(ItemNameCommand::set))))
-            .then(Commands.literal("reset")
-                .executes(CommandExecutors.logged(ItemNameCommand::reset))));
+        NamespacedCommands.register(
+            dispatcher, SeersItemText.MOD_ID, NAME, name -> Commands.literal(name)
+                .then(Commands.literal("set")
+                    .then(Commands.argument("name", nameArg())
+                        .executes(CommandExecutors.logged(ItemNameCommand::set))))
+                .then(Commands.literal("reset")
+                    .executes(CommandExecutors.logged(ItemNameCommand::reset)))
+        );
     }
 
     private static int set(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

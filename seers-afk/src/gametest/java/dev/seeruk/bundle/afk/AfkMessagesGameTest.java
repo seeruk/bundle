@@ -12,10 +12,17 @@ public class AfkMessagesGameTest {
     public void messagesFillInTheDisplayName(GameTestHelper helper) {
         final var player = player(helper);
         final var name = player.getDisplayName().getString();
-        final var messages = new AfkConfig.Messages(TextTemplate.parse("${display_name} went"), TextTemplate.parse("${display_name} came back"));
+        final var messages = new AfkConfig.Messages(
+            TextTemplate.parse("${display_name} went"),
+            TextTemplate.parse("${display_name} came back")
+        );
 
         helper.assertValueEqual(AfkMessages.message(player, true, messages).getString(), name + " went", "AFK message");
-        helper.assertValueEqual(AfkMessages.message(player, false, messages).getString(), name + " came back", "back message");
+        helper.assertValueEqual(
+            AfkMessages.message(player, false, messages).getString(),
+            name + " came back",
+            "back message"
+        );
         helper.succeed();
     }
 }

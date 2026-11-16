@@ -1,8 +1,8 @@
 # Seer's PropSwap
 
 Debug-stick-like behaviours, but on regular tools! This is a datapack-driven mod that allows various
-types of blocks to have various properties / block states altered while using appropriate tools. 
-What does that mean? You can do things like unlink a fence from a wall, or glass panes from a block 
+types of blocks to have various properties / block states altered while using appropriate tools.
+What does that mean? You can do things like unlink a fence from a wall, or glass panes from a block
 behind them, and more!
 
 ## Features
@@ -19,7 +19,7 @@ behind them, and more!
 This mod is server-side, and optionally client-side.
 
 Run `/propswap` to turn PropSwapping on, then use (right-click) a block while holding the tool that
-would break it. Crouching and using can also modify some blocks in a slightly different way. As 
+would break it. Crouching and using can also modify some blocks in a slightly different way. As
 properties are changed, an indication of what changed will show up above the action bar, similar to
 the real debug stick.
 
@@ -28,7 +28,7 @@ updates (the debug stick's biggest annoyance...). The lock is cleared when the b
 replaced.
 
 If you don't use PropSwap for 5 minutes, it'll turn itself off. When you log into a server it
-will be disabled to begin with, and won't remember if you previously had it enabled. This is 
+will be disabled to begin with, and won't remember if you previously had it enabled. This is
 primarily to prevent accidental changes to blocks!
 
 The optional client-side mod ensures that your client doesn't show flickering blocks or do things
@@ -58,13 +58,13 @@ placing blocks next to them doesn't make them flicker either.
 | Beds                         | Splits the bed, then flips the clicked half (head or foot) | -                                        |
 
 Clicking the top or bottom of a fence, pane, bar or wall changes the side you're facing instead. For
-walls, crouching on a side toggles the post, and crouch-clicking on the top or bottom toggles every 
-side. A wall always keeps its post if it would otherwise have nothing left, as an empty wall is 
+walls, crouching on a side toggles the post, and crouch-clicking on the top or bottom toggles every
+side. A wall always keeps its post if it would otherwise have nothing left, as an empty wall is
 invisible and impossible for a player to then remove.
 
-Splitting a bed allows each half to be broken on its own. Splitting costs a bed of the same kind, 
-since you've basically got two beds now. Each half drops a bed when it's broken, so you always get 
-back what you put in. Flipping halves after that is free, and creative players don't have to pay to 
+Splitting a bed allows each half to be broken on its own. Splitting costs a bed of the same kind,
+since you've basically got two beds now. Each half drops a bed when it's broken, so you always get
+back what you put in. Flipping halves after that is free, and creative players don't have to pay to
 split.
 
 ### Tools
@@ -74,9 +74,9 @@ include the Vanilla `minecraft:mineable/*` tags by default. So wood takes an axe
 pickaxe, and datapacks that add blocks to those tags (like making glass a pickaxe block) just work.
 PropSwap's tags can also be changed on their own, without touching Vanilla behaviour.
 
-Some supported blocks have no tool in Vanilla, so PropSwap's tags give them one. Beds use an axe
-(straw beds already use a hoe in Vanilla, so they use a hoe here too), and glass panes use a pickaxe
-(via the `c:glass_panes` tag, so modded panes are included too). Any other block with no tool won't
+Some supported blocks have no tool in Vanilla, so PropSwap's tags give them one. Beds use an axe (straw beds already use
+a hoe in Vanilla, so they use a hoe here too), and glass panes use a pickaxe (via the `c:glass_panes` tag, so modded
+panes are included too). Any other block with no tool won't
 do anything until a datapack adds it to one of PropSwap's tags.
 
 ### Events

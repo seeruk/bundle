@@ -115,10 +115,12 @@ public final class TextComponents {
 
     private static List<Chunk> chunks(Component text) {
         final var chunks = new ArrayList<Chunk>();
-        text.visit((style, content) -> {
-            chunks.add(new Chunk(content, style));
-            return Optional.empty();
-        }, Style.EMPTY);
+        text.visit(
+            (style, content) -> {
+                chunks.add(new Chunk(content, style));
+                return Optional.empty();
+            }, Style.EMPTY
+        );
         return chunks;
     }
 

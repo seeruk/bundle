@@ -25,8 +25,16 @@ public class ChatRelayGameTest {
 
         final var message = relay(player, ChatType.CHAT, Component.literal("Testing"));
 
-        helper.assertValueEqual(message.map(WebhookMessage::username), Optional.of(player.getGameProfile().name()), "username");
-        helper.assertValueEqual(message.map(WebhookMessage::avatarUrl), Optional.of(ChatRelay.avatarUrl(player.getUUID())), "avatar");
+        helper.assertValueEqual(
+            message.map(WebhookMessage::username),
+            Optional.of(player.getGameProfile().name()),
+            "username"
+        );
+        helper.assertValueEqual(
+            message.map(WebhookMessage::avatarUrl),
+            Optional.of(ChatRelay.avatarUrl(player.getUUID())),
+            "avatar"
+        );
         helper.assertValueEqual(message.map(WebhookMessage::content), Optional.of("Testing"), "content");
         helper.succeed();
     }
@@ -56,7 +64,11 @@ public class ChatRelayGameTest {
     public void otherMessagesAreNotSent(GameTestHelper helper) {
         final var player = player(helper);
 
-        helper.assertValueEqual(relay(player, ChatType.SAY_COMMAND, Component.literal("Testing")), Optional.empty(), "message");
+        helper.assertValueEqual(
+            relay(player, ChatType.SAY_COMMAND, Component.literal("Testing")),
+            Optional.empty(),
+            "message"
+        );
         helper.succeed();
     }
 
@@ -70,7 +82,11 @@ public class ChatRelayGameTest {
 
         final var message = relay(player, ChatType.CHAT, Component.literal("Testing"));
 
-        helper.assertValueEqual(message.map(WebhookMessage::username), Optional.of("[Admin] " + player.getGameProfile().name()), "username");
+        helper.assertValueEqual(
+            message.map(WebhookMessage::username),
+            Optional.of("[Admin] " + player.getGameProfile().name()),
+            "username"
+        );
         scoreboard.removePlayerTeam(team);
         helper.succeed();
     }

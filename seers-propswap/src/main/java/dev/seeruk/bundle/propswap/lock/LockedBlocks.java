@@ -2,9 +2,9 @@ package dev.seeruk.bundle.propswap.lock;
 
 import com.mojang.serialization.Codec;
 import dev.seeruk.bundle.propswap.SeersPropSwap;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;

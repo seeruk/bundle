@@ -46,7 +46,12 @@ public class BarrelSwapTest {
         static Stream<Arguments> shouldRotate() {
             return Stream.of(
                 Arguments.of("Faces the clicked side", Direction.UP, Direction.NORTH, Direction.NORTH),
-                Arguments.of("Faces the opposite way when clicking the side it faces", Direction.NORTH, Direction.NORTH, Direction.SOUTH),
+                Arguments.of(
+                    "Faces the opposite way when clicking the side it faces",
+                    Direction.NORTH,
+                    Direction.NORTH,
+                    Direction.SOUTH
+                ),
                 Arguments.of("Faces down when clicking the bottom", Direction.EAST, Direction.DOWN, Direction.DOWN)
             );
         }

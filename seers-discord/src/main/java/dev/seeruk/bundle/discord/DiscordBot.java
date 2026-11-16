@@ -161,7 +161,11 @@ public final class DiscordBot {
                 .findFirst()
                 .orElseGet(() -> channel.createWebhook(WEBHOOK_NAME).complete()));
         } catch (RuntimeException e) {
-            LOGGER.error("Couldn't set up a webhook in #{}, so messages can't be sent to Discord", channel.getName(), e);
+            LOGGER.error(
+                "Couldn't set up a webhook in #{}, so messages can't be sent to Discord",
+                channel.getName(),
+                e
+            );
             return Optional.empty();
         }
     }

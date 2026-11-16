@@ -46,7 +46,11 @@ public final class ModConfig {
         }
 
         for (final var key : loaded.unknownKeys()) {
-            logger.warn("Unknown config setting '{}' in {} (a typo, or no longer used?)", key, folder.resolve(USER_FILE));
+            logger.warn(
+                "Unknown config setting '{}' in {} (a typo, or no longer used?)",
+                key,
+                folder.resolve(USER_FILE)
+            );
         }
 
         return loaded.config();
@@ -58,7 +62,8 @@ public final class ModConfig {
      * @param unknownKeys      Settings in {@value #USER_FILE} that the mod doesn't have.
      * @param distWriteFailure Why {@value #DIST_FILE} couldn't be updated, if it couldn't.
      */
-    record Loaded<T>(T config, boolean usedDefaults, List<String> unknownKeys, Optional<IOException> distWriteFailure) {}
+    record Loaded<T>(T config, boolean usedDefaults, List<String> unknownKeys,
+                     Optional<IOException> distWriteFailure) {}
 
     /**
      * Writes the dist file, then loads the admin's config merged over the defaults.

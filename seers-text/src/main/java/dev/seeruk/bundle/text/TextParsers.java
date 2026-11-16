@@ -87,7 +87,12 @@ public final class TextParsers {
         return ParserBuilder.of()
             .customTagRegistry(withTags(untrustedTags(), extraTags))
             .quickText()
-            .markdown(MarkdownFormat.BOLD, MarkdownFormat.ITALIC, MarkdownFormat.UNDERLINE, MarkdownFormat.STRIKETHROUGH)
+            .markdown(
+                MarkdownFormat.BOLD,
+                MarkdownFormat.ITALIC,
+                MarkdownFormat.UNDERLINE,
+                MarkdownFormat.STRIKETHROUGH
+            )
             .requireSafe();
     }
 

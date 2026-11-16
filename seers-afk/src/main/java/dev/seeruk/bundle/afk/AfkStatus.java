@@ -81,8 +81,10 @@ public final class AfkStatus {
      * {@code doImmediateRespawn} game rule).
      */
     public static void respawned(ServerPlayer player) {
-        ACTIVITY.computeIfPresent(player.getUUID(), (id, activity) ->
-            new Activity(player.getLastActionTime(), activity.since(), activity.afk()));
+        ACTIVITY.computeIfPresent(
+            player.getUUID(), (id, activity) ->
+                new Activity(player.getLastActionTime(), activity.since(), activity.afk())
+        );
     }
 
     /**

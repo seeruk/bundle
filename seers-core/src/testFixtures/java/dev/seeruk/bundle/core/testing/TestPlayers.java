@@ -38,7 +38,12 @@ public final class TestPlayers {
     public static ServerPlayer player(GameTestHelper helper, NameAndId nameAndId) {
         final var cookie = CommonListenerCookie.createInitial(new GameProfile(nameAndId.id(), nameAndId.name()), false);
         final var server = helper.getLevel().getServer();
-        final var player = new ServerPlayer(server, helper.getLevel(), cookie.gameProfile(), cookie.clientInformation());
+        final var player = new ServerPlayer(
+            server,
+            helper.getLevel(),
+            cookie.gameProfile(),
+            cookie.clientInformation()
+        );
 
         final var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);

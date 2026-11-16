@@ -25,8 +25,10 @@ public class SeersPropSwapClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(PropSwapModePayload.TYPE, (payload, context) ->
-            enabled = payload.enabled());
+        ClientPlayNetworking.registerGlobalReceiver(
+            PropSwapModePayload.TYPE, (payload, context) ->
+                enabled = payload.enabled()
+        );
 
         // It's always off on a new connection, until the server says otherwise
         ClientPlayConnectionEvents.JOIN.register((listener, sender, client) -> enabled = false);

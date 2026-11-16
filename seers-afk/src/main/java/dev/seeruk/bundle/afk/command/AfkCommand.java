@@ -21,8 +21,10 @@ public final class AfkCommand {
     private AfkCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        NamespacedCommands.register(dispatcher, MOD_ID, NAME, name -> Commands.literal(name)
-            .executes(CommandExecutors.logged(AfkCommand::toggle)));
+        NamespacedCommands.register(
+            dispatcher, MOD_ID, NAME, name -> Commands.literal(name)
+                .executes(CommandExecutors.logged(AfkCommand::toggle))
+        );
     }
 
     private static int toggle(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

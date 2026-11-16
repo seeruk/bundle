@@ -32,7 +32,11 @@ public class DiscordMarkdownTest {
                 literal("**hi** _x_ # y - z > q [a] <@1> `c` ||s|| ~~t~~ \\", Style.EMPTY),
                 "\\*\\*hi\\*\\* \\_x\\_ \\# y \\- z \\> q \\[a\\] \\<@1\\> \\`c\\` \\|\\|s\\|\\| \\~\\~t\\~\\~ \\\\"
             ),
-            Arguments.of("Leaves links as they are", literal("See https://example.com/a_b-c", Style.EMPTY), "See https://example.com/a_b-c"),
+            Arguments.of(
+                "Leaves links as they are",
+                literal("See https://example.com/a_b-c", Style.EMPTY),
+                "See https://example.com/a_b-c"
+            ),
             Arguments.of("Writes bold", literal("hi", BOLD), "**hi**"),
             Arguments.of("Writes italics", literal("hi", ITALIC), "*hi*"),
             Arguments.of("Writes underlines", literal("hi", Style.EMPTY.withUnderlined(true)), "__hi__"),

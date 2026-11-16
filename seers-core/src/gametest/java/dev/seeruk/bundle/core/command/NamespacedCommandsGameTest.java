@@ -13,8 +13,10 @@ public class NamespacedCommandsGameTest implements ModInitializer {
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) -> {
-            NamespacedCommands.register(dispatcher, MOD_ID, NAME,
-                name -> Commands.literal(name).executes(context -> 1));
+            NamespacedCommands.register(
+                dispatcher, MOD_ID, NAME,
+                name -> Commands.literal(name).executes(context -> 1)
+            );
         });
     }
 
@@ -23,8 +25,10 @@ public class NamespacedCommandsGameTest implements ModInitializer {
         final var root = helper.getLevel().getServer().getCommands().getDispatcher().getRoot();
 
         helper.assertTrue(root.getChild(NAME) != null, "Command not registered as " + NAME);
-        helper.assertTrue(root.getChild(MOD_ID + ":" + NAME) != null,
-            "Command not registered as " + MOD_ID + ":" + NAME);
+        helper.assertTrue(
+            root.getChild(MOD_ID + ":" + NAME) != null,
+            "Command not registered as " + MOD_ID + ":" + NAME
+        );
 
         helper.succeed();
     }

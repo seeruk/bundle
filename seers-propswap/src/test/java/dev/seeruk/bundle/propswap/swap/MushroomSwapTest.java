@@ -1,10 +1,10 @@
 package dev.seeruk.bundle.propswap.swap;
 
-import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.Direction;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -68,7 +68,10 @@ public class MushroomSwapTest {
 
             final var result = SWAP.swap(new SwapInput(state, face, Direction.NORTH, crouching));
 
-            assertEquals(SwapResult.changed(state.setValue(property, expected), property).locked(), result.orElseThrow());
+            assertEquals(
+                SwapResult.changed(state.setValue(property, expected), property).locked(),
+                result.orElseThrow()
+            );
         }
     }
 }

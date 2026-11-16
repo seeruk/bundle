@@ -1,7 +1,10 @@
 {
     "chat": {
         "translation_key": "chat.type.emote",
-        "parameters": ["sender", "content"],
+        "parameters": [
+            "sender",
+            "content"
+        ],
         "style": {
             "color": "gray",
             "italic": true
@@ -9,6 +12,9 @@
     },
     "narration": {
         "translation_key": "chat.type.emote",
-        "parameters": ["sender", "content"]
+        "parameters": [
+            "sender",
+            "content"
+        ]
     }
 }

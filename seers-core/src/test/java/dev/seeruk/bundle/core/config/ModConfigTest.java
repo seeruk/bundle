@@ -12,10 +12,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ModConfigTest {
     private record TestConfig(String name, int count, Section section) {
@@ -36,9 +33,9 @@ public class ModConfigTest {
     private static final String DIST = """
         # The name of the thing.
         name: default
-
+        
         count: 1
-
+        
         section:
           enabled: false
           ratio: 0.5
@@ -69,7 +66,10 @@ public class ModConfigTest {
     void emptyUserFileUsesTheDefaults() throws IOException {
         Files.writeString(folder.resolve(ModConfig.USER_FILE), "# Nothing changed yet\n");
 
-        assertEquals(new TestConfig("default", 1, new Section(false, 0.5)), ModConfig.load(folder, DIST, TestConfig.CODEC).config());
+        assertEquals(
+            new TestConfig("default", 1, new Section(false, 0.5)),
+            ModConfig.load(folder, DIST, TestConfig.CODEC).config()
+        );
     }
 
     @Test

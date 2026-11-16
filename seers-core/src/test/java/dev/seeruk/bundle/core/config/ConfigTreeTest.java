@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigTreeTest {
     @Nested
@@ -71,7 +69,14 @@ public class ConfigTreeTest {
                 Arguments.of(
                     "Overrides a setting in a section, keeping the rest of the section",
                     Map.of("section", Map.of("enabled", true)),
-                    Map.of("name", "default", "section", Map.of("enabled", true, "ratio", 0.5), "tags", DEFAULTS.get("tags"))
+                    Map.of(
+                        "name",
+                        "default",
+                        "section",
+                        Map.of("enabled", true, "ratio", 0.5),
+                        "tags",
+                        DEFAULTS.get("tags")
+                    )
                 ),
                 Arguments.of(
                     "Replaces a list whole",
@@ -104,11 +109,23 @@ public class ConfigTreeTest {
         static Stream<Arguments> shouldFindUnknownKeys() {
             return Stream.of(
                 Arguments.of("Finds nothing without any overrides", Map.of(), List.of()),
-                Arguments.of("Finds nothing when every setting is known", Map.of("name", "Seer", "section", Map.of("enabled", true)), List.of()),
+                Arguments.of(
+                    "Finds nothing when every setting is known",
+                    Map.of("name", "Seer", "section", Map.of("enabled", true)),
+                    List.of()
+                ),
                 Arguments.of("Finds an unknown setting", Map.of("nmae", "Seer"), List.of("nmae")),
-                Arguments.of("Finds an unknown setting in a section", Map.of("section", Map.of("enabld", true)), List.of("section.enabld")),
+                Arguments.of(
+                    "Finds an unknown setting in a section",
+                    Map.of("section", Map.of("enabld", true)),
+                    List.of("section.enabld")
+                ),
                 Arguments.of("Finds an unknown section", Map.of("other", Map.of("enabled", true)), List.of("other")),
-                Arguments.of("Doesn't look inside a setting that should be a list", Map.of("tags", Map.of("a", 1)), List.of())
+                Arguments.of(
+                    "Doesn't look inside a setting that should be a list",
+                    Map.of("tags", Map.of("a", 1)),
+                    List.of()
+                )
             );
         }
 

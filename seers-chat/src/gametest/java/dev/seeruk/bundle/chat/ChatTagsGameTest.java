@@ -5,11 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -23,9 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static dev.seeruk.bundle.chat.ChatFixtures.chat;
-import static dev.seeruk.bundle.chat.ChatFixtures.onlySentBy;
-import static dev.seeruk.bundle.chat.ChatFixtures.styles;
+import static dev.seeruk.bundle.chat.ChatFixtures.*;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
 public class ChatTagsGameTest {
@@ -78,7 +72,11 @@ public class ChatTagsGameTest {
 
         chat(player, "<dim>");
 
-        helper.succeedWhen(() -> helper.assertValueEqual(content(helper, player).getString(), "Overworld", "message text"));
+        helper.succeedWhen(() -> helper.assertValueEqual(
+            content(helper, player).getString(),
+            "Overworld",
+            "message text"
+        ));
     }
 
     @GameTest
@@ -101,7 +99,11 @@ public class ChatTagsGameTest {
 
         chat(player, "<death>");
 
-        helper.succeedWhen(() -> helper.assertValueEqual(content(helper, player).getString(), "<death>", "message text"));
+        helper.succeedWhen(() -> helper.assertValueEqual(
+            content(helper, player).getString(),
+            "<death>",
+            "message text"
+        ));
     }
 
     @GameTest
@@ -113,7 +115,11 @@ public class ChatTagsGameTest {
 
         helper.succeedWhen(() -> {
             final var keys = translationKeys(content(helper, player));
-            helper.assertValueEqual(keys, List.of("biome." + biome.getNamespace() + "." + biome.getPath()), "translation keys");
+            helper.assertValueEqual(
+                keys,
+                List.of("biome." + biome.getNamespace() + "." + biome.getPath()),
+                "translation keys"
+            );
         });
     }
 
@@ -124,7 +130,11 @@ public class ChatTagsGameTest {
 
         chat(player, "<health>");
 
-        helper.succeedWhen(() -> helper.assertValueEqual(content(helper, player).getString(), "❤ 14/20", "message text"));
+        helper.succeedWhen(() -> helper.assertValueEqual(
+            content(helper, player).getString(),
+            "❤ 14/20",
+            "message text"
+        ));
     }
 
     @GameTest
@@ -134,7 +144,11 @@ public class ChatTagsGameTest {
 
         chat(player, "<level>");
 
-        helper.succeedWhen(() -> helper.assertValueEqual(content(helper, player).getString(), "Level 30", "message text"));
+        helper.succeedWhen(() -> helper.assertValueEqual(
+            content(helper, player).getString(),
+            "Level 30",
+            "message text"
+        ));
     }
 
     private static Component content(GameTestHelper helper, ServerPlayer player) {

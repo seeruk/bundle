@@ -27,12 +27,20 @@ public final class ItemTextStats {
     /**
      * Total number of new characters each player has written in item names.
      */
-    static final ScoreboardStat NAME_CHARACTERS = new ScoreboardStat(MOD_ID, NAME_CHARACTERS_OBJECTIVE, "Name Characters Written");
+    static final ScoreboardStat NAME_CHARACTERS = new ScoreboardStat(
+        MOD_ID,
+        NAME_CHARACTERS_OBJECTIVE,
+        "Name Characters Written"
+    );
 
     /**
      * Total number of new characters each player has written in item lore.
      */
-    static final ScoreboardStat LORE_CHARACTERS = new ScoreboardStat(MOD_ID, LORE_CHARACTERS_OBJECTIVE, "Lore Characters Written");
+    static final ScoreboardStat LORE_CHARACTERS = new ScoreboardStat(
+        MOD_ID,
+        LORE_CHARACTERS_OBJECTIVE,
+        "Lore Characters Written"
+    );
 
     /**
      * Total number of times each player has given an item a new name.
@@ -42,7 +50,11 @@ public final class ItemTextStats {
     /**
      * Total number of new, non-blank lines of lore each player has written.
      */
-    static final ScoreboardStat LORE_LINES_WRITTEN = new ScoreboardStat(MOD_ID, LORE_LINES_WRITTEN_OBJECTIVE, "Lore Lines Written");
+    static final ScoreboardStat LORE_LINES_WRITTEN = new ScoreboardStat(
+        MOD_ID,
+        LORE_LINES_WRITTEN_OBJECTIVE,
+        "Lore Lines Written"
+    );
 
     private ItemTextStats() {}
 

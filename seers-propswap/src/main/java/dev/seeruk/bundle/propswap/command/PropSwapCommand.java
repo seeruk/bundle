@@ -21,8 +21,10 @@ public final class PropSwapCommand {
     private PropSwapCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        NamespacedCommands.register(dispatcher, SeersPropSwap.MOD_ID, NAME, name -> Commands.literal(name)
-            .executes(CommandExecutors.logged(PropSwapCommand::toggle)));
+        NamespacedCommands.register(
+            dispatcher, SeersPropSwap.MOD_ID, NAME, name -> Commands.literal(name)
+                .executes(CommandExecutors.logged(PropSwapCommand::toggle))
+        );
     }
 
     private static int toggle(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

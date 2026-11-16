@@ -12,7 +12,8 @@ public final class AfkEvents {
      * Fired when a player goes AFK, or comes back, by any means. Not fired when an AFK player
      * disconnects.
      */
-    public static final Event<StatusChanged> STATUS_CHANGED = EventFactory.createArrayBacked(StatusChanged.class,
+    public static final Event<StatusChanged> STATUS_CHANGED = EventFactory.createArrayBacked(
+        StatusChanged.class,
         (listeners) -> (player, isAfk, reason) -> {
             for (StatusChanged listener : listeners) {
                 listener.onStatusChanged(player, isAfk, reason);

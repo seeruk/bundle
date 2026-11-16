@@ -37,7 +37,11 @@ public class NicknameTest {
                     Component.literal("a".repeat(Nickname.MAX_LENGTH)).withStyle(ChatFormatting.RED),
                     false
                 ),
-                Arguments.of("Emoji only count once towards the length", Component.literal("😀".repeat(Nickname.MAX_LENGTH)), false),
+                Arguments.of(
+                    "Emoji only count once towards the length",
+                    Component.literal("😀".repeat(Nickname.MAX_LENGTH)),
+                    false
+                ),
                 Arguments.of("Allows whitespace inside a nickname", Component.literal("Seer is Testing"), false),
                 Arguments.of("Allows admins to use other players' usernames", Component.literal("Taken"), true),
                 Arguments.of("Allows admins to use other players' nicknames", Component.literal("Nicked"), true)

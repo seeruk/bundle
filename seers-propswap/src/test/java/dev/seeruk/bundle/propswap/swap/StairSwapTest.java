@@ -1,12 +1,12 @@
 package dev.seeruk.bundle.propswap.swap;
 
-import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.state.properties.StairsShape;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.Direction;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.StairsShape;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,11 +47,31 @@ public class StairSwapTest {
     class Swap {
         static Stream<Arguments> shouldCycleShape() {
             return Stream.of(
-                Arguments.of("Cycles from straight to an inner corner", StairsShape.STRAIGHT, false, StairsShape.INNER_LEFT),
-                Arguments.of("Cycles from inner to outer corners", StairsShape.INNER_RIGHT, false, StairsShape.OUTER_LEFT),
-                Arguments.of("Cycles from the last corner back to straight", StairsShape.OUTER_RIGHT, false, StairsShape.STRAIGHT),
+                Arguments.of(
+                    "Cycles from straight to an inner corner",
+                    StairsShape.STRAIGHT,
+                    false,
+                    StairsShape.INNER_LEFT
+                ),
+                Arguments.of(
+                    "Cycles from inner to outer corners",
+                    StairsShape.INNER_RIGHT,
+                    false,
+                    StairsShape.OUTER_LEFT
+                ),
+                Arguments.of(
+                    "Cycles from the last corner back to straight",
+                    StairsShape.OUTER_RIGHT,
+                    false,
+                    StairsShape.STRAIGHT
+                ),
                 Arguments.of("Cycles backwards while crouching", StairsShape.INNER_LEFT, true, StairsShape.STRAIGHT),
-                Arguments.of("Cycles backwards from straight to the last corner", StairsShape.STRAIGHT, true, StairsShape.OUTER_RIGHT)
+                Arguments.of(
+                    "Cycles backwards from straight to the last corner",
+                    StairsShape.STRAIGHT,
+                    true,
+                    StairsShape.OUTER_RIGHT
+                )
             );
         }
 

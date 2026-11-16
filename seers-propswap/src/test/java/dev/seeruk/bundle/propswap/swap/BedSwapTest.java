@@ -48,8 +48,16 @@ public class BedSwapTest {
     class Flip {
         static Stream<Arguments> shouldFlipHalf() {
             return Stream.of(
-                Arguments.of("Turns a foot into a head", bed(BedPart.FOOT, Direction.NORTH), bed(BedPart.HEAD, Direction.SOUTH)),
-                Arguments.of("Turns a head into a foot", bed(BedPart.HEAD, Direction.EAST), bed(BedPart.FOOT, Direction.WEST))
+                Arguments.of(
+                    "Turns a foot into a head",
+                    bed(BedPart.FOOT, Direction.NORTH),
+                    bed(BedPart.HEAD, Direction.SOUTH)
+                ),
+                Arguments.of(
+                    "Turns a head into a foot",
+                    bed(BedPart.HEAD, Direction.EAST),
+                    bed(BedPart.FOOT, Direction.WEST)
+                )
             );
         }
 

@@ -16,7 +16,11 @@ public class AfkTabListGameTest {
 
         AfkStatus.toggle(player, helper.getLevel().getServer().getTickCount(), AfkReason.COMMAND);
 
-        helper.assertValueEqual(player.getTabListDisplayName().getString(), player.getGameProfile().name() + " [AFK]", "tab list name");
+        helper.assertValueEqual(
+            player.getTabListDisplayName().getString(),
+            player.getGameProfile().name() + " [AFK]",
+            "tab list name"
+        );
         helper.assertValueEqual(player.getTabListOrder(), -1, "tab list order");
         helper.succeed();
     }
@@ -38,7 +42,11 @@ public class AfkTabListGameTest {
         final var player = player(helper);
         AfkStatus.toggle(player, helper.getLevel().getServer().getTickCount(), AfkReason.COMMAND);
 
-        final var name = AfkTabList.name(player, Component.literal("Seer"), TextTemplate.parse("[AFK] ${tab_list_name}"));
+        final var name = AfkTabList.name(
+            player,
+            Component.literal("Seer"),
+            TextTemplate.parse("[AFK] ${tab_list_name}")
+        );
 
         helper.assertValueEqual(name.getString(), "[AFK] Seer", "tab list name");
         helper.succeed();

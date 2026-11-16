@@ -25,7 +25,11 @@ public final class ChatStats {
     /**
      * Total number of characters in the chat messages each player has sent.
      */
-    static final ScoreboardStat MESSAGE_CHARACTERS = new ScoreboardStat(MOD_ID, MESSAGE_CHARACTERS_OBJECTIVE, "Message Characters Sent");
+    static final ScoreboardStat MESSAGE_CHARACTERS = new ScoreboardStat(
+        MOD_ID,
+        MESSAGE_CHARACTERS_OBJECTIVE,
+        "Message Characters Sent"
+    );
 
     /**
      * Total number of emotes ({@code /me}) each player has sent.
@@ -35,7 +39,11 @@ public final class ChatStats {
     /**
      * Total number of characters in the emotes each player has sent.
      */
-    static final ScoreboardStat EMOTE_CHARACTERS = new ScoreboardStat(MOD_ID, EMOTE_CHARACTERS_OBJECTIVE, "Emote Characters Sent");
+    static final ScoreboardStat EMOTE_CHARACTERS = new ScoreboardStat(
+        MOD_ID,
+        EMOTE_CHARACTERS_OBJECTIVE,
+        "Emote Characters Sent"
+    );
 
     private ChatStats() {}
 

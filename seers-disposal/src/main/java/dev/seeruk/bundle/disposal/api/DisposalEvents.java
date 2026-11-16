@@ -15,7 +15,8 @@ public final class DisposalEvents {
      * Fired when a player closes the disposal inventory with item in it, just after the items have
      * been destroyed. The list of items is a copy of the destroyed stacks and will never be empty.
      */
-    public static final Event<Disposed> DISPOSED = EventFactory.createArrayBacked(Disposed.class,
+    public static final Event<Disposed> DISPOSED = EventFactory.createArrayBacked(
+        Disposed.class,
         (listeners) -> (player, items) -> {
             for (Disposed listener : listeners) {
                 listener.onDisposed(player, items);

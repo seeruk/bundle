@@ -45,7 +45,10 @@ public record SwapResult(BlockState state, Component message, boolean lock) {
     public static <T extends Comparable<T>> SwapResult cycled(BlockState state, Property<T> property, boolean backwards) {
         final var values = property.getPossibleValues();
         final var current = state.getValue(property);
-        final var value = backwards ? Util.findPreviousInIterable(values, current) : Util.findNextInIterable(values, current);
+        final var value = backwards ? Util.findPreviousInIterable(values, current) : Util.findNextInIterable(
+            values,
+            current
+        );
 
         return changed(state.setValue(property, value), property);
     }

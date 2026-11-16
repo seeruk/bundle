@@ -36,7 +36,11 @@ public class LoreEditorGameTest {
         LoreEditor.remove(player, stack);
 
         helper.assertValueEqual(LoreEditor.lines(stack), List.of(), "lore");
-        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literals("Testing 1", "Testing 2"), List.of())), "events");
+        helper.assertValueEqual(
+            eventsFor(player),
+            List.of(new Changed(player, stack, literals("Testing 1", "Testing 2"), List.of())),
+            "events"
+        );
         helper.succeed();
     }
 
@@ -83,7 +87,11 @@ public class LoreEditorGameTest {
 
         final var line = LoreEditor.lines(stack).getFirst();
         helper.assertValueEqual(line.getString(), "Testing", "lore");
-        helper.assertValueEqual(line.toFlatList().getFirst().getStyle().getColor(), TextColor.fromLegacyFormat(ChatFormatting.RED), "colour");
+        helper.assertValueEqual(
+            line.toFlatList().getFirst().getStyle().getColor(),
+            TextColor.fromLegacyFormat(ChatFormatting.RED),
+            "colour"
+        );
         helper.succeed();
     }
 
@@ -98,7 +106,10 @@ public class LoreEditorGameTest {
         LoreEditor.replace(player, stack, input);
 
         helper.assertValueEqual(plain(LoreEditor.lines(stack)), List.of(input), "lore");
-        helper.assertTrue(LoreEditor.lines(stack).getFirst().toFlatList().stream().allMatch(part -> part.getStyle().getClickEvent() == null), "Lore had a click event");
+        helper.assertTrue(
+            LoreEditor.lines(stack).getFirst().toFlatList().stream().allMatch(part -> part.getStyle().getClickEvent() == null),
+            "Lore had a click event"
+        );
         helper.succeed();
     }
 
@@ -128,7 +139,10 @@ public class LoreEditorGameTest {
         final var result = LoreEditor.replace(player, stack, "<red>Testing 1\nTesting 2</red>");
 
         helper.assertTrue(result instanceof LoreEditResult.Edited, "Edit didn't succeed");
-        helper.assertTrue(EVENTS.matchingSince(mark, event -> event.player() == player).isEmpty(), "Event fired for unchanged lore");
+        helper.assertTrue(
+            EVENTS.matchingSince(mark, event -> event.player() == player).isEmpty(),
+            "Event fired for unchanged lore"
+        );
         helper.succeed();
     }
 

@@ -16,7 +16,8 @@ public final class ItemLoreEvents {
      * Fired when a player edits an item's lore. Only fired when an edit is successful, and the lore
      * has actually changed.
      */
-    public static final Event<Changed> CHANGED = EventFactory.createArrayBacked(Changed.class,
+    public static final Event<Changed> CHANGED = EventFactory.createArrayBacked(
+        Changed.class,
         (listeners) -> (player, item, original, edited) -> {
             for (Changed listener : listeners) {
                 listener.onLoreChanged(player, item, original, edited);

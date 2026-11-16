@@ -33,20 +33,22 @@ public final class NickCommand {
     private NickCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        NamespacedCommands.register(dispatcher, SeersNicks.MOD_ID, NAME, name -> Commands.literal(name)
-            .then(Commands.literal("set")
-                .then(Commands.argument("nickname", StringArgumentType.greedyString())
-                    .executes(CommandExecutors.logged(NickCommand::set))))
-            .then(Commands.literal("reset")
-                .executes(CommandExecutors.logged(NickCommand::reset)))
-            .then(Commands.literal("player")
-                .requires(ADMIN)
-                .then(Commands.argument("player", GameProfileArgument.gameProfile())
-                    .then(Commands.literal("set")
-                        .then(Commands.argument("nickname", StringArgumentType.greedyString())
-                            .executes(CommandExecutors.logged(NickCommand::setPlayer))))
-                    .then(Commands.literal("reset")
-                        .executes(CommandExecutors.logged(NickCommand::resetPlayer))))));
+        NamespacedCommands.register(
+            dispatcher, SeersNicks.MOD_ID, NAME, name -> Commands.literal(name)
+                .then(Commands.literal("set")
+                    .then(Commands.argument("nickname", StringArgumentType.greedyString())
+                        .executes(CommandExecutors.logged(NickCommand::set))))
+                .then(Commands.literal("reset")
+                    .executes(CommandExecutors.logged(NickCommand::reset)))
+                .then(Commands.literal("player")
+                    .requires(ADMIN)
+                    .then(Commands.argument("player", GameProfileArgument.gameProfile())
+                        .then(Commands.literal("set")
+                            .then(Commands.argument("nickname", StringArgumentType.greedyString())
+                                .executes(CommandExecutors.logged(NickCommand::setPlayer))))
+                        .then(Commands.literal("reset")
+                            .executes(CommandExecutors.logged(NickCommand::resetPlayer)))))
+        );
     }
 
     private static int set(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

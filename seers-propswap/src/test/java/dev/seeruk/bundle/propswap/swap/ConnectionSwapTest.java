@@ -36,15 +36,21 @@ public class ConnectionSwapTest {
                 true
             ));
 
-            return Stream.concat(copperBars, Stream.of(
-                Arguments.of("Supports wooden fences", Blocks.OAK_FENCE.defaultBlockState(), true),
-                Arguments.of("Supports nether brick fences", Blocks.NETHER_BRICK_FENCE.defaultBlockState(), true),
-                Arguments.of("Supports glass panes", Blocks.GLASS_PANE.defaultBlockState(), true),
-                Arguments.of("Supports stained glass panes", Blocks.STAINED_GLASS_PANE.pick(DyeColor.RED).defaultBlockState(), true),
-                Arguments.of("Supports iron bars", Blocks.IRON_BARS.defaultBlockState(), true),
-                Arguments.of("Doesn't support walls", Blocks.COBBLESTONE_WALL.defaultBlockState(), false),
-                Arguments.of("Doesn't support other blocks", Blocks.STONE.defaultBlockState(), false)
-            ));
+            return Stream.concat(
+                copperBars, Stream.of(
+                    Arguments.of("Supports wooden fences", Blocks.OAK_FENCE.defaultBlockState(), true),
+                    Arguments.of("Supports nether brick fences", Blocks.NETHER_BRICK_FENCE.defaultBlockState(), true),
+                    Arguments.of("Supports glass panes", Blocks.GLASS_PANE.defaultBlockState(), true),
+                    Arguments.of(
+                        "Supports stained glass panes",
+                        Blocks.STAINED_GLASS_PANE.pick(DyeColor.RED).defaultBlockState(),
+                        true
+                    ),
+                    Arguments.of("Supports iron bars", Blocks.IRON_BARS.defaultBlockState(), true),
+                    Arguments.of("Doesn't support walls", Blocks.COBBLESTONE_WALL.defaultBlockState(), false),
+                    Arguments.of("Doesn't support other blocks", Blocks.STONE.defaultBlockState(), false)
+                )
+            );
         }
 
         @ParameterizedTest(name = "{0}")
@@ -59,9 +65,27 @@ public class ConnectionSwapTest {
         static Stream<Arguments> shouldToggleSide() {
             return Stream.of(
                 Arguments.of("Connects the clicked side", fence(), Direction.NORTH, Direction.EAST, Direction.NORTH),
-                Arguments.of("Disconnects the clicked side", fence(Direction.WEST), Direction.WEST, Direction.EAST, Direction.WEST),
-                Arguments.of("Toggles the side faced when clicking the top", fence(), Direction.UP, Direction.EAST, Direction.EAST),
-                Arguments.of("Toggles the side faced when clicking the bottom", fence(), Direction.DOWN, Direction.SOUTH, Direction.SOUTH)
+                Arguments.of(
+                    "Disconnects the clicked side",
+                    fence(Direction.WEST),
+                    Direction.WEST,
+                    Direction.EAST,
+                    Direction.WEST
+                ),
+                Arguments.of(
+                    "Toggles the side faced when clicking the top",
+                    fence(),
+                    Direction.UP,
+                    Direction.EAST,
+                    Direction.EAST
+                ),
+                Arguments.of(
+                    "Toggles the side faced when clicking the bottom",
+                    fence(),
+                    Direction.DOWN,
+                    Direction.SOUTH,
+                    Direction.SOUTH
+                )
             );
         }
 
@@ -85,7 +109,12 @@ public class ConnectionSwapTest {
             final var all = new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
             return Stream.of(
                 Arguments.of("Connects every side when none are connected", fence(), fence(all), "true"),
-                Arguments.of("Disconnects every side when some are connected", fence(Direction.NORTH), fence(), "false"),
+                Arguments.of(
+                    "Disconnects every side when some are connected",
+                    fence(Direction.NORTH),
+                    fence(),
+                    "false"
+                ),
                 Arguments.of("Disconnects every side when all are connected", fence(all), fence(), "false")
             );
         }

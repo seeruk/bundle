@@ -1,10 +1,10 @@
 package dev.seeruk.bundle.propswap.swap;
 
-import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.Direction;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;

@@ -24,7 +24,10 @@ public class AfkCommandGameTest {
         final var root = helper.getLevel().getServer().getCommands().getDispatcher().getRoot();
 
         helper.assertTrue(root.getChild(AfkCommand.NAME) != null, "Command not registered as " + AfkCommand.NAME);
-        helper.assertTrue(root.getChild(MOD_ID + ":" + AfkCommand.NAME) != null, "Command not registered as " + MOD_ID + ":" + AfkCommand.NAME);
+        helper.assertTrue(
+            root.getChild(MOD_ID + ":" + AfkCommand.NAME) != null,
+            "Command not registered as " + MOD_ID + ":" + AfkCommand.NAME
+        );
         helper.succeed();
     }
 
@@ -38,10 +41,12 @@ public class AfkCommandGameTest {
         execute(helper, player, AfkCommand.NAME);
         helper.assertFalse(AfkStatus.isAfk(player), "Player was still AFK");
 
-        helper.assertValueEqual(eventsFor(player), List.of(
-            new Changed(player.getUUID(), true, AfkReason.COMMAND),
-            new Changed(player.getUUID(), false, AfkReason.COMMAND)
-        ), "events");
+        helper.assertValueEqual(
+            eventsFor(player), List.of(
+                new Changed(player.getUUID(), true, AfkReason.COMMAND),
+                new Changed(player.getUUID(), false, AfkReason.COMMAND)
+            ), "events"
+        );
         helper.succeed();
     }
 
@@ -75,12 +80,16 @@ public class AfkCommandGameTest {
         CompletableFuture.runAsync(() ->
             player.connection.handleChatCommand(new ServerboundChatCommandPacket(AfkCommand.NAME))).join();
 
-        helper.runAfterDelay(1, () -> {
-            helper.assertValueEqual(eventsFor(player), List.of(
-                new Changed(player.getUUID(), true, AfkReason.TIMEOUT),
-                new Changed(player.getUUID(), false, AfkReason.COMMAND)
-            ), "events");
-            helper.succeed();
-        });
+        helper.runAfterDelay(
+            1, () -> {
+                helper.assertValueEqual(
+                    eventsFor(player), List.of(
+                        new Changed(player.getUUID(), true, AfkReason.TIMEOUT),
+                        new Changed(player.getUUID(), false, AfkReason.COMMAND)
+                    ), "events"
+                );
+                helper.succeed();
+            }
+        );
     }
 }

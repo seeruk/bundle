@@ -10,6 +10,7 @@ import java.util.List;
  */
 public sealed interface LoreEditResult {
     // Success cases
+
     /**
      * A {@link LoreEditResult} returned when the lore was successfully edited.
      *

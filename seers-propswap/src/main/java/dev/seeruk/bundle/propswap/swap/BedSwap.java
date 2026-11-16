@@ -37,7 +37,10 @@ public final class BedSwap implements PlayerAwareSwap {
         final var bed = state.getBlock().asItem();
         if (!player.hasInfiniteMaterials() && !take(player, bed)) {
             final var name = new ItemStack(bed).getHoverName();
-            return Optional.of(new SwapResult(state, Component.literal("You need a ").append(name).append(" to split this")));
+            return Optional.of(new SwapResult(
+                state,
+                Component.literal("You need a ").append(name).append(" to split this")
+            ));
         }
 
         final var partner = pos.relative(AbstractBedBlock.getConnectedDirection(state));

@@ -58,9 +58,14 @@ public class AfkStatsGameTest {
         AfkStatus.toggle(player, helper.getLevel().getServer().getTickCount(), AfkReason.COMMAND);
         final var before = score(player, AfkStats.AFK_TICKS);
 
-        helper.runAfterDelay(5, () -> {
-            helper.assertTrue(score(player, AfkStats.AFK_TICKS) > before, "Score didn't increase as the server ticked");
-            helper.succeed();
-        });
+        helper.runAfterDelay(
+            5, () -> {
+                helper.assertTrue(
+                    score(player, AfkStats.AFK_TICKS) > before,
+                    "Score didn't increase as the server ticked"
+                );
+                helper.succeed();
+            }
+        );
     }
 }

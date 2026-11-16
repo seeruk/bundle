@@ -46,9 +46,10 @@ public class TextParsersTest {
                 Arguments.of("**Hello**", Component.literal("Hello").withStyle(ChatFormatting.BOLD)),
                 Arguments.of("*Hello*", Component.literal("Hello").withStyle(ChatFormatting.ITALIC)),
                 // Including "unsafe" Markdown, like links:
-                Arguments.of("[Hello](https://example.com)", Component.literal("Hello")
-                    .withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE)
-                    .withStyle(s -> s.withClickEvent(new ClickEvent.OpenUrl(URI.create("https://example.com"))))
+                Arguments.of(
+                    "[Hello](https://example.com)", Component.literal("Hello")
+                        .withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE)
+                        .withStyle(s -> s.withClickEvent(new ClickEvent.OpenUrl(URI.create("https://example.com"))))
                 )
             );
         }
@@ -141,7 +142,10 @@ public class TextParsersTest {
         @ParameterizedTest(name = "shouldParse({0})")
         @MethodSource
         void shouldParse(final String input) {
-            assertEquals(TextParsers.parseAsTrusted(input).toFlatList(), TextParsers.parseAsColours(input).toFlatList());
+            assertEquals(
+                TextParsers.parseAsTrusted(input).toFlatList(),
+                TextParsers.parseAsColours(input).toFlatList()
+            );
         }
 
         @ParameterizedTest(name = "shouldNotParse({0})")

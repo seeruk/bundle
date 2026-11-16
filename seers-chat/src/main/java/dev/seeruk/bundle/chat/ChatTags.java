@@ -54,8 +54,10 @@ public final class ChatTags {
     static final TextTag[] TAGS = Stream.concat(
         Stream.of(
             // <item> links the main hand item, and <item head> etc. link another slot
-            TextTag.self("item", "other", true, args ->
-                DynamicTextNode.of(args.input().isBlank() ? "item" : "item " + args.input().trim(), KEY)),
+            TextTag.self(
+                "item", "other", true, args ->
+                    DynamicTextNode.of(args.input().isBlank() ? "item" : "item " + args.input().trim(), KEY)
+            ),
             tag("pos"),
             tag("dim"),
             tag("death"),
@@ -133,9 +135,11 @@ public final class ChatTags {
      * based on their ID, e.g. {@code example:mining_world} is "Mining World".
      */
     private static String dimensionName(ResourceKey<Level> dimension) {
-        return DIMENSION_NAMES.getOrDefault(dimension, Arrays.stream(dimension.identifier().getPath().split("_"))
-            .map(word -> word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1))
-            .collect(Collectors.joining(" ")));
+        return DIMENSION_NAMES.getOrDefault(
+            dimension, Arrays.stream(dimension.identifier().getPath().split("_"))
+                .map(word -> word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1))
+                .collect(Collectors.joining(" "))
+        );
     }
 
     private static Component health(ServerPlayer player) {

@@ -15,7 +15,11 @@ public class EmoteStyleGameTest {
             .lookupOrThrow(Registries.CHAT_TYPE)
             .getOrThrow(ChatType.EMOTE_COMMAND);
 
-        helper.assertValueEqual(emote.value().chat().style(), Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true), "emote style");
+        helper.assertValueEqual(
+            emote.value().chat().style(),
+            Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true),
+            "emote style"
+        );
         helper.succeed();
     }
 }

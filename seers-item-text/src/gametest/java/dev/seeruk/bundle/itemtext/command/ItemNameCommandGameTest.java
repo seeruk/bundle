@@ -44,7 +44,11 @@ public class ItemNameCommandGameTest {
         final var result = execute(helper, player, ItemNameCommand.NAME + " set Testing with spaces");
 
         helper.assertValueEqual(result, 1, "command result");
-        helper.assertValueEqual(NameEditor.customName(player.getMainHandItem()), literal("Testing with spaces"), "name");
+        helper.assertValueEqual(
+            NameEditor.customName(player.getMainHandItem()),
+            literal("Testing with spaces"),
+            "name"
+        );
         helper.succeed();
     }
 
@@ -104,7 +108,11 @@ public class ItemNameCommandGameTest {
         final var player = helper.makeMockServerPlayerInLevel();
         player.setItemInHand(InteractionHand.MAIN_HAND, withName("Testing"));
 
-        final var result = execute(helper, player, ItemNameCommand.NAME + " set " + "a".repeat(AnvilMenu.MAX_NAME_LENGTH + 1));
+        final var result = execute(
+            helper,
+            player,
+            ItemNameCommand.NAME + " set " + "a".repeat(AnvilMenu.MAX_NAME_LENGTH + 1)
+        );
 
         helper.assertValueEqual(result, 0, "command result");
         helper.assertValueEqual(NameEditor.customName(player.getMainHandItem()), literal("Testing"), "name");

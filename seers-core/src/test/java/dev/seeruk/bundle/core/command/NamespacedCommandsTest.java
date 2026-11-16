@@ -33,12 +33,14 @@ public class NamespacedCommandsTest {
             dispatcher = new CommandDispatcher<>();
             builtNames = new ArrayList<>();
 
-            NamespacedCommands.register(dispatcher, MOD_ID, NAME, name -> {
-                builtNames.add(name);
-                return literal(name)
-                    .executes(context -> 1)
-                    .then(literal("sub").executes(context -> 2));
-            });
+            NamespacedCommands.register(
+                dispatcher, MOD_ID, NAME, name -> {
+                    builtNames.add(name);
+                    return literal(name)
+                        .executes(context -> 1)
+                        .then(literal("sub").executes(context -> 2));
+                }
+            );
         }
 
         @Test

@@ -10,7 +10,6 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 import static dev.seeruk.bundle.core.testing.StatScores.score;
-import static dev.seeruk.bundle.itemtext.LoreFixtures.literals;
 import static dev.seeruk.bundle.itemtext.LoreFixtures.withLore;
 import static dev.seeruk.bundle.itemtext.NameFixtures.withName;
 
@@ -27,7 +26,10 @@ public class ItemTextStatsGameTest {
         final var scoreboard = helper.getLevel().getServer().getScoreboard();
 
         for (final var stat : STATS) {
-            helper.assertTrue(scoreboard.getObjective(stat.objectiveId()) != null, "Objective " + stat.objectiveId() + " doesn't exist");
+            helper.assertTrue(
+                scoreboard.getObjective(stat.objectiveId()) != null,
+                "Objective " + stat.objectiveId() + " doesn't exist"
+            );
         }
 
         helper.succeed();
@@ -135,7 +137,11 @@ public class ItemTextStatsGameTest {
 
         LoreEditor.replace(player, stack, "New " + paragraph);
 
-        helper.assertValueEqual(score(player, ItemTextStats.LORE_CHARACTERS) - characters, 3, "characters score increase");
+        helper.assertValueEqual(
+            score(player, ItemTextStats.LORE_CHARACTERS) - characters,
+            3,
+            "characters score increase"
+        );
         helper.assertValueEqual(score(player, ItemTextStats.LORE_LINES_WRITTEN) - lines, 1, "lines score increase");
         helper.succeed();
     }

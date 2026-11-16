@@ -23,7 +23,10 @@ public class CustomActionsGameTest {
         final var payload = new CompoundTag();
         payload.putString("lore", "Seer");
 
-        player.connection.handleCustomClickAction(new ServerboundCustomClickActionPacket(id("passes_actions"), Optional.of(payload)));
+        player.connection.handleCustomClickAction(new ServerboundCustomClickActionPacket(
+            id("passes_actions"),
+            Optional.of(payload)
+        ));
 
         helper.assertValueEqual(received, List.of(new Received(player, payload)), "received actions");
         helper.succeed();
@@ -34,7 +37,10 @@ public class CustomActionsGameTest {
         final var player = player(helper);
         final var received = register("empty_payload");
 
-        player.connection.handleCustomClickAction(new ServerboundCustomClickActionPacket(id("empty_payload"), Optional.empty()));
+        player.connection.handleCustomClickAction(new ServerboundCustomClickActionPacket(
+            id("empty_payload"),
+            Optional.empty()
+        ));
 
         helper.assertValueEqual(received, List.of(new Received(player, new CompoundTag())), "received actions");
         helper.succeed();
@@ -45,7 +51,10 @@ public class CustomActionsGameTest {
         final var player = player(helper);
         final var received = register("ignores_others");
 
-        player.connection.handleCustomClickAction(new ServerboundCustomClickActionPacket(id("something_else"), Optional.empty()));
+        player.connection.handleCustomClickAction(new ServerboundCustomClickActionPacket(
+            id("something_else"),
+            Optional.empty()
+        ));
 
         helper.assertTrue(received.isEmpty(), "Handler received another action");
         helper.succeed();

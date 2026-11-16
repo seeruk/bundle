@@ -32,7 +32,11 @@ public class LitSwapTest {
                 Arguments.of("Supports furnaces", Blocks.FURNACE.defaultBlockState(), true),
                 Arguments.of("Supports smokers", Blocks.SMOKER.defaultBlockState(), true),
                 Arguments.of("Supports blast furnaces", Blocks.BLAST_FURNACE.defaultBlockState(), true),
-                Arguments.of("Doesn't support other blocks with a lit state", Blocks.CAMPFIRE.defaultBlockState(), false),
+                Arguments.of(
+                    "Doesn't support other blocks with a lit state",
+                    Blocks.CAMPFIRE.defaultBlockState(),
+                    false
+                ),
                 Arguments.of("Doesn't support other blocks", Blocks.STONE.defaultBlockState(), false)
             );
         }

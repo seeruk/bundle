@@ -26,7 +26,10 @@ public class ChatStatsGameTest {
         final var scoreboard = helper.getLevel().getServer().getScoreboard();
 
         for (final var stat : STATS) {
-            helper.assertTrue(scoreboard.getObjective(stat.objectiveId()) != null, "Objective " + stat.objectiveId() + " doesn't exist");
+            helper.assertTrue(
+                scoreboard.getObjective(stat.objectiveId()) != null,
+                "Objective " + stat.objectiveId() + " doesn't exist"
+            );
         }
 
         helper.succeed();

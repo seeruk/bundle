@@ -17,9 +17,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BedPart;
 
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.POS;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.player;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.use;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.*;
 
 /**
  * Most of these are about making sure beds can't be duplicated (or lost) by splitting them. The
@@ -128,12 +126,16 @@ public class BedSwapGameTest {
 
         // A normal bed with its foot in the same spot, before the tick ends
         final var blueBed = Blocks.BED.pick(DyeColor.BLUE);
-        helper.setBlock(POS.west(), blueBed.defaultBlockState()
-            .setValue(AbstractBedBlock.PART, BedPart.HEAD)
-            .setValue(AbstractBedBlock.FACING, Direction.WEST));
-        helper.setBlock(POS, blueBed.defaultBlockState()
-            .setValue(AbstractBedBlock.PART, BedPart.FOOT)
-            .setValue(AbstractBedBlock.FACING, Direction.WEST));
+        helper.setBlock(
+            POS.west(), blueBed.defaultBlockState()
+                .setValue(AbstractBedBlock.PART, BedPart.HEAD)
+                .setValue(AbstractBedBlock.FACING, Direction.WEST)
+        );
+        helper.setBlock(
+            POS, blueBed.defaultBlockState()
+                .setValue(AbstractBedBlock.PART, BedPart.FOOT)
+                .setValue(AbstractBedBlock.FACING, Direction.WEST)
+        );
 
         // Work out the foot's drops on their own, as removing it would break the head too
         Block.dropResources(helper.getBlockState(POS), helper.getLevel(), helper.absolutePos(POS));

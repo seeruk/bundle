@@ -16,7 +16,8 @@ public final class NicksEvents {
      * Fired when a player's nickname changes. Only fired when an edit is successful, and the
      * nickname has actually changed. The player may be offline, if an admin changed it.
      */
-    public static final Event<Changed> CHANGED = EventFactory.createArrayBacked(Changed.class,
+    public static final Event<Changed> CHANGED = EventFactory.createArrayBacked(
+        Changed.class,
         (listeners) -> (server, player, original, edited) -> {
             for (Changed listener : listeners) {
                 listener.onNickChanged(server, player, original, edited);

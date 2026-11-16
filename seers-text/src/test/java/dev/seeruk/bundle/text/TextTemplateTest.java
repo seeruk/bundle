@@ -29,7 +29,10 @@ public class TextTemplateTest {
     @Test
     void keepsTheValuesStyle() {
         final var name = Component.literal("Seer").withStyle(ChatFormatting.RED);
-        final var formatted = TextTemplate.parse("<yellow>${player} is now AFK</yellow>").format(Map.of("player", name));
+        final var formatted = TextTemplate.parse("<yellow>${player} is now AFK</yellow>").format(Map.of(
+            "player",
+            name
+        ));
 
         final var parts = formatted.toFlatList();
         assertEquals("Seer", parts.getFirst().getString());

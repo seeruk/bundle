@@ -44,10 +44,12 @@ final class ConfigTree {
         final var merged = new LinkedHashMap<Object, Object>(defaults);
         overrides.forEach((key, value) -> {
             if (value != null) {
-                merged.merge(key, value, (original, override) ->
-                    original instanceof Map<?, ?> section && override instanceof Map<?, ?> overrideSection
-                        ? merge(section, overrideSection)
-                        : override);
+                merged.merge(
+                    key, value, (original, override) ->
+                        original instanceof Map<?, ?> section && override instanceof Map<?, ?> overrideSection
+                            ? merge(section, overrideSection)
+                            : override
+                );
             }
         });
         return merged;

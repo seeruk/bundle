@@ -5,7 +5,6 @@ import dev.seeruk.bundle.itemtext.LoreEditor;
 import dev.seeruk.bundle.itemtext.SeersItemText;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.GameType;

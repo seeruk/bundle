@@ -16,7 +16,8 @@ public final class ItemNameEvents {
      * Fired when a player modifies an item's name. Only fired when an edit is successful, and the
      * name has actually changed.
      */
-    public static final Event<Changed> CHANGED = EventFactory.createArrayBacked(Changed.class,
+    public static final Event<Changed> CHANGED = EventFactory.createArrayBacked(
+        Changed.class,
         (listeners) -> (player, item, original, edited) -> {
             for (Changed listener : listeners) {
                 listener.onNameChanged(player, item, original, edited);

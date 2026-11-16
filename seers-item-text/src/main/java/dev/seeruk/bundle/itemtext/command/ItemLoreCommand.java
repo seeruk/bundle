@@ -5,11 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.seeruk.bundle.core.command.CommandExecutors;
 import dev.seeruk.bundle.core.command.NamespacedCommands;
-import dev.seeruk.bundle.itemtext.EditableItem;
-import dev.seeruk.bundle.itemtext.LoreEditMessages;
-import dev.seeruk.bundle.itemtext.LoreEditResult;
-import dev.seeruk.bundle.itemtext.LoreEditor;
-import dev.seeruk.bundle.itemtext.SeersItemText;
+import dev.seeruk.bundle.itemtext.*;
 import dev.seeruk.bundle.itemtext.dialog.LoreDialog;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -27,12 +23,13 @@ public class ItemLoreCommand {
     private ItemLoreCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        NamespacedCommands.register(dispatcher, SeersItemText.MOD_ID, NAME, name -> Commands.literal(name)
-            .executes(CommandExecutors.logged(ItemLoreCommand::openEditor))
-            .then(Commands.literal("edit")
-                .executes(CommandExecutors.logged(ItemLoreCommand::openEditor)))
-            .then(Commands.literal("remove")
-                .executes(CommandExecutors.logged(ItemLoreCommand::remove)))
+        NamespacedCommands.register(
+            dispatcher, SeersItemText.MOD_ID, NAME, name -> Commands.literal(name)
+                .executes(CommandExecutors.logged(ItemLoreCommand::openEditor))
+                .then(Commands.literal("edit")
+                    .executes(CommandExecutors.logged(ItemLoreCommand::openEditor)))
+                .then(Commands.literal("remove")
+                    .executes(CommandExecutors.logged(ItemLoreCommand::remove)))
         );
     }
 

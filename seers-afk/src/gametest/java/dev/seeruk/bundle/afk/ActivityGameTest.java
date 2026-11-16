@@ -13,12 +13,19 @@ public class ActivityGameTest {
         final var before = player.getLastActionTime();
 
         // A tick later, so a new action happens at a different time
-        helper.runAfterDelay(1, () -> {
-            player.connection.handleMovePlayer(new ServerboundMovePlayerPacket.Rot(player.getYRot() + 10, player.getXRot(), true, false));
+        helper.runAfterDelay(
+            1, () -> {
+                player.connection.handleMovePlayer(new ServerboundMovePlayerPacket.Rot(
+                    player.getYRot() + 10,
+                    player.getXRot(),
+                    true,
+                    false
+                ));
 
-            helper.assertTrue(player.getLastActionTime() != before, "Looking around didn't count");
-            helper.succeed();
-        });
+                helper.assertTrue(player.getLastActionTime() != before, "Looking around didn't count");
+                helper.succeed();
+            }
+        );
     }
 
     @GameTest
@@ -27,12 +34,14 @@ public class ActivityGameTest {
         final var before = player.getLastActionTime();
         final var to = player.position().add(0.1, 0, 0);
 
-        helper.runAfterDelay(1, () -> {
-            player.connection.handleMovePlayer(new ServerboundMovePlayerPacket.Pos(to, true, false));
+        helper.runAfterDelay(
+            1, () -> {
+                player.connection.handleMovePlayer(new ServerboundMovePlayerPacket.Pos(to, true, false));
 
-            helper.assertValueEqual(player.position(), to, "position");
-            helper.assertValueEqual(player.getLastActionTime(), before, "last action time");
-            helper.succeed();
-        });
+                helper.assertValueEqual(player.position(), to, "position");
+                helper.assertValueEqual(player.getLastActionTime(), before, "last action time");
+                helper.succeed();
+            }
+        );
     }
 }

@@ -10,9 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DiscordConfigTest {
     private static final DiscordConfig.Formats FORMATS = new DiscordConfig.Formats(
@@ -47,10 +45,12 @@ public class DiscordConfigTest {
     }
 
     private static DataResult<DiscordConfig> parse(Object channelId) {
-        return DiscordConfig.CODEC.parse(JavaOps.INSTANCE, Map.of(
-            "bot_token", "token",
-            "channel_id", channelId,
-            "formats", Map.of("chat", "${message}", "emote", "_${message}_")
-        ));
+        return DiscordConfig.CODEC.parse(
+            JavaOps.INSTANCE, Map.of(
+                "bot_token", "token",
+                "channel_id", channelId,
+                "formats", Map.of("chat", "${message}", "emote", "_${message}_")
+            )
+        );
     }
 }

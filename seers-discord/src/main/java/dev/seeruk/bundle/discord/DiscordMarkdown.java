@@ -91,19 +91,21 @@ public final class DiscordMarkdown {
      */
     private static List<Run> runs(Component text) {
         final var runs = new ArrayList<Run>();
-        text.visit((style, content) -> {
-            if (!content.isEmpty()) {
-                final var markers = markers(style);
-                if (!runs.isEmpty() && runs.getLast().markers().equals(markers)) {
-                    // If the markers are the same as the last run, join them together. We do this
-                    // by removing it, and appending the new content to it and adding the result.
-                    runs.add(new Run(runs.removeLast().text() + content, markers));
-                } else {
-                    runs.add(new Run(content, markers));
+        text.visit(
+            (style, content) -> {
+                if (!content.isEmpty()) {
+                    final var markers = markers(style);
+                    if (!runs.isEmpty() && runs.getLast().markers().equals(markers)) {
+                        // If the markers are the same as the last run, join them together. We do this
+                        // by removing it, and appending the new content to it and adding the result.
+                        runs.add(new Run(runs.removeLast().text() + content, markers));
+                    } else {
+                        runs.add(new Run(content, markers));
+                    }
                 }
-            }
-            return Optional.empty();
-        }, Style.EMPTY);
+                return Optional.empty();
+            }, Style.EMPTY
+        );
         return runs;
     }
 

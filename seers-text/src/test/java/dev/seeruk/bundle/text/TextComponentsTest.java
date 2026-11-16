@@ -51,7 +51,11 @@ public class TextComponentsTest {
                 Arguments.of(
                     "Keeps empty lines",
                     Component.literal("Testing 1\n\nTesting 2"),
-                    List.of(List.of(chunk("Testing 1", Style.EMPTY)), List.of(), List.of(chunk("Testing 2", Style.EMPTY)))
+                    List.of(
+                        List.of(chunk("Testing 1", Style.EMPTY)),
+                        List.of(),
+                        List.of(chunk("Testing 2", Style.EMPTY))
+                    )
                 ),
                 Arguments.of(
                     "Keeps an empty line after a trailing line break",
@@ -138,7 +142,10 @@ public class TextComponentsTest {
         @ParameterizedTest(name = "{0}")
         @MethodSource
         void shouldWrap(final String description, final Component line, final int maxLength, final List<List<Chunk>> expected) {
-            assertEquals(expected, TextComponents.wrap(line, maxLength).stream().map(TextComponentsTest::chunks).toList());
+            assertEquals(
+                expected,
+                TextComponents.wrap(line, maxLength).stream().map(TextComponentsTest::chunks).toList()
+            );
         }
     }
 
@@ -176,12 +183,14 @@ public class TextComponentsTest {
 
     private static List<Chunk> chunks(Component text) {
         final var chunks = new ArrayList<Chunk>();
-        text.visit((style, content) -> {
-            if (!content.isEmpty()) {
-                chunks.add(new Chunk(content, style));
-            }
-            return Optional.empty();
-        }, Style.EMPTY);
+        text.visit(
+            (style, content) -> {
+                if (!content.isEmpty()) {
+                    chunks.add(new Chunk(content, style));
+                }
+                return Optional.empty();
+            }, Style.EMPTY
+        );
         return chunks;
     }
 }

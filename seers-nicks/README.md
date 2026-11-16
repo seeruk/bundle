@@ -15,8 +15,8 @@ This mod is server-side.
 
 All the functionality of this mod is driven by commands, listed below. Formatting uses the excellent
 [Text Placeholder API][1] by Patbox. You can find more information about available tags and
-formatting options in the [Text Placeholder API documentation][2]. Players can only use colours
-(including `<rainbow>` and gradients), but admins can use any formatting.
+formatting options in the [Text Placeholder API documentation][2]. Players can only use colours (including `<rainbow>`
+and gradients), but admins can use any formatting.
 
 Nicknames show up in place of a player's name in chat, death messages, advancements, and anywhere
 else the server shows their name. Hovering over a nickname in chat still shows who it really is, and

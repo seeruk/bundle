@@ -12,9 +12,7 @@ import net.minecraft.world.level.block.state.properties.StairsShape;
 
 import java.util.List;
 
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.POS;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.player;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.use;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.*;
 
 public class LockedBlocksGameTest {
     @GameTest
@@ -39,14 +37,24 @@ public class LockedBlocksGameTest {
         // Fences don't connect to torches, so this would normally drop the connection
         helper.setBlock(POS.north(), Blocks.TORCH);
 
-        helper.assertValueEqual(helper.getBlockState(POS).getValue(CrossCollisionBlock.NORTH), true, "north connection");
+        helper.assertValueEqual(
+            helper.getBlockState(POS).getValue(CrossCollisionBlock.NORTH),
+            true,
+            "north connection"
+        );
         helper.succeed();
     }
 
     @GameTest
     public void lockedWaterloggedBlockStillLetsWaterFlow(GameTestHelper helper) {
         final var player = player(helper, Items.IRON_AXE);
-        for (final var side : List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN)) {
+        for (final var side : List.of(
+            Direction.NORTH,
+            Direction.EAST,
+            Direction.SOUTH,
+            Direction.WEST,
+            Direction.DOWN
+        )) {
             helper.setBlock(POS.relative(side), Blocks.STONE);
         }
         helper.setBlock(POS, Blocks.OAK_FENCE.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true));

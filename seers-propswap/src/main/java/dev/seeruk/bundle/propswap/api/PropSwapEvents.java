@@ -15,7 +15,8 @@ public final class PropSwapEvents {
      * Fired when a player PropSwaps a block. Only fired when the block has actually changed
      * (though, not sure how it could not change currently...).
      */
-    public static final Event<Swapped> SWAPPED = EventFactory.createArrayBacked(Swapped.class,
+    public static final Event<Swapped> SWAPPED = EventFactory.createArrayBacked(
+        Swapped.class,
         (listeners) -> (player, level, pos, original, swapped) -> {
             for (Swapped listener : listeners) {
                 listener.onSwapped(player, level, pos, original, swapped);

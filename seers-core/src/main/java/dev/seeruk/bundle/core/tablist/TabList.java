@@ -31,7 +31,8 @@ public final class TabList {
      * Changes a player's tab list name. Listeners start from the name Vanilla would show, and
      * listeners in {@link #REPLACE} run first.
      */
-    public static final Event<Name> NAME = EventFactory.createWithPhases(Name.class,
+    public static final Event<Name> NAME = EventFactory.createWithPhases(
+        Name.class,
         (listeners) -> (player, name) -> {
             for (Name listener : listeners) {
                 name = listener.name(player, name);
@@ -48,7 +49,8 @@ public final class TabList {
      * <p>Listeners should adjust the order they're given (e.g. {@code order - 1}) rather than
      * replace it, so changes from different listeners add up the same in any order.
      */
-    public static final Event<Order> ORDER = EventFactory.createArrayBacked(Order.class,
+    public static final Event<Order> ORDER = EventFactory.createArrayBacked(
+        Order.class,
         (listeners) -> (player, order) -> {
             for (Order listener : listeners) {
                 order = listener.order(player, order);

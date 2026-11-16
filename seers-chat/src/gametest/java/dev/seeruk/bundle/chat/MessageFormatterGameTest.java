@@ -17,9 +17,7 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 import java.util.Optional;
 
-import static dev.seeruk.bundle.chat.ChatFixtures.chat;
-import static dev.seeruk.bundle.chat.ChatFixtures.onlySentBy;
-import static dev.seeruk.bundle.chat.ChatFixtures.styles;
+import static dev.seeruk.bundle.chat.ChatFixtures.*;
 import static dev.seeruk.bundle.core.testing.TestCommands.execute;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
@@ -33,7 +31,11 @@ public class MessageFormatterGameTest {
         helper.succeedWhen(() -> {
             final var message = onlySentBy(helper, player).message();
             helper.assertValueEqual(message.decoratedContent().getString(), "Testing", "message text");
-            helper.assertValueEqual(styles(message.decoratedContent()), List.of(Style.EMPTY.withColor(ChatFormatting.RED)), "message styles");
+            helper.assertValueEqual(
+                styles(message.decoratedContent()),
+                List.of(Style.EMPTY.withColor(ChatFormatting.RED)),
+                "message styles"
+            );
         });
     }
 
@@ -44,7 +46,10 @@ public class MessageFormatterGameTest {
 
         chat(player, "Testing");
 
-        helper.succeedWhen(() -> helper.assertTrue(onlySentBy(helper, player).message().unsignedContent() == null, "Message was changed"));
+        helper.succeedWhen(() -> helper.assertTrue(
+            onlySentBy(helper, player).message().unsignedContent() == null,
+            "Message was changed"
+        ));
     }
 
     @GameTest
@@ -55,7 +60,10 @@ public class MessageFormatterGameTest {
 
         helper.succeedWhen(() -> {
             final var styles = styles(onlySentBy(helper, player).message().decoratedContent());
-            helper.assertTrue(styles.stream().allMatch(style -> style.getClickEvent() == null), "Message has a click event");
+            helper.assertTrue(
+                styles.stream().allMatch(style -> style.getClickEvent() == null),
+                "Message has a click event"
+            );
         });
     }
 
@@ -69,7 +77,11 @@ public class MessageFormatterGameTest {
 
         helper.succeedWhen(() -> {
             final var content = onlySentBy(helper, player).message().decoratedContent();
-            helper.assertValueEqual(content.getString(), "Look at " + stack.getDisplayName().getString(), "message text");
+            helper.assertValueEqual(
+                content.getString(),
+                "Look at " + stack.getDisplayName().getString(),
+                "message text"
+            );
 
             final var shown = styles(content).stream()
                 .map(Style::getHoverEvent)
@@ -105,7 +117,11 @@ public class MessageFormatterGameTest {
         helper.succeedWhen(() -> {
             final var sent = onlySentBy(helper, player);
             helper.assertValueEqual(sent.chatType(), ChatType.EMOTE_COMMAND, "chat type");
-            helper.assertValueEqual(styles(sent.message().decoratedContent()), List.of(Style.EMPTY.withColor(ChatFormatting.RED)), "message styles");
+            helper.assertValueEqual(
+                styles(sent.message().decoratedContent()),
+                List.of(Style.EMPTY.withColor(ChatFormatting.RED)),
+                "message styles"
+            );
         });
     }
 
@@ -117,7 +133,10 @@ public class MessageFormatterGameTest {
 
         helper.succeedWhen(() -> {
             final var styles = styles(onlySentBy(helper, player).message().decoratedContent());
-            helper.assertTrue(styles.stream().anyMatch(style -> style.getClickEvent() instanceof ClickEvent.RunCommand), "Message has no click event");
+            helper.assertTrue(
+                styles.stream().anyMatch(style -> style.getClickEvent() instanceof ClickEvent.RunCommand),
+                "Message has no click event"
+            );
         });
     }
 
@@ -152,7 +171,11 @@ public class MessageFormatterGameTest {
      * operators can't use any commands by default.
      */
     private static ServerPlayer trusted(GameTestHelper helper, ServerPlayer player) {
-        helper.getLevel().getServer().getPlayerList().op(player.nameAndId(), Optional.of(LevelBasedPermissionSet.GAMEMASTER), Optional.empty());
+        helper.getLevel().getServer().getPlayerList().op(
+            player.nameAndId(),
+            Optional.of(LevelBasedPermissionSet.GAMEMASTER),
+            Optional.empty()
+        );
         return player;
     }
 }

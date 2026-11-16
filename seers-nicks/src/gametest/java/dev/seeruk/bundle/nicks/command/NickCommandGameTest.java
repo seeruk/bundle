@@ -76,7 +76,7 @@ public class NickCommandGameTest {
     public void failedEditReturnsZero(GameTestHelper helper) throws CommandSyntaxException {
         final var player = player(helper);
 
-        final var result = execute(helper, player, NickCommand.NAME + " set " + "a".repeat(Nickname.MAX_LENGTH+1));
+        final var result = execute(helper, player, NickCommand.NAME + " set " + "a".repeat(Nickname.MAX_LENGTH + 1));
 
         helper.assertValueEqual(result, 0, "command result");
         helper.assertValueEqual(nicknameFor(player), Optional.empty(), "nickname");
@@ -90,7 +90,11 @@ public class NickCommandGameTest {
 
         final var nickname = nickname("Seer");
 
-        final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + target.getGameProfile().name() + " set <b>" + nickname + "</b>");
+        final var result = executeAsAdmin(
+            helper,
+            admin,
+            NickCommand.NAME + " player " + target.getGameProfile().name() + " set <b>" + nickname + "</b>"
+        );
 
         helper.assertValueEqual(result, 1, "command result");
         helper.assertValueEqual(nicknameFor(target), Optional.of(nickname), "nickname");
@@ -103,7 +107,11 @@ public class NickCommandGameTest {
         final var target = player(helper);
         execute(helper, target, NickCommand.NAME + " set " + nickname("Seer"));
 
-        final var result = executeAsAdmin(helper, admin, NickCommand.NAME + " player " + target.getGameProfile().name() + " reset");
+        final var result = executeAsAdmin(
+            helper,
+            admin,
+            NickCommand.NAME + " player " + target.getGameProfile().name() + " reset"
+        );
 
         helper.assertValueEqual(result, 1, "command result");
         helper.assertValueEqual(nicknameFor(target), Optional.empty(), "nickname");

@@ -25,7 +25,10 @@ public class PropSwapReminderGameTest {
 
         PropSwapReminder.packetSent(player, new ClientboundSystemChatPacket(Component.literal("hi"), true));
         helper.assertTrue(!PropSwapReminder.shouldRemind(player, now), "Didn't back off");
-        helper.assertTrue(PropSwapReminder.shouldRemind(player, now + PropSwapReminder.BACK_OFF_TICKS), "Never came back");
+        helper.assertTrue(
+            PropSwapReminder.shouldRemind(player, now + PropSwapReminder.BACK_OFF_TICKS),
+            "Never came back"
+        );
         helper.succeed();
     }
 
@@ -51,7 +54,10 @@ public class PropSwapReminderGameTest {
         PropSwapReminder.remind(server);
 
         helper.assertTrue(!PropSwapReminder.shouldRemind(player, now), "Reminded again before refreshing");
-        helper.assertTrue(PropSwapReminder.shouldRemind(player, now + PropSwapReminder.REFRESH_TICKS), "Backed off for itself");
+        helper.assertTrue(
+            PropSwapReminder.shouldRemind(player, now + PropSwapReminder.REFRESH_TICKS),
+            "Backed off for itself"
+        );
         helper.succeed();
     }
 

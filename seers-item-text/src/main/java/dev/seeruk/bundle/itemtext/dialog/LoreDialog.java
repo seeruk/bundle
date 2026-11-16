@@ -1,11 +1,6 @@
 package dev.seeruk.bundle.itemtext.dialog;
 
-import dev.seeruk.bundle.itemtext.EditableItem;
-import dev.seeruk.bundle.itemtext.LoreEditMessages;
-import dev.seeruk.bundle.itemtext.LoreEditResult;
-import dev.seeruk.bundle.itemtext.LoreEditor;
-import dev.seeruk.bundle.itemtext.LoreInput;
-import dev.seeruk.bundle.itemtext.SeersItemText;
+import dev.seeruk.bundle.itemtext.*;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
@@ -13,13 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.dialog.ActionButton;
-import net.minecraft.server.dialog.CommonButtonData;
-import net.minecraft.server.dialog.CommonDialogData;
-import net.minecraft.server.dialog.ConfirmationDialog;
-import net.minecraft.server.dialog.Dialog;
-import net.minecraft.server.dialog.DialogAction;
-import net.minecraft.server.dialog.Input;
+import net.minecraft.server.dialog.*;
 import net.minecraft.server.dialog.action.CustomAll;
 import net.minecraft.server.dialog.body.DialogBody;
 import net.minecraft.server.dialog.body.PlainMessage;
@@ -104,9 +93,11 @@ public final class LoreDialog {
 
         final var input = payload.getStringOr(INPUT, "");
         if (input.length() > MAX_INPUT_LENGTH) {
-            open(player, input, Optional.of(TextParsers.parseAsTrusted(
-                "<red>Lore can't be longer than %d characters</red>".formatted(MAX_INPUT_LENGTH)
-            )));
+            open(
+                player, input, Optional.of(TextParsers.parseAsTrusted(
+                    "<red>Lore can't be longer than %d characters</red>".formatted(MAX_INPUT_LENGTH)
+                ))
+            );
             return;
         }
 
@@ -131,7 +122,8 @@ public final class LoreDialog {
         body.add(new PlainMessage(HINT, WIDTH));
 
         final var initial = truncate(text, MAX_INPUT_LENGTH);
-        final var input = new Input(INPUT, new TextInput(
+        final var input = new Input(
+            INPUT, new TextInput(
             WIDTH,
             Component.literal("Lore"),
             false,
@@ -140,7 +132,8 @@ public final class LoreDialog {
             // A height, not a line limit, as the client counts wrapped lines towards a limit, and
             // won't fill the box with text over it
             Optional.of(new TextInput.MultilineOptions(Optional.empty(), Optional.of(HEIGHT)))
-        ));
+        )
+        );
 
         return new ConfirmationDialog(
             new CommonDialogData(

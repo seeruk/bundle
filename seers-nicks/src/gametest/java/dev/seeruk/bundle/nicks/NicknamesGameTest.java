@@ -11,9 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
-import static dev.seeruk.bundle.nicks.NicksFixtures.nameAndId;
-import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
-import static dev.seeruk.bundle.nicks.NicksFixtures.offline;
+import static dev.seeruk.bundle.nicks.NicksFixtures.*;
 
 public class NicknamesGameTest {
     private static final EventLog<Changed> EVENTS = new EventLog<>();
@@ -31,7 +29,11 @@ public class NicknamesGameTest {
         Nicknames.set(helper.getLevel().getServer(), nameAndId(player), nickname, false);
 
         helper.assertValueEqual(text(Nicknames.get(player.getUUID())), Optional.of(nickname), "nickname");
-        helper.assertValueEqual(eventsFor(player.getUUID()), List.of(new Changed(player.getUUID(), Optional.empty(), Optional.of(nickname))), "events");
+        helper.assertValueEqual(
+            eventsFor(player.getUUID()),
+            List.of(new Changed(player.getUUID(), Optional.empty(), Optional.of(nickname))),
+            "events"
+        );
         helper.succeed();
     }
 
@@ -81,7 +83,10 @@ public class NicknamesGameTest {
         final var result = Nicknames.set(server, nameAndId(player), nickname, false);
 
         helper.assertTrue(result instanceof NickEditResult.Edited, "Edit didn't succeed");
-        helper.assertTrue(EVENTS.matchingSince(mark, event -> event.id().equals(player.getUUID())).isEmpty(), "Event fired for an unchanged nickname");
+        helper.assertTrue(
+            EVENTS.matchingSince(mark, event -> event.id().equals(player.getUUID())).isEmpty(),
+            "Event fired for an unchanged nickname"
+        );
         helper.succeed();
     }
 
@@ -96,7 +101,11 @@ public class NicknamesGameTest {
 
         helper.assertValueEqual(Nicknames.get(player.getUUID()), Optional.empty(), "nickname");
         helper.assertValueEqual(player.getDisplayName().getString(), player.getGameProfile().name(), "display name");
-        helper.assertValueEqual(eventsFor(player.getUUID()).getLast(), new Changed(player.getUUID(), Optional.of(nickname), Optional.empty()), "event");
+        helper.assertValueEqual(
+            eventsFor(player.getUUID()).getLast(),
+            new Changed(player.getUUID(), Optional.of(nickname), Optional.empty()),
+            "event"
+        );
         helper.succeed();
     }
 

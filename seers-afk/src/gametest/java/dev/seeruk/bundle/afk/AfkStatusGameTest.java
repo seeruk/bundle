@@ -26,7 +26,11 @@ public class AfkStatusGameTest {
         AfkStatus.update(player, tick + TIMEOUT, TIMEOUT);
 
         helper.assertTrue(AfkStatus.isAfk(player), "Player wasn't AFK");
-        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player.getUUID(), true, AfkReason.TIMEOUT)), "events");
+        helper.assertValueEqual(
+            eventsFor(player),
+            List.of(new Changed(player.getUUID(), true, AfkReason.TIMEOUT)),
+            "events"
+        );
         helper.succeed();
     }
 
@@ -51,14 +55,28 @@ public class AfkStatusGameTest {
         AfkStatus.update(player, tick + TIMEOUT, TIMEOUT);
 
         // A tick later, so pressing a key happens at a different time to the last action
-        helper.runAfterDelay(1, () -> {
-            player.connection.handlePlayerInput(new ServerboundPlayerInputPacket(new Input(true, false, false, false, false, false, false)));
-            AfkStatus.update(player, tick + TIMEOUT + 1, TIMEOUT);
+        helper.runAfterDelay(
+            1, () -> {
+                player.connection.handlePlayerInput(new ServerboundPlayerInputPacket(new Input(
+                    true,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                )));
+                AfkStatus.update(player, tick + TIMEOUT + 1, TIMEOUT);
 
-            helper.assertFalse(AfkStatus.isAfk(player), "Player was still AFK");
-            helper.assertValueEqual(eventsFor(player).getLast(), new Changed(player.getUUID(), false, AfkReason.ACTIVITY), "event");
-            helper.succeed();
-        });
+                helper.assertFalse(AfkStatus.isAfk(player), "Player was still AFK");
+                helper.assertValueEqual(
+                    eventsFor(player).getLast(),
+                    new Changed(player.getUUID(), false, AfkReason.ACTIVITY),
+                    "event"
+                );
+                helper.succeed();
+            }
+        );
     }
 
     @GameTest
@@ -68,21 +86,25 @@ public class AfkStatusGameTest {
         AfkStatus.toggle(player, server.getTickCount(), AfkReason.COMMAND);
 
         // A tick later, so respawning happens at a different time to going AFK
-        helper.runAfterDelay(1, () -> {
-            player.kill(helper.getLevel());
-            // What the client sends by itself with the doImmediateRespawn game rule
-            player.connection.handleClientCommand(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
-        });
+        helper.runAfterDelay(
+            1, () -> {
+                player.kill(helper.getLevel());
+                // What the client sends by itself with the doImmediateRespawn game rule
+                player.connection.handleClientCommand(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
+            }
+        );
 
         // Another tick later, so statuses have been updated since the respawn
-        helper.runAfterDelay(2, () -> {
-            final var respawned = server.getPlayerList().getPlayer(player.getUUID());
+        helper.runAfterDelay(
+            2, () -> {
+                final var respawned = server.getPlayerList().getPlayer(player.getUUID());
 
-            helper.assertTrue(respawned != player, "Player didn't respawn");
-            helper.assertTrue(AfkStatus.isAfk(respawned), "Player wasn't AFK after respawning");
-            helper.assertValueEqual(eventsFor(player).size(), 1, "event count");
-            helper.succeed();
-        });
+                helper.assertTrue(respawned != player, "Player didn't respawn");
+                helper.assertTrue(AfkStatus.isAfk(respawned), "Player wasn't AFK after respawning");
+                helper.assertValueEqual(eventsFor(player).size(), 1, "event count");
+                helper.succeed();
+            }
+        );
     }
 
     @GameTest

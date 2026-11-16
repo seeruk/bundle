@@ -18,9 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.POS;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.player;
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.use;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.*;
 
 public class PropSwapInteractionGameTest {
     private static final EventLog<Swapped> EVENTS = new EventLog<>();

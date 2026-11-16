@@ -23,7 +23,8 @@ public final class DisposalCommand {
     private DisposalCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        NamespacedCommands.register(dispatcher, SeersDisposal.MOD_ID, NAME,
+        NamespacedCommands.register(
+            dispatcher, SeersDisposal.MOD_ID, NAME,
             name -> Commands.literal(name).executes(CommandExecutors.logged(DisposalCommand::open))
         );
     }

@@ -35,7 +35,11 @@ public class NameEditorGameTest {
 
         final var expected = literal("Testing");
         helper.assertValueEqual(NameEditor.customName(stack), expected, "name");
-        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, Optional.empty(), expected)), "events");
+        helper.assertValueEqual(
+            eventsFor(player),
+            List.of(new Changed(player, stack, Optional.empty(), expected)),
+            "events"
+        );
         helper.succeed();
     }
 
@@ -49,7 +53,11 @@ public class NameEditorGameTest {
 
         final var expected = literal("Testing 2");
         helper.assertValueEqual(NameEditor.customName(stack), expected, "name");
-        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literal("Testing 1"), expected)), "events");
+        helper.assertValueEqual(
+            eventsFor(player),
+            List.of(new Changed(player, stack, literal("Testing 1"), expected)),
+            "events"
+        );
         helper.succeed();
     }
 
@@ -109,7 +117,11 @@ public class NameEditorGameTest {
         NameEditor.reset(player, stack);
 
         helper.assertValueEqual(NameEditor.customName(stack), Optional.empty(), "name");
-        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, literal("Testing"), Optional.empty())), "events");
+        helper.assertValueEqual(
+            eventsFor(player),
+            List.of(new Changed(player, stack, literal("Testing"), Optional.empty())),
+            "events"
+        );
         helper.succeed();
     }
 
@@ -124,7 +136,11 @@ public class NameEditorGameTest {
         NameEditor.reset(player, stack);
 
         helper.assertValueEqual(NameEditor.customName(stack), Optional.empty(), "name");
-        helper.assertValueEqual(eventsFor(player), List.of(new Changed(player, stack, Optional.empty(), Optional.empty())), "events");
+        helper.assertValueEqual(
+            eventsFor(player),
+            List.of(new Changed(player, stack, Optional.empty(), Optional.empty())),
+            "events"
+        );
         helper.succeed();
     }
 
@@ -182,7 +198,10 @@ public class NameEditorGameTest {
 
         final var result = NameEditor.set(player, stack, "a".repeat(AnvilMenu.MAX_NAME_LENGTH + 1));
 
-        helper.assertTrue(result instanceof NameEditResult.MaxLengthExceeded, "Edit didn't fail with MaxLengthExceeded");
+        helper.assertTrue(
+            result instanceof NameEditResult.MaxLengthExceeded,
+            "Edit didn't fail with MaxLengthExceeded"
+        );
         helper.assertValueEqual(NameEditor.customName(stack), literal("Testing"), "name");
         helper.assertTrue(eventsFor(player).isEmpty(), "Event fired for a failed edit");
         helper.succeed();

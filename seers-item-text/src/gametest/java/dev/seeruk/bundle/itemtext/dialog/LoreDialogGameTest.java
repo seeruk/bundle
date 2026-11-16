@@ -31,7 +31,11 @@ public class LoreDialogGameTest {
 
         save(player, input);
 
-        helper.assertValueEqual(plain(LoreEditor.lines(player.getMainHandItem())), List.of("Testing 1", "Testing 2"), "lore");
+        helper.assertValueEqual(
+            plain(LoreEditor.lines(player.getMainHandItem())),
+            List.of("Testing 1", "Testing 2"),
+            "lore"
+        );
         helper.assertValueEqual(LoreInput.get(player.getMainHandItem()), Optional.of(input), "remembered input");
         helper.succeed();
     }
@@ -72,7 +76,11 @@ public class LoreDialogGameTest {
         helper.assertValueEqual(initialText(LoreDialog.create("Testing", Optional.empty())), "Testing", "initial text");
 
         final var tooLong = "a".repeat(LoreDialog.MAX_INPUT_LENGTH + 1);
-        helper.assertValueEqual(initialText(LoreDialog.create(tooLong, Optional.empty())).length(), LoreDialog.MAX_INPUT_LENGTH, "initial text length");
+        helper.assertValueEqual(
+            initialText(LoreDialog.create(tooLong, Optional.empty())).length(),
+            LoreDialog.MAX_INPUT_LENGTH,
+            "initial text length"
+        );
         helper.succeed();
     }
 
@@ -81,7 +89,11 @@ public class LoreDialogGameTest {
         // The emoji is two UTF-16 units, so the limit falls between them
         final var text = "a".repeat(LoreDialog.MAX_INPUT_LENGTH - 1) + "😀";
 
-        helper.assertValueEqual(initialText(LoreDialog.create(text, Optional.empty())), "a".repeat(LoreDialog.MAX_INPUT_LENGTH - 1), "initial text");
+        helper.assertValueEqual(
+            initialText(LoreDialog.create(text, Optional.empty())),
+            "a".repeat(LoreDialog.MAX_INPUT_LENGTH - 1),
+            "initial text"
+        );
         helper.succeed();
     }
 
@@ -103,7 +115,10 @@ public class LoreDialogGameTest {
     private static void save(ServerPlayer player, String input) {
         final var payload = new CompoundTag();
         payload.putString(LoreDialog.INPUT, input);
-        player.connection.handleCustomClickAction(new ServerboundCustomClickActionPacket(LoreDialog.SAVE_ACTION, Optional.of(payload)));
+        player.connection.handleCustomClickAction(new ServerboundCustomClickActionPacket(
+            LoreDialog.SAVE_ACTION,
+            Optional.of(payload)
+        ));
     }
 
     private static List<String> plain(List<Component> lines) {

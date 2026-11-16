@@ -29,10 +29,22 @@ public class LoreEditorTest {
         static Stream<Arguments> shouldParseIntoLines() {
             return Stream.of(
                 Arguments.of("No lines for no text", "", List.of()),
-                Arguments.of("Splits lines of text a lines of lore", "Testing 1\nTesting 2", List.of("Testing 1", "Testing 2")),
-                Arguments.of("Keeps blank lines between lines", "Testing 1\n\nTesting 2", List.of("Testing 1", "", "Testing 2")),
+                Arguments.of(
+                    "Splits lines of text a lines of lore",
+                    "Testing 1\nTesting 2",
+                    List.of("Testing 1", "Testing 2")
+                ),
+                Arguments.of(
+                    "Keeps blank lines between lines",
+                    "Testing 1\n\nTesting 2",
+                    List.of("Testing 1", "", "Testing 2")
+                ),
                 Arguments.of("Drops blank lines at the end", "Testing 1\n\n \n", List.of("Testing 1")),
-                Arguments.of("Doesn't count formatting tags towards a line's length", "<red>" + "a".repeat(LoreLines.MAX_LINE_LENGTH) + "</red>", List.of("a".repeat(LoreLines.MAX_LINE_LENGTH))),
+                Arguments.of(
+                    "Doesn't count formatting tags towards a line's length",
+                    "<red>" + "a".repeat(LoreLines.MAX_LINE_LENGTH) + "</red>",
+                    List.of("a".repeat(LoreLines.MAX_LINE_LENGTH))
+                ),
                 Arguments.of(
                     "Wraps long lines",
                     "a".repeat(LoreLines.MAX_LINE_LENGTH - 5) + " wrapped words",
@@ -52,7 +64,11 @@ public class LoreEditorTest {
             final var lines = LoreEditor.parse("<red>Testing 1\nTesting 2</red>");
 
             for (final var line : lines) {
-                assertEquals(TextColor.fromLegacyFormat(ChatFormatting.RED), line.toFlatList().getFirst().getStyle().getColor(), line.getString());
+                assertEquals(
+                    TextColor.fromLegacyFormat(ChatFormatting.RED),
+                    line.toFlatList().getFirst().getStyle().getColor(),
+                    line.getString()
+                );
             }
         }
     }

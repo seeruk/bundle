@@ -29,8 +29,10 @@ public class SeersNicks implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> Nicknames.clear());
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-            Nicknames.releaseUsername(server,
-                new NameAndId(handler.player.getUUID(), handler.player.getGameProfile().name())));
+            Nicknames.releaseUsername(
+                server,
+                new NameAndId(handler.player.getUUID(), handler.player.getGameProfile().name())
+            ));
 
         TabList.NAME.register(TabList.REPLACE, NicksTabList::name);
 

@@ -15,8 +15,10 @@ public class TabListGameTest {
         // Registered before the replacing listener, to check the phases decide the order
         TabList.NAME.register((player, name) ->
             player.entityTags().contains(DECORATED) ? Component.empty().append(name).append(" [Decorated]") : name);
-        TabList.NAME.register(TabList.REPLACE, (player, name) ->
-            player.entityTags().contains(REPLACED) ? Component.literal("Replaced") : name);
+        TabList.NAME.register(
+            TabList.REPLACE, (player, name) ->
+                player.entityTags().contains(REPLACED) ? Component.literal("Replaced") : name
+        );
         TabList.ORDER.register((player, order) -> player.entityTags().contains(DECORATED) ? order - 1 : order);
     }
 

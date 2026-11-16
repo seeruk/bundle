@@ -13,7 +13,10 @@ import java.util.regex.Pattern;
  * @param template The unformatted template.
  */
 public record DiscordTemplate(String template) {
-    public static final Codec<DiscordTemplate> CODEC = Codec.STRING.xmap(DiscordTemplate::new, DiscordTemplate::template);
+    public static final Codec<DiscordTemplate> CODEC = Codec.STRING.xmap(
+        DiscordTemplate::new,
+        DiscordTemplate::template
+    );
 
     private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{([a-z_]+)}");
 

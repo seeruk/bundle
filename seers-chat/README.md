@@ -37,7 +37,7 @@ secure chat will see them as they were written instead.
 | `<death>`                               | Where you last died, like `<pos>`.          |
 | `<dim>`                                 | The dimension you're in, e.g. `The Nether`. |
 | `<biome>`                               | The biome you're in.                        |
-| `<health>`                              | Your health, e.g. `❤ 14/20`.                |
+| `<health>`                              | Your health, e.g. `❤ 14/20`.               |
 | `<level>`                               | Your experience level, e.g. `Level 30`.     |
 
 Items show their tooltip when hovered over. Coordinates show their dimension when hovered over, and
@@ -45,7 +45,7 @@ copy them when clicked. Tags with nothing to show (e.g. an empty hand) are left 
 
 ### Events
 
-This mod doesn't currently have any events, as Fabric API already has 
+This mod doesn't currently have any events, as Fabric API already has
 `ServerMessageEvents.CHAT_MESSAGE` which will have broader compatibility and usability. Anything
 picking up on that event should work with this mod.
 

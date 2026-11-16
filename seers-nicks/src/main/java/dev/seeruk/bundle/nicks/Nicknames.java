@@ -10,11 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.NameAndId;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.seeruk.bundle.nicks.SeersNicks.MOD_ID;
@@ -84,11 +80,13 @@ public final class Nicknames {
             return result;
         }
 
-        STORAGE.update(server, all -> {
-            final var updated = new HashMap<>(all);
-            updated.put(player.id(), nickname);
-            return Map.copyOf(updated);
-        });
+        STORAGE.update(
+            server, all -> {
+                final var updated = new HashMap<>(all);
+                updated.put(player.id(), nickname);
+                return Map.copyOf(updated);
+            }
+        );
         FORMATTED.put(player.id(), new Formatted(formatted));
 
         return changed(server, player, result);
@@ -100,11 +98,13 @@ public final class Nicknames {
             return new NickEditResult.NoNickname();
         }
 
-        STORAGE.update(server, all -> {
-            final var updated = new HashMap<>(all);
-            updated.remove(player.id());
-            return Map.copyOf(updated);
-        });
+        STORAGE.update(
+            server, all -> {
+                final var updated = new HashMap<>(all);
+                updated.remove(player.id());
+                return Map.copyOf(updated);
+            }
+        );
         FORMATTED.remove(player.id());
 
         return changed(server, player, new NickEditResult.Edited(original, Optional.empty()));
