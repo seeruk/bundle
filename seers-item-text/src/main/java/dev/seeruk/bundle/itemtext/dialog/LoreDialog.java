@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.itemtext.dialog;
 
 import dev.seeruk.bundle.itemtext.*;
+import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
@@ -16,10 +17,8 @@ import net.minecraft.server.dialog.input.TextInput;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
-import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -121,7 +120,7 @@ public final class LoreDialog {
         message.ifPresent(m -> body.add(new PlainMessage(m, WIDTH)));
         body.add(new PlainMessage(HINT, WIDTH));
 
-        final var initial = truncate(text, MAX_INPUT_LENGTH);
+        final var initial = TextComponents.truncate(text, MAX_INPUT_LENGTH);
         final var input = new Input(
             INPUT, new TextInput(
             WIDTH,
@@ -154,19 +153,5 @@ public final class LoreDialog {
                 Optional.empty()
             )
         );
-    }
-
-    /**
-     * Cuts the text down to at most {@code maxLength} UTF-16 units, as the client measures it,
-     * without cutting a character (e.g. an emoji) in half.
-     */
-    private static String truncate(String text, int maxLength) {
-        if (text.length() <= maxLength) {
-            return text;
-        }
-
-        final var characters = BreakIterator.getCharacterInstance(Locale.ROOT);
-        characters.setText(text);
-        return text.substring(0, characters.preceding(maxLength + 1));
     }
 }
