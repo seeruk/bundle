@@ -9,7 +9,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
- * Relays in-game chat from players into messages for Discord, sent as the player.
+ * Relays in-game chat from players into messages for Discord, sent as "the player".
  */
 public final class ChatRelay {
     // Discord refuses webhook names longer than this, or with these words in them
@@ -20,7 +20,7 @@ public final class ChatRelay {
 
     /**
      * @param message The message as it was sent, after any formatting.
-     * @param chat    The kind of message (only chat messages and emotes are relayed), and who sent it.
+     * @param chat    The kind of message (only chat and emotes are relayed), and who sent it.
      * @param id      The sending player's UUID.
      * @param formats How messages are written in Discord.
      */

@@ -69,8 +69,8 @@ public final class TextParsers {
     }
 
     /**
-     * Builds a parser like {@link #TRUSTED}, with extra tags, e.g. ones that need context from where
-     * the text is parsed. The builder can add more, e.g. placeholders.
+     * Builds a parser like {@link #TRUSTED}, with extra tags, e.g. ones that need context from
+     * where the text is parsed. The builder can add more, e.g. placeholders.
      */
     public static ParserBuilder trusted(TextTag... extraTags) {
         return ParserBuilder.of()

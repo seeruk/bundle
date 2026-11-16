@@ -186,8 +186,9 @@ public final class DiscordBot {
      * Stops the HTTP client JDA made, which JDA can leave running when it shuts down. Its threads
      * can keep the server's process running for up to a minute after the server stops.
      *
-     * <p>See <a href="https://jda.wiki/using-jda/troubleshooting/#shutdown-but-the-process-doesnt-exit">
-     * this page</a> for more information.
+     * <p>See JDA's
+     * <a href="https://jda.wiki/using-jda/troubleshooting/#shutdown-but-the-process-doesnt-exit">
+     * troubleshooting guide</a> for more information.
      */
     private static void closeHttpClient(JDA jda) {
         final var http = jda.getHttpClient();

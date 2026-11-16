@@ -9,12 +9,12 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
- * Writes text for Discord, in its Markdown.
+ * Utilities for working with Discord Markdown, either from text or Minecraft components.
  */
 public final class DiscordMarkdown {
     // Characters Discord's Markdown can treat specially. Discord shows any punctuation with a
     // backslash before it as it is.
-    private static final Pattern SPECIAL = Pattern.compile("[\\\\*_~`|>#\\-\\[\\]<]");
+    private static final Pattern SPECIAL = Pattern.compile("[\\\\*_~`|<>#\\-\\[\\]]");
 
     private static final Pattern LINK = Pattern.compile("https?://\\S+");
 
@@ -46,8 +46,8 @@ public final class DiscordMarkdown {
     }
 
     /**
-     * The text with its bold, italic, underline, and strikethrough as Discord's Markdown, and
-     * everything else escaped. Discord can't show colours, so they're left out.
+     * The given component returned as a string with styles we can convert to Discord's Markdown
+     * converted, and everything else escaped. Discord can't show colours, so they're left out.
      */
     public static String of(Component text) {
         final var markdown = new StringBuilder();
@@ -81,13 +81,13 @@ public final class DiscordMarkdown {
     }
 
     /**
-     * A run of text that has the same Markdown all the way through.
+     * A run of text that has the same Markdown style markers all the way through.
      */
     private record Run(String text, String markers) {}
 
     /**
-     * The text, split into runs with the same Markdown, neighbouring pieces with the same Markdown
-     * joined together.
+     * The text, split into runs with the same Markdown style, neighbouring pieces with the same
+     * Markdown styles are joined together.
      */
     private static List<Run> runs(Component text) {
         final var runs = new ArrayList<Run>();
@@ -96,8 +96,9 @@ public final class DiscordMarkdown {
                 if (!content.isEmpty()) {
                     final var markers = markers(style);
                     if (!runs.isEmpty() && runs.getLast().markers().equals(markers)) {
-                        // If the markers are the same as the last run, join them together. We do this
-                        // by removing it, and appending the new content to it and adding the result.
+                        // If the markers are the same as the last run, join them together. We do
+                        // this by removing it, and appending the new content to it and adding the
+                        // result.
                         runs.add(new Run(runs.removeLast().text() + content, markers));
                     } else {
                         runs.add(new Run(content, markers));

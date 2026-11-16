@@ -2,11 +2,11 @@ plugins {
     id("bundle.mod")
 }
 
-// JDA and everything it needs is bundled in the mod's jar, except voice support (which a chat bridge
-// never uses), and SLF4J (which the game already has). Loom only bundles the libraries it's given,
-// not their own dependencies, so each library JDA resolves to is bundled. Fabric loads the newest
-// version of each library any mod bundles, so ones other mods also bundle (e.g. Jackson) aren't
-// loaded twice.
+// JDA and everything it needs is bundled in the mod's jar, except voice support (which a chat
+// bridge never uses), and SLF4J (which the game already has). Loom only bundles the libraries it's
+// given, not their own dependencies, so each library JDA resolves to is bundled. Fabric loads the
+// newest version of each library any mod bundles, so ones other mods also bundle (e.g. Jackson)
+// aren't loaded twice.
 val bundled: Configuration by configurations.creating
 
 configurations.implementation {

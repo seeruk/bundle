@@ -46,9 +46,10 @@ public final class TextComponents {
     }
 
     /**
-     * Wraps a line of text into lines of at most {@code maxLength} characters (see {@link #length}),
-     * keeping its styling. Lines are broken at spaces where possible (dropping the space), and words
-     * longer than a whole line are broken wherever they need to be, though never inside a character.
+     * Wraps a line of text into lines of at most {@code maxLength} characters (see
+     * {@link #length}), keeping its styling. Lines are broken at spaces where possible (dropping
+     * the space), and words longer than a whole line are broken wherever they need to be, though
+     * never inside a character.
      */
     public static List<Component> wrap(Component line, int maxLength) {
         final var text = line.getString();

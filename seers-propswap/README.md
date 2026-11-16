@@ -74,9 +74,9 @@ include the Vanilla `minecraft:mineable/*` tags by default. So wood takes an axe
 pickaxe, and datapacks that add blocks to those tags (like making glass a pickaxe block) just work.
 PropSwap's tags can also be changed on their own, without touching Vanilla behaviour.
 
-Some supported blocks have no tool in Vanilla, so PropSwap's tags give them one. Beds use an axe (straw beds already use
-a hoe in Vanilla, so they use a hoe here too), and glass panes use a pickaxe (via the `c:glass_panes` tag, so modded
-panes are included too). Any other block with no tool won't
+Some supported blocks have no tool in Vanilla, so PropSwap's tags give them one. Beds use an axe
+(straw beds already use a hoe in Vanilla, so they use a hoe here too), and glass panes use a pickaxe
+(via the `c:glass_panes` tag, so modded panes are included too). Any other block with no tool won't
 do anything until a datapack adds it to one of PropSwap's tags.
 
 ### Events

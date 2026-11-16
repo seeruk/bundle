@@ -113,7 +113,7 @@ public class ItemTextStatsGameTest {
     @SuppressWarnings("removal")
     @GameTest
     public void addingLoreAddsNewWordsLength(GameTestHelper helper) {
-        // "Testing" is new as well as "2", as the original's only "Testing" is used by the first line
+        // "Testing" is new as well as "2", as the first line uses the original's only "Testing"
         final var player = helper.makeMockServerPlayerInLevel();
         final var stack = withLore("Testing 1");
         final var before = score(player, ItemTextStats.LORE_CHARACTERS);
@@ -245,8 +245,8 @@ public class ItemTextStatsGameTest {
     @SuppressWarnings("removal")
     @GameTest
     public void movedAndBlankLinesDoNotCountAsWritten(GameTestHelper helper) {
-        // The existing lines are moved down, and blank lines are added, but only the lines with text
-        // in them were written
+        // The existing lines are moved down, and blank lines are added, but only the lines with
+        // text in them were written
         final var player = helper.makeMockServerPlayerInLevel();
         final var stack = withLore("Testing 1", "Testing 2");
         final var before = score(player, ItemTextStats.LORE_LINES_WRITTEN);
