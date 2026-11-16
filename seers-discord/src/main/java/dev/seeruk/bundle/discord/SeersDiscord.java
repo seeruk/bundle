@@ -25,7 +25,7 @@ public class SeersDiscord implements ModInitializer {
 
         // Fired for messages players send with commands (e.g. /me) too
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, chat) ->
-            ChatRelay.message(message, chat, sender.getUUID(), config.formats()).ifPresent(DiscordBot::send));
+            ChatRelay.message(message, chat, sender, config.formats()).ifPresent(DiscordBot::send));
 
         LOGGER.info("Initialized");
     }

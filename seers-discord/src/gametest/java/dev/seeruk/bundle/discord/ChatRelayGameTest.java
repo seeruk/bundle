@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.ChatFormatting;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -8,7 +9,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
+import java.util.List;
 import java.util.Optional;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
@@ -91,11 +95,26 @@ public class ChatRelayGameTest {
         helper.succeed();
     }
 
+    @GameTest
+    public void linkedItemsAreEmbedded(GameTestHelper helper) {
+        final var player = player(helper);
+        final var sword = new ItemStack(Items.DIAMOND_SWORD);
+
+        final var message = relay(player, ChatType.CHAT, Component.literal("Look: ").append(sword.getDisplayName()));
+
+        helper.assertValueEqual(
+            message.map(WebhookMessage::embeds).map(embeds -> embeds.stream().map(MessageEmbed::getTitle).toList()),
+            Optional.of(List.of("Diamond Sword")),
+            "embed titles"
+        );
+        helper.succeed();
+    }
+
     /**
      * The message for Discord, for the player sending the content as the given kind of message.
      */
     private static Optional<WebhookMessage> relay(ServerPlayer player, ResourceKey<ChatType> chatType, Component content) {
         final var message = PlayerChatMessage.system(content.getString()).withUnsignedContent(content);
-        return ChatRelay.message(message, ChatType.bind(chatType, player), player.getUUID(), FORMATS);
+        return ChatRelay.message(message, ChatType.bind(chatType, player), player, FORMATS);
     }
 }

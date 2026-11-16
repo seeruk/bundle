@@ -2,6 +2,7 @@ package dev.seeruk.bundle.discord;
 
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Map;
 import java.util.Optional;
@@ -21,13 +22,13 @@ public final class ChatRelay {
     /**
      * @param message The message as it was sent, after any formatting.
      * @param chat    The kind of message (only chat and emotes are relayed), and who sent it.
-     * @param id      The sending player's UUID.
+     * @param sender  The player who sent it.
      * @param formats How messages are written in Discord.
      */
     public static Optional<WebhookMessage> message(
         PlayerChatMessage message,
         ChatType.Bound chat,
-        UUID id,
+        ServerPlayer sender,
         DiscordConfig.Formats formats
     ) {
         final DiscordTemplate format;
@@ -46,7 +47,12 @@ public final class ChatRelay {
             "message", DiscordMarkdown.of(message.decoratedContent())
         ));
 
-        return Optional.of(new WebhookMessage(username(displayName), avatarUrl(id), content));
+        return Optional.of(new WebhookMessage(
+            username(displayName),
+            avatarUrl(sender.getUUID()),
+            content,
+            ItemEmbeds.of(message.decoratedContent(), sender)
+        ));
     }
 
     /**

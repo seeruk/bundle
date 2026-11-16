@@ -164,6 +164,7 @@ public final class DiscordBot {
             .setUsername(message.username())
             .setAvatarUrl(message.avatarUrl())
             .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
+            .setEmbeds(message.embeds())
             .queue(
                 null, error -> {
                     if (error instanceof ErrorResponseException response
