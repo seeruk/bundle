@@ -12,8 +12,17 @@ public class DiscordConfigGameTest {
 
         helper.assertValueEqual(config.botToken(), "", "bot token");
         helper.assertValueEqual(config.channelId(), "", "channel ID");
-        helper.assertValueEqual(config.formats().chat().template(), "${message}", "chat format");
-        helper.assertValueEqual(config.formats().emote().template(), "_${display_name} ${message}_", "emote format");
+        helper.assertValueEqual(config.formats().discord().chat().template(), "${message}", "chat format");
+        helper.assertValueEqual(
+            config.formats().discord().emote().template(),
+            "_${display_name} ${message}_",
+            "emote format"
+        );
+        helper.assertValueEqual(
+            config.formats().game().chat().template(),
+            "<blue>[Discord]</blue> <aqua><hover '@${username}'>${display_name}</hover></aqua>: ${message}",
+            "game chat format"
+        );
         helper.succeed();
     }
 }

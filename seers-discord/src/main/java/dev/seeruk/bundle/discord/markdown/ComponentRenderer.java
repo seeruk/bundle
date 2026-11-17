@@ -25,6 +25,9 @@ import java.util.Map;
  * then translated into a {@link Component} tree.
  */
 public final class ComponentRenderer {
+    // Starts one of the game's old formatting codes, which it still reads in any text
+    private static final String SECTION_SIGN = "\u00A7";
+
     private ComponentRenderer() {}
 
     /**
@@ -38,7 +41,7 @@ public final class ComponentRenderer {
         try {
             return render(MarkdownParser.parse(markdown), mentions);
         } catch (ParseException e) {
-            return nameEmojis(markdown);
+            return literal(markdown);
         }
     }
 
@@ -59,14 +62,14 @@ public final class ComponentRenderer {
             // The text before this node goes first, to keep everything in order. The builder is
             // then emptied, ready for the next run of text.
             if (!text.isEmpty()) {
-                result.append(nameEmojis(text.toString()));
+                result.append(literal(text.toString()));
                 text.setLength(0);
             }
 
             result.append(render(node, mentions));
         }
 
-        return text.isEmpty() ? result : result.append(nameEmojis(text.toString()));
+        return text.isEmpty() ? result : result.append(literal(text.toString()));
     }
 
     /**
@@ -110,18 +113,19 @@ public final class ComponentRenderer {
     }
 
     /**
-     * Returns plain text as a Component, with any emoji the game can't show swapped for their names
-     * (see {@link Emojis#named}).
+     * Returns plain text from Discord as a Component, as it should be shown in game. Any emoji the
+     * game can't show are swapped for their names (see {@link Emojis#named}), and section signs
+     * are removed, as the game would otherwise read them as formatting codes (e.g. "§c" for red).
      */
-    private static MutableComponent nameEmojis(String text) {
-        return Component.literal(Emojis.named(text));
+    public static MutableComponent literal(String text) {
+        return Component.literal(Emojis.named(text.replace(SECTION_SIGN, "")));
     }
 
     /**
      * Returns the label as a link to the URL, which opens it when clicked, and shows it when
      * hovered over. If the URL isn't a valid one, there's no link, and the label is left as it is.
      */
-    private static MutableComponent linked(MutableComponent label, String url) {
+    public static MutableComponent linked(MutableComponent label, String url) {
         try {
             final var uri = new URI(url);
             return label.withStyle(style -> style
@@ -143,7 +147,7 @@ public final class ComponentRenderer {
             case ROLE -> "@" + name(mentions.roles(), mention.id(), "unknown-role");
             case CHANNEL -> "#" + name(mentions.channels(), mention.id(), "unknown");
         };
-        return nameEmojis(name).withStyle(ChatFormatting.GREEN);
+        return literal(name).withStyle(ChatFormatting.GREEN);
     }
 
     private static String name(Map<Long, String> names, String id, String unknown) {

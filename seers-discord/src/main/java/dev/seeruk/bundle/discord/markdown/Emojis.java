@@ -9,7 +9,7 @@ import java.util.EnumSet;
 /**
  * Utilities for showing emojis from Discord in game.
  */
-final class Emojis {
+public final class Emojis {
     // Emojis are sometimes represented as a Unicode symbol and an invisible character, this is the
     // variation selector, Minecraft can't show these coloured symbols, but can show the basic
     // Unicode versions, so we strip this off.
@@ -22,7 +22,7 @@ final class Emojis {
      * Unicode version (for those supported by Minecraft's font), or their Discord name otherwise,
      * like {@code :smile:}.
      */
-    static String named(String text) {
+    public static String named(String text) {
         return EmojiManager.replaceAllEmojis(text, Emojis::name, EnumSet.of(EmojiType.UNICODE));
     }
 

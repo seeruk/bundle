@@ -88,9 +88,9 @@ public final class TextComponents {
     }
 
     /**
-     * Truncates the given text to the given maximum length. Length is not measured by
-     * {@link String#length}, but by {@link #length(String)}, so it factors in multibyte characters
-     * without cutting them in half.
+     * Truncates the given text to at most the given number of UTF-16 units (i.e. as measured by
+     * {@link String#length}, not by {@link #length(String)}), without cutting a character (e.g. an
+     * emoji) in half. So the result can be a little shorter than the limit.
      */
     public static String truncate(String text, int maxLength) {
         if (text.length() <= maxLength) {
@@ -100,6 +100,20 @@ public final class TextComponents {
         final var characters = BreakIterator.getCharacterInstance(Locale.ROOT);
         characters.setText(text);
         return text.substring(0, characters.preceding(maxLength + 1));
+    }
+
+    /**
+     * Cuts styled text down to at most {@code maxLength} characters (see {@link #length}), keeping
+     * its styling, and without cutting a character (e.g. an emoji) in half.
+     */
+    public static Component truncate(Component text, int maxLength) {
+        // Where each character starts in the text, and where the text ends
+        final var breaks = characterBreaks(text.getString());
+        if (breaks.length - 1 <= maxLength) {
+            return text;
+        }
+
+        return slice(chunks(text), 0, breaks[maxLength]);
     }
 
     private static int[] characterBreaks(String text) {

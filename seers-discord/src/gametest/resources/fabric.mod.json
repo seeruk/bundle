@@ -7,7 +7,7 @@
     "environment": "*",
     "entrypoints": {
         "fabric-gametest": [
-            "dev.seeruk.bundle.discord.ChatRelayGameTest",
+            "dev.seeruk.bundle.discord.DiscordRelayGameTest",
             "dev.seeruk.bundle.discord.DiscordConfigGameTest",
             "dev.seeruk.bundle.discord.ItemEmbedsGameTest"
         ]

@@ -41,15 +41,21 @@ permission). The server starts either way, and Discord stays off until it's set 
 Settings live in `config/seers-discord/config.yml` (see `config.dist.yml` next to it for every
 setting and their defaults).
 
-| Setting         | Default                        | Description                      |
-|-----------------|--------------------------------|----------------------------------|
-| `bot_token`     | `""`                           | The bot's token. Keep it secret! |
-| `channel_id`    | `""`                           | The channel to bridge chat with. |
-| `formats.chat`  | `${message}`                   | How chat messages are written.   |
-| `formats.emote` | `_${display_name} ${message}_` | How emotes (`/me`) are written.  |
+| Setting                 | Default                        | Description                                |
+|-------------------------|--------------------------------|--------------------------------------------|
+| `bot_token`             | `""`                           | The bot's token. Keep it secret!           |
+| `channel_id`            | `""`                           | The channel to bridge chat with.           |
+| `formats.discord.chat`  | `${message}`                   | How chat messages are written in Discord.  |
+| `formats.discord.emote` | `_${display_name} ${message}_` | How emotes (`/me`) are written in Discord. |
+| `formats.game.chat`     | See `config.dist.yml`          | How Discord messages are shown in game.    |
 
-Formats can use Discord's formatting (e.g. `_italics_`), `${message}` for the message, and
-`${display_name}` for the player's name, as it's shown in chat.
+Formats for Discord can use Discord's formatting (e.g. `_italics_`), `${message}` for the message,
+and `${display_name}` for the player's name, as it's shown in chat.
+
+Formats for the game can use the game's formatting tags (e.g. `<blue>`), `${message}` for the
+message, `${display_name}` for the sender's name in the bot's server (e.g. their nickname), and
+`${username}` for their Discord username. By default, the username is shown when hovering over
+their name, as names in a server aren't unique.
 
 ### Chat in Discord
 

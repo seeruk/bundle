@@ -11,14 +11,14 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
- * Relays in-game chat from players into messages for Discord, sent as "the player".
+ * Relays what happens in game to Discord, e.g. players' chat, which is sent as "the player".
  */
-public final class ChatRelay {
+public final class DiscordRelay {
     // Discord refuses webhook names longer than this, or with these words in them
     private static final int MAX_NAME_LENGTH = 80;
     private static final Pattern RESERVED_WORD = Pattern.compile("(?i)discord|clyde");
 
-    private ChatRelay() {}
+    private DiscordRelay() {}
 
     /**
      * @param message The message as it was sent, after any formatting.
@@ -30,7 +30,7 @@ public final class ChatRelay {
         PlayerChatMessage message,
         ChatType.Bound chat,
         ServerPlayer sender,
-        DiscordConfig.Formats formats
+        DiscordConfig.DiscordFormats formats
     ) {
         final DiscordTemplate format;
         if (chat.chatType().is(ChatType.CHAT)) {

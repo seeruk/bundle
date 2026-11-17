@@ -191,6 +191,40 @@ public class TextComponentsTest {
         ) {
             assertEquals(expected, TextComponents.truncate(text, maxLength));
         }
+
+        static Stream<Arguments> shouldCutStyledTextDownKeepingItsStyles() {
+            return Stream.of(
+                Arguments.of(
+                    "Leaves text of exactly the length alone",
+                    literal("Test", RED).append(literal("ing", BOLD)),
+                    7,
+                    List.of(chunk("Test", RED), chunk("ing", RED.withBold(true)))
+                ),
+                Arguments.of(
+                    "Cuts styled text in the middle of a style",
+                    literal("Test", RED).append(literal("ing", BOLD)),
+                    5,
+                    List.of(chunk("Test", RED), chunk("i", RED.withBold(true)))
+                ),
+                Arguments.of(
+                    "Counts an emoji made of others as one character",
+                    literal("Hi" + FAMILY + "!", RED),
+                    3,
+                    List.of(chunk("Hi" + FAMILY, RED))
+                )
+            );
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource
+        void shouldCutStyledTextDownKeepingItsStyles(
+            final String description,
+            final Component text,
+            final int maxLength,
+            final List<Chunk> expected
+        ) {
+            assertEquals(expected, TextChunks.chunks(TextComponents.truncate(text, maxLength)));
+        }
     }
 
     // A family emoji, made of three people joined together

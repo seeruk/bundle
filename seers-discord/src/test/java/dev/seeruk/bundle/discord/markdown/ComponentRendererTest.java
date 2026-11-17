@@ -44,6 +44,11 @@ public class ComponentRendererTest {
         return Stream.of(
             Arguments.of("Keeps plain text as it is", "Hello World!", List.of(plain("Hello World!"))),
             Arguments.of("Leaves the game's tags as written", "<red>hi</red>", List.of(plain("<red>hi</red>"))),
+            Arguments.of(
+                "Removes the game's formatting codes",
+                "\u00A7cred `\u00A7kcode` <@123>",
+                List.of(plain("cred "), chunk("kcode", GRAY), plain(" "), chunk("@Seer", GREEN))
+            ),
 
             // Styles
             Arguments.of("Parses bold", "**hi**", List.of(chunk("hi", BOLD))),

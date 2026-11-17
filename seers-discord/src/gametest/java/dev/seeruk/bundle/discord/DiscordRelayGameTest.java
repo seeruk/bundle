@@ -18,8 +18,8 @@ import java.util.Optional;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
-public class ChatRelayGameTest {
-    private static final DiscordConfig.Formats FORMATS = new DiscordConfig.Formats(
+public class DiscordRelayGameTest {
+    private static final DiscordConfig.DiscordFormats FORMATS = new DiscordConfig.DiscordFormats(
         new DiscordTemplate("${message}"),
         new DiscordTemplate("_${display_name} ${message}_")
     );
@@ -37,7 +37,7 @@ public class ChatRelayGameTest {
         );
         helper.assertValueEqual(
             message.map(WebhookMessage::avatarUrl),
-            Optional.of(ChatRelay.avatarUrl(player.getUUID())),
+            Optional.of(DiscordRelay.avatarUrl(player.getUUID())),
             "avatar"
         );
         helper.assertValueEqual(message.map(WebhookMessage::content), Optional.of("Testing"), "content");
@@ -116,6 +116,6 @@ public class ChatRelayGameTest {
      */
     private static Optional<WebhookMessage> relay(ServerPlayer player, ResourceKey<ChatType> chatType, Component content) {
         final var message = PlayerChatMessage.system(content.getString()).withUnsignedContent(content);
-        return ChatRelay.message(message, ChatType.bind(chatType, player), player, FORMATS);
+        return DiscordRelay.message(message, ChatType.bind(chatType, player), player, FORMATS);
     }
 }
