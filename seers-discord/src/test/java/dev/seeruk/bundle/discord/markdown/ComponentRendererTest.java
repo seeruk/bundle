@@ -2,6 +2,7 @@ package dev.seeruk.bundle.discord.markdown;
 
 import dev.seeruk.bundle.core.testing.TextChunks;
 import dev.seeruk.bundle.core.testing.TextChunks.Chunk;
+import dev.seeruk.bundle.text.TextColours;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.ClickEvent;
@@ -179,7 +180,8 @@ public class ComponentRendererTest {
     }
 
     private static Style link(String url) {
-        return Style.EMPTY.withUnderlined(true)
+        return Style.EMPTY.withColor(TextColours.CLICKABLE)
+            .withUnderlined(true)
             .withClickEvent(new ClickEvent.OpenUrl(URI.create(url)))
             .withHoverEvent(new HoverEvent.ShowText(Component.literal(url)));
     }

@@ -3,7 +3,9 @@ package dev.seeruk.bundle.discord;
 import dev.seeruk.bundle.core.testing.TextChunks;
 import dev.seeruk.bundle.core.testing.TextChunks.Chunk;
 import dev.seeruk.bundle.discord.markdown.Mentions;
+import dev.seeruk.bundle.text.TextColours;
 import dev.seeruk.bundle.text.TextComponents;
+import dev.seeruk.bundle.text.TextTemplate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.ClickEvent;
@@ -12,7 +14,6 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.Bootstrap;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
@@ -24,22 +25,23 @@ import static dev.seeruk.bundle.core.testing.TextChunks.chunk;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameRelayTest {
+    // Templates are parsed when they're made, which needs the game set up first, so this runs
+    // before FORMATS is made
+    static {
+        SharedConstants.tryDetectVersion();
+        Bootstrap.bootStrap();
+    }
+
     private static final DiscordConfig.GameFormats FORMATS = new DiscordConfig.GameFormats(
         // The default formats
-        new GameTemplate(
+        TextTemplate.parse(
             "${reply}<blue><<hover 'Discord user @${username}'>${display_name}</hover>></blue> ${message}"
         ),
-        new GameTemplate("<gray><hover '${display_name}: ${message}'>➥</hover></gray> ")
+        TextTemplate.parse("<gray><hover '${display_name}: ${message}'>➥</hover></gray> ")
     );
 
     // What's shown before each message with FORMATS
     private static final String PREFIX = "<Seer> ";
-
-    @BeforeAll
-    static void bootstrap() {
-        SharedConstants.tryDetectVersion();
-        Bootstrap.bootStrap();
-    }
 
     @Test
     void shouldShowMessagesInTheFormat() {
@@ -134,6 +136,7 @@ public class GameRelayTest {
         final var end = TextChunks.chunks(relay(message(text)).orElseThrow()).getLast();
 
         assertEquals(GameRelay.TOO_LONG, end.text());
+        assertEquals(TextColor.fromLegacyFormat(TextColours.HOVERABLE), end.style().getColor());
         assertEquals(text, hoverText(end));
     }
 
@@ -185,6 +188,10 @@ public class GameRelayTest {
         )).orElseThrow();
 
         assertEquals(PREFIX + "Look [image] [file: notes.txt]", shown.getString());
+        assertEquals(
+            TextColor.fromLegacyFormat(TextColours.CLICKABLE),
+            TextChunks.chunks(shown).getLast().style().getColor()
+        );
         assertEquals(
             List.of("https://cdn.example.com/screenshot.png", "https://cdn.example.com/notes.txt"),
             links(shown)

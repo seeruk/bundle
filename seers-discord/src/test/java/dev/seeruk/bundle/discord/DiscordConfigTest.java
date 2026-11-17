@@ -2,6 +2,7 @@ package dev.seeruk.bundle.discord;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JavaOps;
+import dev.seeruk.bundle.text.TextTemplate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DiscordConfigTest {
     private static final DiscordConfig.Formats FORMATS = new DiscordConfig.Formats(
         new DiscordConfig.DiscordFormats(new DiscordTemplate("${message}"), new DiscordTemplate("_${message}_")),
-        new DiscordConfig.GameFormats(new GameTemplate("${display_name}: ${message}"), new GameTemplate("${message}"))
+        new DiscordConfig.GameFormats(TextTemplate.parse("${display_name}: ${message}"), TextTemplate.parse("${message}"))
     );
 
     static Stream<Arguments> shouldReadChannelIds() {

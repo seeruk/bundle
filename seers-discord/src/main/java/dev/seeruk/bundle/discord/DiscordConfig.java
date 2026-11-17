@@ -3,6 +3,7 @@ package dev.seeruk.bundle.discord;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.seeruk.bundle.text.TextTemplate;
 
 /**
  * @param botToken  The bot's token, which it logs in with.
@@ -55,10 +56,10 @@ public record DiscordConfig(String botToken, String channelId, Formats formats) 
      *              reply format goes, if the message is a reply.
      * @param reply How the message a reply replied to is shown, with its sender and message.
      */
-    public record GameFormats(GameTemplate chat, GameTemplate reply) {
+    public record GameFormats(TextTemplate chat, TextTemplate reply) {
         public static final Codec<GameFormats> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            GameTemplate.CODEC.fieldOf("chat").forGetter(GameFormats::chat),
-            GameTemplate.CODEC.fieldOf("reply").forGetter(GameFormats::reply)
+            TextTemplate.CODEC.fieldOf("chat").forGetter(GameFormats::chat),
+            TextTemplate.CODEC.fieldOf("reply").forGetter(GameFormats::reply)
         ).apply(instance, GameFormats::new));
     }
 

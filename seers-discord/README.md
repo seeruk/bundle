@@ -87,17 +87,19 @@ aren't shown, so messages relayed from the game don't endlessly echo.
 
 - **Formatting:** Discord's formatting is kept as well as the game can show it (e.g. bold, italics,
   links, and code), and anything else is shown as it was written, so tags like `<red>` don't work.
-- **Spoilers:** these are shown as `[spoiler]`, with what's hidden shown when it's hovered over.
+  Links are aqua and underlined, and open when clicked.
+- **Spoilers:** these are shown as a dark grey `[spoiler]`, with what's hidden shown when it's hovered
+  over.
 - **Mentions:** these are shown by name, e.g. `@Seer` or `#general`, in green.
 - **Emoji:** ones the game can show are kept, and others are shown by name, e.g. `:smile:`, this 
   includes custom emojis.
 - **Replies:** these start with a `➥`, which shows who and what was replied to when it's hovered
   over.
 - **Attachments and stickers:** these are shown as `[image]`, `[file: notes.txt]`, or
-  `[sticker: Wave]`. Attachments can be clicked to open them.
-- **Long messages:** these are cut down to 256 characters and 5 lines, ending with `[...]`, which
-  shows the whole message when it's hovered over (up to 1,000 characters and 20 lines, so it fits
-  on screen).
+  `[sticker: Wave]`. Attachments are aqua and underlined, like links, and open when clicked.
+- **Long messages:** these are cut down to 256 characters and 5 lines, ending with a light purple
+  `[...]`, which shows the whole message when it's hovered over (up to 1,000 characters and 20
+  lines, so it fits on screen).
 
 ### Events
 

@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord.markdown;
 
+import dev.seeruk.bundle.text.TextColours;
 import dev.vankka.simpleast.core.ParseException;
 import dev.vankka.simpleast.core.TextStyle;
 import dev.vankka.simpleast.core.node.Node;
@@ -103,6 +104,7 @@ public final class ComponentRenderer {
             case MarkdownElement.CodeBlock _, MarkdownElement.Code _ -> content.withStyle(ChatFormatting.GRAY);
             case MarkdownElement.Quote _, MarkdownElement.SmallText _ -> content.withStyle(ChatFormatting.GRAY);
             case MarkdownElement.Heading _ -> content.withStyle(ChatFormatting.BOLD);
+            // Dark grey rather than TextColours.HOVERABLE, so a spoiler doesn't draw the eye to itself
             case MarkdownElement.Spoiler _ -> Component.literal("[spoiler]").withStyle(spoiler -> spoiler
                 .withColor(ChatFormatting.DARK_GRAY)
                 .withHoverEvent(new HoverEvent.ShowText(content)));
@@ -123,12 +125,15 @@ public final class ComponentRenderer {
 
     /**
      * Returns the label as a link to the URL, which opens it when clicked, and shows it when
-     * hovered over. If the URL isn't a valid one, there's no link, and the label is left as it is.
+     * hovered over. It's underlined, as links usually are, and coloured as something clickable (see
+     * {@link TextColours#CLICKABLE}). If the URL isn't a valid one, there's no link, and the label
+     * is left as it is.
      */
     public static MutableComponent linked(MutableComponent label, String url) {
         try {
             final var uri = new URI(url);
             return label.withStyle(style -> style
+                .withColor(TextColours.CLICKABLE)
                 .withUnderlined(true)
                 .withClickEvent(new ClickEvent.OpenUrl(uri))
                 .withHoverEvent(new HoverEvent.ShowText(Component.literal(url))));

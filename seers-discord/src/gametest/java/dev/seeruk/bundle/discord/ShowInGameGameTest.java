@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.discord;
 
 import dev.seeruk.bundle.discord.markdown.Mentions;
+import dev.seeruk.bundle.text.TextTemplate;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 
@@ -12,8 +13,8 @@ import static dev.seeruk.bundle.discord.DiscordFixtures.gameMessagesContaining;
 
 public class ShowInGameGameTest {
     private static final DiscordConfig.GameFormats FORMATS = new DiscordConfig.GameFormats(
-        new GameTemplate("[Discord] ${display_name}: ${message}"),
-        new GameTemplate("")
+        TextTemplate.parse("[Discord] ${display_name}: ${message}"),
+        TextTemplate.parse("")
     );
 
     @GameTest

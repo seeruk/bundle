@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.discord;
 
 import dev.seeruk.bundle.discord.markdown.ComponentRenderer;
+import dev.seeruk.bundle.text.TextColours;
 import dev.seeruk.bundle.text.TextComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -53,6 +54,7 @@ public final class GameRelay {
             rendered,
             MESSAGE,
             Component.literal(TOO_LONG).withStyle(style -> style
+                .withColor(TextColours.HOVERABLE)
                 .withHoverEvent(new HoverEvent.ShowText(shortened(rendered, FULL_MESSAGE))))
         );
 
