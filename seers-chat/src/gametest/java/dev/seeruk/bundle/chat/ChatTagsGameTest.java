@@ -1,7 +1,7 @@
 package dev.seeruk.bundle.chat;
 
+import dev.seeruk.bundle.text.TextColours;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -181,7 +181,7 @@ public class ChatTagsGameTest {
         final var hover = (HoverEvent.ShowText) Objects.requireNonNull(style.getHoverEvent());
         final var click = (ClickEvent.CopyToClipboard) Objects.requireNonNull(style.getClickEvent());
 
-        helper.assertValueEqual(style.getColor(), TextColor.fromLegacyFormat(ChatFormatting.AQUA), "colour");
+        helper.assertValueEqual(style.getColor(), TextColor.fromLegacyFormat(TextColours.CLICKABLE), "colour");
         helper.assertValueEqual(hover.value().getString(), dimension + "\nClick to copy", "hover text");
         helper.assertValueEqual(click.value(), copied, "copied text");
     }

@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.chat;
 
+import dev.seeruk.bundle.text.TextColours;
 import eu.pb4.placeholders.api.ParserContext;
 import eu.pb4.placeholders.api.node.DynamicTextNode;
 import eu.pb4.placeholders.api.parsers.tag.TextTag;
@@ -124,7 +125,7 @@ public final class ChatTags {
 
         return Component.literal("[%d, %d, %d]".formatted(pos.getX(), pos.getY(), pos.getZ()))
             .withStyle(style -> style
-                .withColor(ChatFormatting.AQUA)
+                .withColor(TextColours.CLICKABLE)
                 .withHoverEvent(new HoverEvent.ShowText(hover))
                 .withClickEvent(new ClickEvent.CopyToClipboard(
                     "%d %d %d".formatted(pos.getX(), pos.getY(), pos.getZ()))));
