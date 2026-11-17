@@ -9,12 +9,14 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static dev.seeruk.bundle.discord.SeersDiscord.LOGGER;
 
@@ -30,6 +32,13 @@ public final class DiscordBot {
         Permission.MESSAGE_SEND,
         Permission.MESSAGE_EMBED_LINKS,
         Permission.MANAGE_WEBHOOKS
+    );
+
+    // What the bot's told about by Discord: messages in servers, and what's in them. Message
+    // Content is a privileged intent, so it also has to be turned on in the developer portal.
+    private static final EnumSet<GatewayIntent> INTENTS = EnumSet.of(
+        GatewayIntent.GUILD_MESSAGES,
+        GatewayIntent.MESSAGE_CONTENT
     );
 
     private static final Duration SHUTDOWN_TIMEOUT = Duration.ofSeconds(5);
@@ -58,8 +67,11 @@ public final class DiscordBot {
 
     /**
      * Logs in to Discord in the background, if the config has a bot and a channel.
+     *
+     * @param config   The mod's config.
+     * @param received Given each message sent in the bot's channel, on one of JDA's threads.
      */
-    public static void start(DiscordConfig config) {
+    public static void start(DiscordConfig config, Consumer<DiscordMessage> received) {
         if (config.botToken().isBlank() || config.channelId().isBlank()) {
             LOGGER.info("Could not start, as bot_token and channel_id aren't both set in its config.yml");
             return;
@@ -69,7 +81,7 @@ public final class DiscordBot {
             stopped = false;
         }
 
-        Thread.ofVirtual().name("seers-discord-login").start(() -> login(config));
+        Thread.ofVirtual().name("seers-discord-login").start(() -> login(config, received));
     }
 
     /**
@@ -106,10 +118,11 @@ public final class DiscordBot {
         closeHttpClient(current);
     }
 
-    private static void login(DiscordConfig config) {
+    private static void login(DiscordConfig config, Consumer<DiscordMessage> received) {
         final JDA connected;
         try {
-            connected = JDABuilder.createLight(config.botToken(), List.of())
+            connected = JDABuilder.createLight(config.botToken(), INTENTS)
+                .addEventListeners(new DiscordListener(config.channelId(), received))
                 .setEnableShutdownHook(false) // The server controls the shutdown
                 .build();
         } catch (InvalidTokenException e) {
@@ -132,7 +145,8 @@ public final class DiscordBot {
         try {
             connected.awaitReady();
         } catch (InterruptedException | IllegalStateException e) {
-            // Stopped before it was ready
+            // Stopped before it was ready, either by the server stopping, or by Discord refusing the
+            // connection (which the listener logs)
             return;
         }
 

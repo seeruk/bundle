@@ -26,7 +26,7 @@ public record GameTemplate(String template) {
     );
 
     // These are the only placeholders, so anything else written like one is left as it was written
-    private static final Set<String> PLACEHOLDERS = Set.of("display_name", "username", "message");
+    private static final Set<String> PLACEHOLDERS = Set.of("reply", "display_name", "username", "message");
 
     private static final NodeParser PARSER = TextParsers.trusted()
         .placeholders(TagLikeParser.PLACEHOLDER_USER, PLACEHOLDERS, KEY)

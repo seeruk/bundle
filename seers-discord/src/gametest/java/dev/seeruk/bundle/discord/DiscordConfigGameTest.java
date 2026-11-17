@@ -20,8 +20,13 @@ public class DiscordConfigGameTest {
         );
         helper.assertValueEqual(
             config.formats().game().chat().template(),
-            "<blue>[Discord]</blue> <aqua><hover '@${username}'>${display_name}</hover></aqua>: ${message}",
+            "${reply}<blue><<hover 'Discord user @${username}'>${display_name}</hover>></blue> ${message}",
             "game chat format"
+        );
+        helper.assertValueEqual(
+            config.formats().game().reply().template(),
+            "<gray><hover '${display_name}: ${message}'>➥</hover></gray> ",
+            "game reply format"
         );
         helper.succeed();
     }

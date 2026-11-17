@@ -23,8 +23,14 @@ formats:
 
   # How messages from Discord are shown in game. ${message} is the message, with any formatting
   # from Discord (e.g. bold) turned into the game's. ${display_name} is the sender's name in the
-  # bot's server (e.g. their nickname), and ${username} is their Discord username, which by default
-  # is shown when hovering over their name, as names in a server aren't unique. Formats can use the
-  # game's formatting tags, e.g. <blue>.
+  # bot's server (e.g. their nickname), and ${username} is their Discord username. By default, they
+  # look like players' chat, with the name in blue so it's clear they're from Discord, and the
+  # username shown when hovering over the name, as names in a server aren't unique. Formats can use
+  # the game's formatting tags, e.g. <blue>.
+  #
+  # In chat, ${reply} is where the reply format goes, if the message is a reply (and nothing if it
+  # isn't). The reply format's placeholders are for the message that was replied to. By default,
+  # it's a ➥ that shows who and what was replied to when it's hovered over.
   game:
-    chat: "<blue>[Discord]</blue> <aqua><hover '@${username}'>${display_name}</hover></aqua>: ${message}"
+    chat: "${reply}<blue><<hover 'Discord user @${username}'>${display_name}</hover>></blue> ${message}"
+    reply: "<gray><hover '${display_name}: ${message}'>➥</hover></gray> "

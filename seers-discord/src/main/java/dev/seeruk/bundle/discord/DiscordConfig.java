@@ -51,11 +51,14 @@ public record DiscordConfig(String botToken, String channelId, Formats formats) 
      * Each format can use {@code ${display_name}} for the sender's name in the bot's server,
      * {@code ${username}} for their Discord username, and {@code ${message}} for their message.
      *
-     * @param chat How chat messages are shown.
+     * @param chat  How chat messages are shown. It can also use {@code ${reply}} for where the
+     *              reply format goes, if the message is a reply.
+     * @param reply How the message a reply replied to is shown, with its sender and message.
      */
-    public record GameFormats(GameTemplate chat) {
+    public record GameFormats(GameTemplate chat, GameTemplate reply) {
         public static final Codec<GameFormats> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            GameTemplate.CODEC.fieldOf("chat").forGetter(GameFormats::chat)
+            GameTemplate.CODEC.fieldOf("chat").forGetter(GameFormats::chat),
+            GameTemplate.CODEC.fieldOf("reply").forGetter(GameFormats::reply)
         ).apply(instance, GameFormats::new));
     }
 

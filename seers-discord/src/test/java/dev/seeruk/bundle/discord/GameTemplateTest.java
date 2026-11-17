@@ -62,6 +62,19 @@ public class GameTemplateTest {
                 )
             ),
             Arguments.of(
+                // The default format puts the name in angle brackets, like players' chat
+                "Leaves angle brackets that aren't tags as written",
+                "<blue><${display_name}></blue> ${message}",
+                VALUES,
+                List.of(
+                    chunk("<", BLUE),
+                    chunk("Seer", BLUE),
+                    chunk(">", BLUE),
+                    plain(" "),
+                    chunk("Hello", Style.EMPTY.withBold(true))
+                )
+            ),
+            Arguments.of(
                 "Shows values as they are, rather than as tags",
                 "${message}",
                 Map.of("message", Component.literal("<red>Hello</red>")),

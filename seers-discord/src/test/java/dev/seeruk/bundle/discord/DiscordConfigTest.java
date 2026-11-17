@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DiscordConfigTest {
     private static final DiscordConfig.Formats FORMATS = new DiscordConfig.Formats(
         new DiscordConfig.DiscordFormats(new DiscordTemplate("${message}"), new DiscordTemplate("_${message}_")),
-        new DiscordConfig.GameFormats(new GameTemplate("${display_name}: ${message}"))
+        new DiscordConfig.GameFormats(new GameTemplate("${display_name}: ${message}"), new GameTemplate("${message}"))
     );
 
     static Stream<Arguments> shouldReadChannelIds() {
@@ -51,7 +51,7 @@ public class DiscordConfigTest {
                 "channel_id", channelId,
                 "formats", Map.of(
                     "discord", Map.of("chat", "${message}", "emote", "_${message}_"),
-                    "game", Map.of("chat", "${display_name}: ${message}")
+                    "game", Map.of("chat", "${display_name}: ${message}", "reply", "${message}")
                 )
             )
         );

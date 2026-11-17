@@ -27,10 +27,11 @@ public record DiscordMessage(
 ) {
     /**
      * @param displayName What the replied-to message's sender is called in the bot's server.
+     * @param username    The replied-to message's sender's Discord username.
      * @param content     The replied-to message, in Discord's Markdown.
      * @param mentions    The names of what the replied-to message mentions.
      */
-    public record Reply(String displayName, String content, Mentions mentions) {}
+    public record Reply(String displayName, String username, String content, Mentions mentions) {}
 
     /**
      * @param fileName The file's name, e.g. {@code screenshot.png}.

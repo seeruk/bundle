@@ -26,7 +26,8 @@ Discord, including properly handling things like rate limits.
 ### Setup
 
 1. Create an application in the [Discord developer portal][2], and copy its bot's token from the
-   Bot page.
+   Bot page. On the same page, turn on Message Content Intent, so the bot can read messages in its
+   channel.
 2. Invite the bot to your Discord server, from the OAuth2 page: choose the `bot` scope, and the View
    Channels, Send Messages, Embed Links, and Manage Webhooks permissions.
 3. Turn on Developer Mode in Discord's advanced settings, then right-click the channel to bridge
@@ -41,13 +42,14 @@ permission). The server starts either way, and Discord stays off until it's set 
 Settings live in `config/seers-discord/config.yml` (see `config.dist.yml` next to it for every
 setting and their defaults).
 
-| Setting                 | Default                        | Description                                |
-|-------------------------|--------------------------------|--------------------------------------------|
-| `bot_token`             | `""`                           | The bot's token. Keep it secret!           |
-| `channel_id`            | `""`                           | The channel to bridge chat with.           |
-| `formats.discord.chat`  | `${message}`                   | How chat messages are written in Discord.  |
-| `formats.discord.emote` | `_${display_name} ${message}_` | How emotes (`/me`) are written in Discord. |
-| `formats.game.chat`     | See `config.dist.yml`          | How Discord messages are shown in game.    |
+| Setting                 | Default                        | Description                                           |
+|-------------------------|--------------------------------|-------------------------------------------------------|
+| `bot_token`             | `""`                           | The bot's token. Keep it secret!                      |
+| `channel_id`            | `""`                           | The channel to bridge chat with.                      |
+| `formats.discord.chat`  | `${message}`                   | How chat messages are written in Discord.             |
+| `formats.discord.emote` | `_${display_name} ${message}_` | How emotes (`/me`) are written in Discord.            |
+| `formats.game.chat`     | See `config.dist.yml`          | How Discord messages are shown in game.               |
+| `formats.game.reply`    | See `config.dist.yml`          | How what a Discord reply replied to is shown in game. |
 
 Formats for Discord can use Discord's formatting (e.g. `_italics_`), `${message}` for the message,
 and `${display_name}` for the player's name, as it's shown in chat.
@@ -55,7 +57,9 @@ and `${display_name}` for the player's name, as it's shown in chat.
 Formats for the game can use the game's formatting tags (e.g. `<blue>`), `${message}` for the
 message, `${display_name}` for the sender's name in the bot's server (e.g. their nickname), and
 `${username}` for their Discord username. By default, the username is shown when hovering over
-their name, as names in a server aren't unique.
+their name, as names in a server aren't unique. The chat format can also use `${reply}`, for where
+the reply format goes if the message is a reply, which has the same placeholders, for the message
+that was replied to.
 
 ### Chat in Discord
 
@@ -73,6 +77,27 @@ used as the side colour for the embed. This includes all information included in
 by default, and also a couple of elements from what would be shown in an advanced tooltip (e.g. 
 durability). The item's own name is shown at the bottom, so it's clear what it is, even if it's been
 renamed.
+
+### Chat from Discord
+
+Messages sent in the bot's channel are shown in game, by default like players' chat
+(`<Seer> Hello!`), with the sender's name in blue, as it is in the Discord server (e.g. their
+nickname). Hovering over their name shows their Discord username. Messages from bots and webhooks
+aren't shown, so messages relayed from the game don't endlessly echo.
+
+- **Formatting:** Discord's formatting is kept as well as the game can show it (e.g. bold, italics,
+  links, and code), and anything else is shown as it was written, so tags like `<red>` don't work.
+- **Spoilers:** these are shown as `[spoiler]`, with what's hidden shown when it's hovered over.
+- **Mentions:** these are shown by name, e.g. `@Seer` or `#general`, in green.
+- **Emoji:** ones the game can show are kept, and others are shown by name, e.g. `:smile:`, this 
+  includes custom emojis.
+- **Replies:** these start with a `➥`, which shows who and what was replied to when it's hovered
+  over.
+- **Attachments and stickers:** these are shown as `[image]`, `[file: notes.txt]`, or
+  `[sticker: Wave]`. Attachments can be clicked to open them.
+- **Long messages:** these are cut down to 256 characters and 5 lines, ending with `[...]`, which
+  shows the whole message when it's hovered over (up to 1,000 characters and 20 lines, so it fits
+  on screen).
 
 ### Events
 

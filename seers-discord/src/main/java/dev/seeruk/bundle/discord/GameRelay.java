@@ -2,7 +2,6 @@ package dev.seeruk.bundle.discord;
 
 import dev.seeruk.bundle.discord.markdown.ComponentRenderer;
 import dev.seeruk.bundle.text.TextComponents;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
@@ -16,18 +15,28 @@ import java.util.stream.Stream;
  * Relays what happens in Discord to the game, e.g. messages in the bot's channel.
  */
 public final class GameRelay {
-    // As long as a message players can type in game. Longer ones are cut down, ending with
-    // TOO_LONG, which counts towards the length.
-    static final int MAX_MESSAGE_LENGTH = 256;
+    // How much of a message is shown in chat, i.e. as long as a message players can type in game,
+    // and few enough lines that one message can't fill chat. Longer ones are cut down, ending
+    // with TOO_LONG, which counts towards the length.
+    static final Limit MESSAGE = new Limit(256, 5);
     static final String TOO_LONG = " [...]";
 
-    // Replies are only shown in a hover, so they're kept short
-    static final int MAX_REPLY_LENGTH = 100;
+    // How much of a cut down message is shown when hovering over its TOO_LONG, i.e. as much as
+    // fits on screen in a hover
+    static final Limit FULL_MESSAGE = new Limit(1000, 20);
 
-    // Messages (and replies) are also cut after this many lines, so one message can't fill chat
-    static final int MAX_LINES = 5;
+    // How much of a replied-to message is shown, as it's only extra context
+    static final Limit REPLY = new Limit(100, 5);
 
     private GameRelay() {}
+
+    /**
+     * How much text is shown.
+     *
+     * @param length The most characters shown (see {@link TextComponents#length}).
+     * @param lines  The most lines shown.
+     */
+    record Limit(int length, int lines) {}
 
     /**
      * Returns the message as it's shown in game chat, or nothing if there's nothing in it the game
@@ -37,9 +46,14 @@ public final class GameRelay {
      * @param formats How messages from Discord are shown.
      */
     public static Optional<Component> message(DiscordMessage message, DiscordConfig.GameFormats formats) {
+        final var rendered = ComponentRenderer.render(message.content(), message.mentions());
+
+        // If it's cut down, hovering over the end shows the rest of it
         final var content = shortened(
-            ComponentRenderer.render(message.content(), message.mentions()),
-            MAX_MESSAGE_LENGTH
+            rendered,
+            MESSAGE,
+            Component.literal(TOO_LONG).withStyle(style -> style
+                .withHoverEvent(new HoverEvent.ShowText(shortened(rendered, FULL_MESSAGE))))
         );
 
         // Attachments and stickers go after the message, separated by spaces
@@ -53,34 +67,36 @@ public final class GameRelay {
             return Optional.empty();
         }
 
-        // A reply shows what it replied to when it's hovered over
-        final var body = ComponentUtils.formatList(parts, Component.literal(" ")).copy();
-        message.reply().ifPresent(reply -> body.withStyle(style -> style
-            .withHoverEvent(new HoverEvent.ShowText(replied(reply)))));
-
         return Optional.of(formats.chat().format(Map.of(
+            "reply", message.reply().map(reply -> replied(reply, formats)).orElse(Component.empty()),
             "display_name", ComponentRenderer.literal(message.displayName()),
             "username", Component.literal(message.username()),
-            "message", body
+            "message", ComponentUtils.formatList(parts, Component.literal(" "))
         )));
     }
 
     /**
-     * Returns the text cut down to at most the given number of characters (see
-     * {@link TextComponents#length}), and {@link #MAX_LINES} lines, ending with {@link #TOO_LONG}
-     * if it's been cut.
+     * Returns the text cut down to the limit, ending with {@link #TOO_LONG} if it's been cut.
      */
-    private static Component shortened(Component text, int maxLength) {
+    private static Component shortened(Component text, Limit limit) {
+        return shortened(text, limit, Component.literal(TOO_LONG));
+    }
+
+    /**
+     * Returns the text cut down to the limit, ending with the given marker (which should show
+     * {@link #TOO_LONG}) if it's been cut.
+     */
+    private static Component shortened(Component text, Limit limit, Component tooLong) {
         final var plain = text.getString();
         var cut = Integer.MAX_VALUE;
 
         // Too long, so cut to leave room for TOO_LONG
-        if (TextComponents.length(plain) > maxLength) {
-            cut = maxLength - TOO_LONG.length();
+        if (TextComponents.length(plain) > limit.length()) {
+            cut = limit.length() - TOO_LONG.length();
         }
 
         // Too many lines, so cut at the end of the last line that's allowed, if that's sooner
-        final var extraLine = lineBreak(plain, MAX_LINES);
+        final var extraLine = lineBreak(plain, limit.lines());
         if (extraLine >= 0) {
             cut = Math.min(cut, TextComponents.length(plain.substring(0, extraLine)));
         }
@@ -89,7 +105,7 @@ public final class GameRelay {
             return text;
         }
 
-        return Component.empty().append(TextComponents.truncate(text, cut)).append(TOO_LONG);
+        return Component.empty().append(TextComponents.truncate(text, cut)).append(tooLong);
     }
 
     /**
@@ -108,19 +124,14 @@ public final class GameRelay {
     }
 
     /**
-     * Returns what's shown when hovering over a reply, i.e. who it replied to, and what they said.
+     * Returns the reply format, filled in with the message that's been replied to.
      */
-    private static Component replied(DiscordMessage.Reply reply) {
-        final var header = Component.literal("Replying to ")
-            .append(ComponentRenderer.literal(reply.displayName()))
-            .append(":")
-            .withStyle(ChatFormatting.GRAY);
-        final var content = shortened(ComponentRenderer.render(reply.content(), reply.mentions()), MAX_REPLY_LENGTH);
-
-        // The header's grey is only its own, so it's not carried into the message
-        return content.getString().isEmpty()
-            ? header
-            : Component.empty().append(header).append("\n").append(content);
+    private static Component replied(DiscordMessage.Reply reply, DiscordConfig.GameFormats formats) {
+        return formats.reply().format(Map.of(
+            "display_name", ComponentRenderer.literal(reply.displayName()),
+            "username", Component.literal(reply.username()),
+            "message", shortened(ComponentRenderer.render(reply.content(), reply.mentions()), REPLY)
+        ));
     }
 
     /**
