@@ -49,6 +49,32 @@ public class TextTemplateTest {
     }
 
     @Test
+    void showsValuesAsTheyAreRatherThanAsTags() {
+        final var formatted = TextTemplate.parse("${message}").format(Map.of(
+            "message",
+            Component.literal("<red>Hello</red>")
+        ));
+
+        assertEquals("<red>Hello</red>", formatted.getString());
+        assertEquals(null, formatted.toFlatList().getFirst().getStyle().getColor());
+    }
+
+    @Test
+    void leavesAngleBracketsThatArentTagsAsWritten() {
+        // e.g. a name in angle brackets, like players' chat
+        final var formatted = TextTemplate.parse("<blue><${player}></blue>").format(Map.of(
+            "player",
+            Component.literal("Seer")
+        ));
+
+        assertEquals("<Seer>", formatted.getString());
+        formatted.toFlatList().forEach(part -> assertEquals(
+            TextColor.fromLegacyFormat(ChatFormatting.BLUE),
+            part.getStyle().getColor()
+        ));
+    }
+
+    @Test
     void leavesPlaceholdersWithoutValuesAsWritten() {
         assertEquals("${other} is now AFK", TextTemplate.parse("${other} is now AFK").format(Map.of()).getString());
     }
