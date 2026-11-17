@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.markdown.MarkdownRenderer;
 import dev.seeruk.bundle.text.TextComponents;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -94,7 +95,7 @@ public final class ItemEmbeds {
         }
 
         final var description = details.stream()
-            .map(DiscordMarkdown::of)
+            .map(MarkdownRenderer::render)
             .collect(Collectors.joining("\n"))
             .strip();
 

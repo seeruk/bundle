@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.markdown.MarkdownRenderer;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.ChatFormatting;
@@ -59,7 +60,7 @@ public class ChatRelayGameTest {
 
         final var message = relay(player, ChatType.EMOTE_COMMAND, Component.literal("waves"));
 
-        final var name = DiscordMarkdown.escape(player.getGameProfile().name());
+        final var name = MarkdownRenderer.escape(player.getGameProfile().name());
         helper.assertValueEqual(message.map(WebhookMessage::content), Optional.of("_" + name + " waves_"), "content");
         helper.succeed();
     }

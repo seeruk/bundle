@@ -1,5 +1,7 @@
 package dev.seeruk.bundle.text;
 
+import dev.seeruk.bundle.core.testing.TextChunks;
+import dev.seeruk.bundle.core.testing.TextChunks.Chunk;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
@@ -12,11 +14,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
+import static dev.seeruk.bundle.core.testing.TextChunks.chunk;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TextComponentsTest {
@@ -68,7 +69,7 @@ public class TextComponentsTest {
         @ParameterizedTest(name = "{0}")
         @MethodSource
         void shouldSplitLines(final String description, final Component text, final List<List<Chunk>> expected) {
-            assertEquals(expected, TextComponents.splitLines(text).stream().map(TextComponentsTest::chunks).toList());
+            assertEquals(expected, TextComponents.splitLines(text).stream().map(TextChunks::chunks).toList());
         }
     }
 
@@ -144,7 +145,7 @@ public class TextComponentsTest {
         void shouldWrap(final String description, final Component line, final int maxLength, final List<List<Chunk>> expected) {
             assertEquals(
                 expected,
-                TextComponents.wrap(line, maxLength).stream().map(TextComponentsTest::chunks).toList()
+                TextComponents.wrap(line, maxLength).stream().map(TextChunks::chunks).toList()
             );
         }
     }
@@ -195,27 +196,7 @@ public class TextComponentsTest {
     // A family emoji, made of three people joined together
     private static final String FAMILY = "👨‍👩‍👧";
 
-    // Each run of text and its style, so tests don't depend on how components are nested
-    record Chunk(String text, Style style) {}
-
-    private static Chunk chunk(String text, Style style) {
-        return new Chunk(text, style);
-    }
-
     private static MutableComponent literal(String text, Style style) {
         return Component.literal(text).withStyle(style);
-    }
-
-    private static List<Chunk> chunks(Component text) {
-        final var chunks = new ArrayList<Chunk>();
-        text.visit(
-            (style, content) -> {
-                if (!content.isEmpty()) {
-                    chunks.add(new Chunk(content, style));
-                }
-                return Optional.empty();
-            }, Style.EMPTY
-        );
-        return chunks;
     }
 }

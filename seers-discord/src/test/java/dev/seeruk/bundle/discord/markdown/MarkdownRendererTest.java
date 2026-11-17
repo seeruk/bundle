@@ -1,4 +1,4 @@
-package dev.seeruk.bundle.discord;
+package dev.seeruk.bundle.discord.markdown;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DiscordMarkdownTest {
+public class MarkdownRendererTest {
     private static final Style BOLD = Style.EMPTY.withBold(true);
     private static final Style ITALIC = Style.EMPTY.withItalic(true);
 
@@ -73,7 +73,7 @@ public class DiscordMarkdownTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource
     void shouldWriteMarkdown(final String description, final Component text, final String expected) {
-        assertEquals(expected, DiscordMarkdown.of(text));
+        assertEquals(expected, MarkdownRenderer.render(text));
     }
 
     private static Component literal(String text, Style style) {

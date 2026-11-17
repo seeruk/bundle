@@ -15,6 +15,12 @@ snakeyaml-engine = "3.2"
 # https://central.sonatype.com/artifact/net.dv8tion/JDA
 jda = "6.7.0"
 
+# https://central.sonatype.com/artifact/net.fellbaum/jemoji
+jemoji = "2.1.0"
+
+# https://central.sonatype.com/artifact/dev.vankka/SimpleAST
+simpleast = "2.2.8"
+
 # Check https://fabricmc.net/develop for the latest Fabric versions.
 
 [libraries]
@@ -26,4 +32,6 @@ junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", vers
 loom-plugin = { module = "net.fabricmc.fabric-loom:net.fabricmc.fabric-loom.gradle.plugin", version.ref = "loom" }
 placeholder-api = { module = "eu.pb4:placeholder-api", version.ref = "placeholder-api" }
 jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
+jemoji = { module = "net.fellbaum:jemoji", version.ref = "jemoji" }
+simpleast = { module = "dev.vankka:SimpleAST", version.ref = "simpleast" }
 snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyaml-engine" }

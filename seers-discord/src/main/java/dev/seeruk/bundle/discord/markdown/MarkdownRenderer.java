@@ -1,4 +1,4 @@
-package dev.seeruk.bundle.discord;
+package dev.seeruk.bundle.discord.markdown;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -9,9 +9,10 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
- * Utilities for working with Discord Markdown, either from text or Minecraft components.
+ * Takes Minecraft Components and converts them to Discord Markdown, based on the styling
+ * of the Components.
  */
-public final class DiscordMarkdown {
+public final class MarkdownRenderer {
     // Characters Discord's Markdown can treat specially. Discord shows any punctuation with a
     // backslash before it as it is.
     private static final Pattern SPECIAL = Pattern.compile("[\\\\*_~`|<>#\\-\\[\\]]");
@@ -25,7 +26,7 @@ public final class DiscordMarkdown {
     // read as one run of asterisks...
     private static final String SEPARATOR = "\u200B"; // It's a zero-width space
 
-    private DiscordMarkdown() {}
+    private MarkdownRenderer() {}
 
     /**
      * Escapes the text, so Discord shows it as it is, rather than as Markdown. Links are left as
@@ -53,7 +54,7 @@ public final class DiscordMarkdown {
      * The given component returned as a string with styles we can convert to Discord's Markdown
      * converted, and everything else escaped. Discord can't show colours, so they're left out.
      */
-    public static String of(Component text) {
+    public static String render(Component text) {
         final var markdown = new StringBuilder();
         var markedBefore = false;
 

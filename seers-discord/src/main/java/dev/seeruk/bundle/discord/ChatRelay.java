@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.markdown.MarkdownRenderer;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,8 +44,8 @@ public final class ChatRelay {
         // The name chat shows, e.g. with the player's nickname, or their team's prefix
         final var displayName = chat.name().getString();
         final var content = format.format(Map.of(
-            "display_name", DiscordMarkdown.escape(displayName),
-            "message", DiscordMarkdown.of(message.decoratedContent())
+            "display_name", MarkdownRenderer.escape(displayName),
+            "message", MarkdownRenderer.render(message.decoratedContent())
         ));
 
         return Optional.of(new WebhookMessage(
