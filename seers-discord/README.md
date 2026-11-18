@@ -118,7 +118,7 @@ coloured like the game shows them:
   `/advancement grant @s everything`), one summary is sent instead, e.g. "Seer completed 112
   advancements".
 - **Going AFK and coming back:** e.g. "Seer is now AFK", in yellow, if [Seer's AFK][4] is installed.
-- **The server starting and stopping:** in green and red.
+- **The server starting and stopping:** e.g. "🟢 The server has started", in green and red.
 
 Each can be turned off, reworded, or recoloured in the config's `discord.events` section, using
 Minecraft's colour names (e.g. `gold`) or hex (e.g. `#FFAA00`). See `config.dist.yml` for each

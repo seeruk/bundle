@@ -71,11 +71,11 @@ discord:
 
     server_start:
       enabled: true
-      format: "The server has started"
+      format: "🟢 The server has started"
       colour: green
     server_stop:
       enabled: true
-      format: "The server has stopped"
+      format: "🔴 The server has stopped"
       colour: red
 
 # Everything shown in game from Discord.

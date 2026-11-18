@@ -158,10 +158,10 @@ public class DiscordEventsGameTest {
         final var started = DiscordRelay.serverStarted(EVENTS).orElseThrow().embeds().getFirst();
         final var stopped = DiscordRelay.serverStopped(EVENTS).orElseThrow().embeds().getFirst();
 
-        helper.assertValueEqual(started.getAuthor().getName(), "The server has started", "started");
+        helper.assertValueEqual(started.getAuthor().getName(), "🟢 The server has started", "started");
         helper.assertTrue(started.getAuthor().getIconUrl() == null, "Should have no face");
         helper.assertValueEqual(started.getColorRaw(), 0x55FF55, "started colour");
-        helper.assertValueEqual(stopped.getAuthor().getName(), "The server has stopped", "stopped");
+        helper.assertValueEqual(stopped.getAuthor().getName(), "🔴 The server has stopped", "stopped");
         helper.assertValueEqual(stopped.getColorRaw(), 0xFF5555, "stopped colour");
         helper.succeed();
     }
