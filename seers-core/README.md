@@ -6,6 +6,8 @@ Shared core library mod for my mods.
 
 - **Command Registration Helpers**: Provides utilities for registering commands along with a
   namespaced alias, ensuring commands remain accessible even if another mod takes the original name.
+- **Player Events**: Events for things Vanilla and Fabric don't have events for: an advancement's
+  announcement, and a player's death message, each fired only when the game shows it in chat.
 - **Custom Actions**: Lets mods handle Vanilla's custom click actions (e.g. a dialog's buttons),
   along with the player who sent them, which Vanilla doesn't provide.
 - **Config**: Utilities for loading and parsing config, with opinionated behaviour around filenames,

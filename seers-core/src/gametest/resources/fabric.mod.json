@@ -7,10 +7,12 @@
     "environment": "*",
     "entrypoints": {
         "main": [
+            "dev.seeruk.bundle.core.api.PlayerEventsGameTest",
             "dev.seeruk.bundle.core.command.NamespacedCommandsGameTest"
         ],
         "fabric-gametest": [
             "dev.seeruk.bundle.core.action.CustomActionsGameTest",
+            "dev.seeruk.bundle.core.api.PlayerEventsGameTest",
             "dev.seeruk.bundle.core.command.NamespacedCommandsGameTest",
             "dev.seeruk.bundle.core.config.ModConfigGameTest",
             "dev.seeruk.bundle.core.stats.ScoreboardStatGameTest",
