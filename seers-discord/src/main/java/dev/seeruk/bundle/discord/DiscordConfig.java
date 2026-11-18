@@ -8,9 +8,10 @@ import dev.seeruk.bundle.text.TextTemplate;
 /**
  * @param botToken  The bot's token, which it logs in with.
  * @param channelId The ID of the channel the bot should bridge chat with.
- * @param formats   How messages are written in Discord, and shown in game.
+ * @param discord   How everything sent to Discord looks there, i.e. chat from the game, and events.
+ * @param game      How everything shown in game from Discord looks, i.e. chat from Discord.
  */
-public record DiscordConfig(String botToken, String channelId, Formats formats) {
+public record DiscordConfig(String botToken, String channelId, DiscordFormats discord, GameFormats game) {
     // Discord IDs are numbers, which YAML reads as numbers unless they're quoted, so either is fine
     private static final Codec<String> ID_CODEC = Codec.withAlternative(Codec.STRING, Codec.LONG, String::valueOf)
         .validate(id -> id.isEmpty() || id.chars().allMatch(Character::isDigit)
@@ -20,37 +21,30 @@ public record DiscordConfig(String botToken, String channelId, Formats formats) 
     public static final Codec<DiscordConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.STRING.fieldOf("bot_token").forGetter(DiscordConfig::botToken),
         ID_CODEC.fieldOf("channel_id").forGetter(DiscordConfig::channelId),
-        Formats.CODEC.fieldOf("formats").forGetter(DiscordConfig::formats)
+        DiscordFormats.CODEC.fieldOf("discord").forGetter(DiscordConfig::discord),
+        GameFormats.CODEC.fieldOf("game").forGetter(DiscordConfig::game)
     ).apply(instance, DiscordConfig::new));
 
     /**
-     * @param discord How messages from the game are written in Discord.
-     * @param game    How messages from Discord are shown in game.
-     */
-    public record Formats(DiscordFormats discord, GameFormats game) {
-        public static final Codec<Formats> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            DiscordFormats.CODEC.fieldOf("discord").forGetter(Formats::discord),
-            GameFormats.CODEC.fieldOf("game").forGetter(Formats::game)
-        ).apply(instance, Formats::new));
-    }
-
-    /**
-     * Each format can use {@code ${display_name}} for the player's name, as it's shown in chat, and
-     * {@code ${message}} for their message.
+     * How everything sent to Discord looks there. The chat formats can use {@code ${display_name}}
+     * for the player's name, as it's shown in chat, and {@code ${message}} for their message.
      *
-     * @param chat  How chat messages are written.
-     * @param emote How emotes (i.e. {@code /me}) are written.
+     * @param chat   How chat messages are written.
+     * @param emote  How emotes (i.e. {@code /me}) are written.
+     * @param events Which events from the game are sent, and how they look.
      */
-    public record DiscordFormats(DiscordTemplate chat, DiscordTemplate emote) {
+    public record DiscordFormats(DiscordTemplate chat, DiscordTemplate emote, EventsConfig events) {
         public static final Codec<DiscordFormats> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             DiscordTemplate.CODEC.fieldOf("chat").forGetter(DiscordFormats::chat),
-            DiscordTemplate.CODEC.fieldOf("emote").forGetter(DiscordFormats::emote)
+            DiscordTemplate.CODEC.fieldOf("emote").forGetter(DiscordFormats::emote),
+            EventsConfig.CODEC.fieldOf("events").forGetter(DiscordFormats::events)
         ).apply(instance, DiscordFormats::new));
     }
 
     /**
-     * Each format can use {@code ${display_name}} for the sender's name in the bot's server,
-     * {@code ${username}} for their Discord username, and {@code ${message}} for their message.
+     * How everything shown in game from Discord looks. Each format can use {@code ${display_name}}
+     * for the sender's name in the bot's server, {@code ${username}} for their Discord username,
+     * and {@code ${message}} for their message.
      *
      * @param chat  How chat messages are shown. It can also use {@code ${reply}} for where the
      *              reply format goes, if the message is a reply.
@@ -70,6 +64,7 @@ public record DiscordConfig(String botToken, String channelId, Formats formats) 
     public String toString() {
         return "DiscordConfig[botToken=" + (botToken.isBlank() ? "" : "<hidden>")
             + ", channelId=" + channelId
-            + ", formats=" + formats + "]";
+            + ", discord=" + discord
+            + ", game=" + game + "]";
     }
 }

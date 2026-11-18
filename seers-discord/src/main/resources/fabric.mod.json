@@ -22,5 +22,8 @@
         "minecraft": "~26.3",
         "fabricloader": ">=0.20.1",
         "fabric-api": "*"
+    },
+    "suggests": {
+        "seers-afk": "*"
     }
 }

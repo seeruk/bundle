@@ -56,9 +56,9 @@ public final class DiscordBot {
     // The webhook messages are sent through, once the bot's ready. Guarded by LOCK.
     private static Webhook webhook;
 
-    // Messages sent while the webhook is being replaced, to send once it has been, and how many
-    // didn't fit. Only set while it's being replaced, and capped, in case that takes a while.
-    // Guarded by LOCK.
+    // Messages sent while there's no webhook yet (i.e. while the bot's logging in, or replacing a
+    // deleted webhook), to send once there is, and how many didn't fit. Only set while waiting for
+    // a webhook, and capped, in case that takes a while. Guarded by LOCK.
     private static final int MAX_PENDING = 50;
     private static List<WebhookMessage> pending;
     private static int dropped;
@@ -77,8 +77,11 @@ public final class DiscordBot {
             return;
         }
 
+        // Messages sent while logging in (e.g. the server starting) wait for the webhook
         synchronized (LOCK) {
             stopped = false;
+            pending = new ArrayList<>();
+            dropped = 0;
         }
 
         Thread.ofVirtual().name("seers-discord-login").start(() -> login(config, received));
@@ -127,9 +130,11 @@ public final class DiscordBot {
                 .build();
         } catch (InvalidTokenException e) {
             LOGGER.error("Couldn't log in to Discord, as bot_token is invalid");
+            ready(null, Optional.empty());
             return;
         } catch (RuntimeException e) {
             LOGGER.error("Couldn't log in to Discord", e);
+            ready(null, Optional.empty());
             return;
         }
 
@@ -147,18 +152,18 @@ public final class DiscordBot {
         } catch (InterruptedException | IllegalStateException e) {
             // Stopped before it was ready, either by the server stopping, or by Discord refusing the
             // connection (which the listener logs)
+            ready(connected, Optional.empty());
             return;
         }
 
-        usableChannel(connected, config.channelId())
-            .flatMap(channel -> findOrCreateWebhook(connected, channel))
-            .ifPresent(found -> setWebhook(connected, found));
+        ready(connected, usableChannel(connected, config.channelId())
+            .flatMap(channel -> findOrCreateWebhook(connected, channel)));
     }
 
     /**
-     * Sends the message through the bot's webhook, if it's connected, or once the webhook's been
-     * replaced, if it's being replaced. Mentions are turned off, so players can't ping anyone (e.g.
-     * with {@code @everyone}).
+     * Sends the message through the bot's webhook, if it's connected, or once there's a webhook, if
+     * the bot's logging in, or replacing a deleted one. Mentions are turned off, so players can't
+     * ping anyone (e.g. with {@code @everyone}).
      */
     public static void send(WebhookMessage message) {
         final Webhook current;
@@ -174,11 +179,15 @@ public final class DiscordBot {
             return;
         }
 
-        current.sendMessage(message.content())
-            .setUsername(message.username())
+        // Discord refuses a message with empty content, so one that's only embeds is sent as such
+        final var action = message.content().isEmpty()
+            ? current.sendMessageEmbeds(message.embeds())
+            : current.sendMessage(message.content()).setEmbeds(message.embeds());
+
+        // A null username and avatar mean the webhook's own are used
+        action.setUsername(message.username())
             .setAvatarUrl(message.avatarUrl())
             .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
-            .setEmbeds(message.embeds())
             .queue(
                 null, error -> {
                     if (error instanceof ErrorResponseException response
@@ -256,56 +265,54 @@ public final class DiscordBot {
         final var connected = deleted.getJDA();
         final var channel = deleted.getChannel().asTextChannel();
 
-        Thread.ofVirtual().name("seers-discord-webhook").start(() -> {
-            final var found = findOrCreateWebhook(connected, channel);
-
-            // Set together, so nothing sent in between is lost. If the server's stopped since this
-            // connection was made, the webhook's left as it is, and nothing waiting is sent.
-            final List<WebhookMessage> waiting;
-            final int overflow;
-            synchronized (LOCK) {
-                if (jda != connected) {
-                    return;
-                }
-                waiting = pending;
-                overflow = dropped;
-                pending = null;
-                webhook = found.orElse(null);
-            }
-
-            if (found.isEmpty()) {
-                LOGGER.warn("{} messages weren't sent to Discord, as there's no webhook", waiting.size() + overflow);
-                return;
-            }
-            if (overflow > 0) {
-                LOGGER.warn("{} messages weren't sent to Discord, as too many were waiting", overflow);
-            }
-
-            waiting.forEach(DiscordBot::send);
-        });
+        Thread.ofVirtual().name("seers-discord-webhook").start(() ->
+            ready(connected, findOrCreateWebhook(connected, channel)));
     }
 
     /**
-     * Adds the message to those waiting for a new webhook, or counts it as dropped if there are
-     * already too many.
+     * Sets the webhook messages are sent through, or none if there isn't one, and sends (or drops)
+     * the messages that were waiting for it.
+     *
+     * @param connected The connection the webhook belongs to, or null if the bot couldn't log in.
+     *                  If the server's stopped since it was made, nothing's changed or sent.
+     * @param found     The webhook, if there is one.
+     */
+    private static void ready(JDA connected, Optional<Webhook> found) {
+        // Set together, so nothing sent in between is lost
+        final List<WebhookMessage> waiting;
+        final int overflow;
+        synchronized (LOCK) {
+            if (jda != connected || pending == null) {
+                return;
+            }
+            waiting = pending;
+            overflow = dropped;
+            pending = null;
+            webhook = found.orElse(null);
+        }
+
+        if (found.isEmpty()) {
+            if (waiting.size() + overflow > 0) {
+                LOGGER.warn("{} messages weren't sent to Discord, as there's no webhook", waiting.size() + overflow);
+            }
+            return;
+        }
+        if (overflow > 0) {
+            LOGGER.warn("{} messages weren't sent to Discord, as too many were waiting", overflow);
+        }
+
+        waiting.forEach(DiscordBot::send);
+    }
+
+    /**
+     * Adds the message to those waiting for a webhook, or counts it as dropped if there are already
+     * too many.
      */
     private static void addPending(WebhookMessage message) {
         if (pending.size() < MAX_PENDING) {
             pending.add(message);
         } else {
             dropped++;
-        }
-    }
-
-    /**
-     * Sets the webhook messages are sent through, unless the server's stopped since the connection
-     * it belongs to was made.
-     */
-    private static void setWebhook(JDA connected, Webhook found) {
-        synchronized (LOCK) {
-            if (jda == connected) {
-                webhook = found;
-            }
         }
     }
 

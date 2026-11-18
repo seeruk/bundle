@@ -12,16 +12,75 @@ bot_token: ""
 # advanced settings, then right-click the channel and choose Copy Channel ID.
 channel_id: ""
 
-formats:
-  # How players' messages are written in Discord, where they're sent as the player, with their
-  # name and face. ${message} is the message, with any formatting from the game (e.g. bold) turned
-  # into Discord's. ${display_name} is the player's name, as it's shown in chat (e.g. with a
-  # nickname). Both can use Discord's formatting, e.g. _italics_.
-  discord:
-    chat: "${message}"
-    emote: "_${display_name} ${message}_"
+# Everything sent to Discord.
+discord:
+  # How players' chat messages and emotes (/me) are written in Discord, where they're sent as the
+  # player, with their name and face. ${message} is the message, with any formatting from the game
+  # (e.g. bold) turned into Discord's. ${display_name} is the player's name, as it's shown in chat
+  # (e.g. with a nickname). Both can use Discord's formatting, e.g. _italics_.
+  chat: "${message}"
+  emote: "_${display_name} ${message}_"
 
-  # How messages from Discord are shown in game. ${message} is the message, with any formatting
+  # Events from the game that are sent to Discord, as small embeds. Each can be turned off with
+  # enabled: false. An event's format is the line at the top of its embed, next to the player's
+  # face. Discord doesn't show formatting there, so it's plain text. Formats for player events can
+  # use ${display_name} for the player's name, as it's shown in chat (e.g. with a nickname), and
+  # ${username} for their username. Colours are Minecraft's colour names (e.g. yellow, or
+  # dark_purple), or hex (e.g. "#FFAA00"). The defaults match how the game shows each event.
+  events:
+    join:
+      enabled: true
+      format: "${display_name} joined the game"
+      colour: yellow
+    quit:
+      enabled: true
+      format: "${display_name} left the game"
+      colour: yellow
+
+    # ${message} is the game's death message, e.g. "Seer was slain by Zombie". Deaths are only sent
+    # when the game shows them in chat (i.e. with the show_death_messages game rule on).
+    death:
+      enabled: true
+      format: "${message}"
+      colour: red
+
+    # ${message} is the game's announcement, e.g. "Seer has made the advancement [Stone Age]",
+    # ${advancement} is the advancement's title, and ${description} is its description. Only
+    # advancements the game announces in chat are sent. description_format is the embed's main text,
+    # below the format's line, which can use Discord's formatting (e.g. _italics_), or nothing if
+    # it's empty. Challenges use challenge_colour. When a player completes more advancements at once
+    # than fit in one Discord message (e.g. with a command), one embed using summary_format is sent
+    # instead, where ${count} is how many they completed.
+    advancement:
+      enabled: true
+      format: "${message}"
+      description_format: "${description}"
+      summary_format: "${display_name} completed ${count} advancements"
+      colour: green
+      challenge_colour: dark_purple
+
+    # Only sent if Seer's AFK is installed.
+    afk:
+      enabled: true
+      format: "${display_name} is now AFK"
+      colour: yellow
+    afk_return:
+      enabled: true
+      format: "${display_name} is no longer AFK"
+      colour: yellow
+
+    server_start:
+      enabled: true
+      format: "The server has started"
+      colour: green
+    server_stop:
+      enabled: true
+      format: "The server has stopped"
+      colour: red
+
+# Everything shown in game from Discord.
+game:
+  # How chat messages from Discord are shown in game. ${message} is the message, with any formatting
   # from Discord (e.g. bold) turned into the game's. ${display_name} is the sender's name in the
   # bot's server (e.g. their nickname), and ${username} is their Discord username. By default, they
   # look like players' chat, with the name in blue so it's clear they're from Discord, and the
@@ -31,6 +90,5 @@ formats:
   # In chat, ${reply} is where the reply format goes, if the message is a reply (and nothing if it
   # isn't). The reply format's placeholders are for the message that was replied to. By default,
   # it's a ➥ that shows who and what was replied to when it's hovered over.
-  game:
-    chat: "${reply}<blue><<hover 'Discord user @${username}'>${display_name}</hover>></blue> ${message}"
-    reply: "<gray><hover '${display_name}: ${message}'>➥</hover></gray> "
+  chat: "${reply}<blue><<hover 'Discord user @${username}'>${display_name}</hover>></blue> ${message}"
+  reply: "<gray><hover '${display_name}: ${message}'>➥</hover></gray> "

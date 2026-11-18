@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.core.config.ModConfig;
 import dev.seeruk.bundle.discord.markdown.MarkdownRenderer;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -21,7 +22,9 @@ import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 public class DiscordRelayGameTest {
     private static final DiscordConfig.DiscordFormats FORMATS = new DiscordConfig.DiscordFormats(
         new DiscordTemplate("${message}"),
-        new DiscordTemplate("_${display_name} ${message}_")
+        new DiscordTemplate("_${display_name} ${message}_"),
+        // Chat doesn't use them, so the defaults are fine
+        ModConfig.load(SeersDiscord.MOD_ID, DiscordConfig.CODEC).discord().events()
     );
 
     @GameTest

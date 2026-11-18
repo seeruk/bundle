@@ -47,6 +47,9 @@ dependencies {
     implementation(project(":seers-core"))
     implementation(project(":seers-text"))
 
+    // Optional dependencies are compile-only
+    compileOnly(project(":seers-afk"))
+
     testImplementation(testFixtures(project(":seers-core")))
     gametestImplementation(testFixtures(project(":seers-core")))
 }

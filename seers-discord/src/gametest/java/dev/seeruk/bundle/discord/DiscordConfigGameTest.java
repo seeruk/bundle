@@ -12,19 +12,19 @@ public class DiscordConfigGameTest {
 
         helper.assertValueEqual(config.botToken(), "", "bot token");
         helper.assertValueEqual(config.channelId(), "", "channel ID");
-        helper.assertValueEqual(config.formats().discord().chat().template(), "${message}", "chat format");
+        helper.assertValueEqual(config.discord().chat().template(), "${message}", "chat format");
         helper.assertValueEqual(
-            config.formats().discord().emote().template(),
+            config.discord().emote().template(),
             "_${display_name} ${message}_",
             "emote format"
         );
         helper.assertValueEqual(
-            config.formats().game().chat().template(),
+            config.game().chat().template(),
             "${reply}<blue><<hover 'Discord user @${username}'>${display_name}</hover>></blue> ${message}",
             "game chat format"
         );
         helper.assertValueEqual(
-            config.formats().game().reply().template(),
+            config.game().reply().template(),
             "<gray><hover '${display_name}: ${message}'>➥</hover></gray> ",
             "game reply format"
         );

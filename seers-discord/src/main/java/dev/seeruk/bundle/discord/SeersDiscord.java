@@ -1,9 +1,13 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.core.api.PlayerEvents;
 import dev.seeruk.bundle.core.config.ModConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
@@ -21,17 +25,48 @@ public class SeersDiscord implements ModInitializer {
     public void onInitialize() {
         final var config = ModConfig.load(MOD_ID, DiscordConfig.CODEC);
 
-        // Messages from Discord arrive on JDA's threads, so they're shown from the server's own
-        ServerLifecycleEvents.SERVER_STARTED.register(server ->
+        final var events = config.discord().events();
+
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            // Messages from Discord arrive on JDA's threads, so they're shown from the server's own
             DiscordBot.start(
                 config, message ->
-                    server.execute(() -> broadcast(server, message, config.formats().game()))
-            ));
+                    server.execute(() -> broadcast(server, message, config.game()))
+            );
+
+            // Sent once the bot's logged in, which happens in the background
+            DiscordRelay.serverStarted(events).ifPresent(DiscordBot::send);
+        });
+
+        // The bot only stops once the server has, so the server stopping is sent before it does
+        ServerLifecycleEvents.SERVER_STOPPING.register(server ->
+            DiscordRelay.serverStopped(events).ifPresent(DiscordBot::send));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> DiscordBot.stop());
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+            DiscordRelay.joined(handler.player, events).ifPresent(DiscordBot::send));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
+            DiscordRelay.left(handler.player, events).ifPresent(DiscordBot::send));
+        PlayerEvents.DEATH_MESSAGE.register((player, message) ->
+            DiscordRelay.died(player, message, events).ifPresent(DiscordBot::send));
+
+        // Advancements require some more specific handling. We don't want to fill the JDA queue
+        // with tons of advancements if someone is granted tons of them at once. To handle that, we
+        // batch them up, and send them at the end of the current tick.
+        final var advancements = new AdvancementBatcher();
+        PlayerEvents.ADVANCEMENT_MESSAGE.register((player, advancement, message) ->
+            DiscordRelay.advancement(player, advancement, message, events)
+                .ifPresent(embed -> advancements.add(player, embed)));
+        ServerTickEvents.END_SERVER_TICK.register(server ->
+            advancements.flush(events).forEach(DiscordBot::send));
+
+        if (FabricLoader.getInstance().isModLoaded("seers-afk")) {
+            AfkEventsBridge.register(events);
+        }
 
         // Fired for messages players send with commands (e.g. /me) too
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, chat) ->
-            DiscordRelay.message(message, chat, sender, config.formats().discord()).ifPresent(DiscordBot::send));
+            DiscordRelay.message(message, chat, sender, config.discord()).ifPresent(DiscordBot::send));
 
         LOGGER.info("Initialized");
     }

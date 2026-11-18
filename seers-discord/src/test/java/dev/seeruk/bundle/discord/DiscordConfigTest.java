@@ -2,7 +2,6 @@ package dev.seeruk.bundle.discord;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JavaOps;
-import dev.seeruk.bundle.text.TextTemplate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,9 +13,29 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DiscordConfigTest {
-    private static final DiscordConfig.Formats FORMATS = new DiscordConfig.Formats(
-        new DiscordConfig.DiscordFormats(new DiscordTemplate("${message}"), new DiscordTemplate("_${message}_")),
-        new DiscordConfig.GameFormats(TextTemplate.parse("${display_name}: ${message}"), TextTemplate.parse("${message}"))
+    private static final Map<String, Object> EVENT = Map.of(
+        "enabled", true,
+        "format", "${display_name}",
+        "colour", "yellow"
+    );
+
+    // Every event, as it's written in config
+    private static final Map<String, Object> EVENTS = Map.of(
+        "join", EVENT,
+        "quit", EVENT,
+        "death", EVENT,
+        "advancement", Map.of(
+            "enabled", true,
+            "format", "${message}",
+            "description_format", "${description}",
+            "summary_format", "${display_name} completed ${count} advancements",
+            "colour", "green",
+            "challenge_colour", "dark_purple"
+        ),
+        "afk", EVENT,
+        "afk_return", EVENT,
+        "server_start", EVENT,
+        "server_stop", EVENT
     );
 
     static Stream<Arguments> shouldReadChannelIds() {
@@ -40,7 +59,8 @@ public class DiscordConfigTest {
 
     @Test
     void shouldHideTheTokenWhenPrinted() {
-        final var config = new DiscordConfig("secret-token", "123", FORMATS);
+        final var parsed = parse("123").getOrThrow();
+        final var config = new DiscordConfig("secret-token", "123", parsed.discord(), parsed.game());
 
         assertFalse(config.toString().contains("secret-token"));
     }
@@ -50,10 +70,8 @@ public class DiscordConfigTest {
             JavaOps.INSTANCE, Map.of(
                 "bot_token", "token",
                 "channel_id", channelId,
-                "formats", Map.of(
-                    "discord", Map.of("chat", "${message}", "emote", "_${message}_"),
-                    "game", Map.of("chat", "${display_name}: ${message}", "reply", "${message}")
-                )
+                "discord", Map.of("chat", "${message}", "emote", "_${message}_", "events", EVENTS),
+                "game", Map.of("chat", "${display_name}: ${message}", "reply", "${message}")
             )
         );
     }

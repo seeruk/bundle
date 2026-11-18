@@ -42,14 +42,15 @@ permission). The server starts either way, and Discord stays off until it's set 
 Settings live in `config/seers-discord/config.yml` (see `config.dist.yml` next to it for every
 setting and their defaults).
 
-| Setting                 | Default                        | Description                                           |
-|-------------------------|--------------------------------|-------------------------------------------------------|
-| `bot_token`             | `""`                           | The bot's token. Keep it secret!                      |
-| `channel_id`            | `""`                           | The channel to bridge chat with.                      |
-| `formats.discord.chat`  | `${message}`                   | How chat messages are written in Discord.             |
-| `formats.discord.emote` | `_${display_name} ${message}_` | How emotes (`/me`) are written in Discord.            |
-| `formats.game.chat`     | See `config.dist.yml`          | How Discord messages are shown in game.               |
-| `formats.game.reply`    | See `config.dist.yml`          | How what a Discord reply replied to is shown in game. |
+| Setting          | Default                        | Description                                                        |
+|------------------|--------------------------------|--------------------------------------------------------------------|
+| `bot_token`      | `""`                           | The bot's token. Keep it secret!                                   |
+| `channel_id`     | `""`                           | The channel to bridge chat with.                                   |
+| `discord.chat`   | `${message}`                   | How chat messages are written in Discord.                          |
+| `discord.emote`  | `_${display_name} ${message}_` | How emotes (`/me`) are written in Discord.                         |
+| `discord.events` | See `config.dist.yml`          | Which events from the game are sent to Discord, and how they look. |
+| `game.chat`      | See `config.dist.yml`          | How Discord messages are shown in game.                            |
+| `game.reply`     | See `config.dist.yml`          | How what a Discord reply replied to is shown in game.              |
 
 Formats for Discord can use Discord's formatting (e.g. `_italics_`), `${message}` for the message,
 and `${display_name}` for the player's name, as it's shown in chat.
@@ -88,8 +89,8 @@ aren't shown, so messages relayed from the game don't endlessly echo.
 - **Formatting:** Discord's formatting is kept as well as the game can show it (e.g. bold, italics,
   links, and code), and anything else is shown as it was written, so tags like `<red>` don't work.
   Links are aqua and underlined, and open when clicked.
-- **Spoilers:** these are shown as a dark grey `[spoiler]`, with what's hidden shown when it's hovered
-  over.
+- **Spoilers:** these are shown as a dark grey `[spoiler]`, with what's hidden shown when it's
+  hovered over.
 - **Mentions:** these are shown by name, e.g. `@Seer` or `#general`, in green.
 - **Emoji:** ones the game can show are kept, and others are shown by name, e.g. `:smile:`, this 
   includes custom emojis.
@@ -100,6 +101,28 @@ aren't shown, so messages relayed from the game don't endlessly echo.
 - **Long messages:** these are cut down to 256 characters and 5 lines, ending with a light purple
   `[...]`, which shows the whole message when it's hovered over (up to 1,000 characters and 20
   lines, so it fits on screen).
+
+### Game Events in Discord
+
+Things that happen in game are sent to the bot's channel as small embeds, from the webhook itself
+rather than a player, with the player's face where there is one. By default, they're worded and
+coloured like the game shows them:
+
+- **Joining and leaving:** e.g. "Seer joined the game", in yellow.
+- **Deaths:** the game's death message, e.g. "Seer was slain by Zombie", in red. These are only sent
+  when the game shows them in chat (i.e. with the `show_death_messages` game rule on).
+- **Advancements:** the game's announcement, e.g. "Seer has made the advancement [Stone Age]", with
+  the advancement's description below it, in green, or dark purple for challenges. Only
+  advancements the game announces in chat are sent. Advancements completed at the same time are
+  sent together, and if there are more than fit in one Discord message (e.g. from
+  `/advancement grant @s everything`), one summary is sent instead, e.g. "Seer completed 112
+  advancements".
+- **Going AFK and coming back:** e.g. "Seer is now AFK", in yellow, if [Seer's AFK][4] is installed.
+- **The server starting and stopping:** in green and red.
+
+Each can be turned off, reworded, or recoloured in the config's `discord.events` section, using
+Minecraft's colour names (e.g. `gold`) or hex (e.g. `#FFAA00`). See `config.dist.yml` for each
+event's placeholders.
 
 ### Events
 
@@ -112,3 +135,4 @@ This mod doesn't currently have any statistics.
 [1]: https://jda.wiki/
 [2]: https://discord.com/developers/applications
 [3]: https://mineatar.io/
+[4]: ../seers-afk

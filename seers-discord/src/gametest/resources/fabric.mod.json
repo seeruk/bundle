@@ -10,8 +10,10 @@
             "dev.seeruk.bundle.discord.DiscordFixtures"
         ],
         "fabric-gametest": [
+            "dev.seeruk.bundle.discord.AdvancementBatcherGameTest",
             "dev.seeruk.bundle.discord.DiscordRelayGameTest",
             "dev.seeruk.bundle.discord.DiscordConfigGameTest",
+            "dev.seeruk.bundle.discord.DiscordEventsGameTest",
             "dev.seeruk.bundle.discord.ItemEmbedsGameTest",
             "dev.seeruk.bundle.discord.ShowInGameGameTest"
         ]
