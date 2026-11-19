@@ -45,9 +45,9 @@ public final class GameRelay {
      * can show (e.g. it's only an embed).
      *
      * @param message The message from Discord.
-     * @param formats How messages from Discord are shown.
+     * @param settings How chat from Discord is shown in game.
      */
-    public static Optional<Component> message(DiscordMessage message, DiscordConfig.GameSettings formats) {
+    public static Optional<Component> message(DiscordMessage message, DiscordConfig.GameSettings settings) {
         final var rendered = ComponentRenderer.render(message.content(), message.mentions());
 
         // If it's cut down, hovering over the end shows the rest of it
@@ -70,8 +70,8 @@ public final class GameRelay {
             return Optional.empty();
         }
 
-        return Optional.of(formats.chat().format(Map.of(
-            "reply", message.reply().map(reply -> replied(reply, formats)).orElse(Component.empty()),
+        return Optional.of(settings.chat().format(Map.of(
+            "reply", message.reply().map(reply -> replied(reply, settings)).orElse(Component.empty()),
             "display_name", ComponentRenderer.literal(message.displayName()),
             "username", Component.literal(message.username()),
             "message", ComponentUtils.formatList(parts, Component.literal(" "))
@@ -129,8 +129,8 @@ public final class GameRelay {
     /**
      * Returns the reply format, filled in with the message that's been replied to.
      */
-    private static Component replied(DiscordMessage.Reply reply, DiscordConfig.GameSettings formats) {
-        return formats.reply().format(Map.of(
+    private static Component replied(DiscordMessage.Reply reply, DiscordConfig.GameSettings settings) {
+        return settings.reply().format(Map.of(
             "display_name", ComponentRenderer.literal(reply.displayName()),
             "username", Component.literal(reply.username()),
             "message", shortened(ComponentRenderer.render(reply.content(), reply.mentions()), REPLY)

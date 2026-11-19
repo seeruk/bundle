@@ -43,13 +43,21 @@ public class SeersDiscord implements ModInitializer {
             DiscordBot.start(
                 config,
                 message -> server.execute(() -> broadcast(server, message, config.game())),
-                (command, reply) -> server.execute(() -> reply.accept(DiscordCommands.reply(
-                    command,
-                    server,
-                    Duration.between(started, Instant.now()),
-                    isAfk,
-                    config.discord().commands()
-                )))
+                (command, reply) -> {
+                    // A stopping server won't run anything else on its thread, so it'd never reply
+                    if (!server.isRunning()) {
+                        reply.accept(DiscordCommands.stopping());
+                        return;
+                    }
+
+                    server.execute(() -> reply.accept(DiscordCommands.reply(
+                        command,
+                        server,
+                        Duration.between(started, Instant.now()),
+                        isAfk,
+                        config.discord().commands()
+                    )));
+                }
             );
 
             // Sent once the bot's logged in, which happens in the background
@@ -93,8 +101,8 @@ public class SeersDiscord implements ModInitializer {
      * Broadcasts a message from Discord in game, to every player (and the server's log), unless
      * there's nothing in it the game can show.
      */
-    static void broadcast(MinecraftServer server, DiscordMessage message, DiscordConfig.GameSettings formats) {
-        GameRelay.message(message, formats)
+    static void broadcast(MinecraftServer server, DiscordMessage message, DiscordConfig.GameSettings settings) {
+        GameRelay.message(message, settings)
             .ifPresent(shown -> server.getPlayerList().broadcastSystemMessage(shown, false));
     }
 }

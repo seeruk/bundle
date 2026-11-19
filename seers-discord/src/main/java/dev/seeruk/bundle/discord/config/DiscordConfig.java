@@ -16,7 +16,7 @@ import dev.seeruk.bundle.text.TextTemplate;
 public record DiscordConfig(String botToken, String channelId, DiscordSettings discord, GameSettings game) {
     // Discord IDs are numbers, which YAML reads as numbers unless they're quoted, so either is fine
     private static final Codec<String> ID_CODEC = Codec.withAlternative(Codec.STRING, Codec.LONG, String::valueOf)
-        .validate(id -> id.isEmpty() || id.chars().allMatch(Character::isDigit)
+        .validate(id -> id.isEmpty() || isId(id)
             ? DataResult.success(id)
             : DataResult.error(() -> "Not a Discord ID (copy it from Discord): " + id));
 
@@ -65,6 +65,22 @@ public record DiscordConfig(String botToken, String channelId, DiscordSettings d
             TextTemplate.CODEC.fieldOf("chat").forGetter(GameSettings::chat),
             TextTemplate.CODEC.fieldOf("reply").forGetter(GameSettings::reply)
         ).apply(instance, GameSettings::new));
+    }
+
+    /**
+     * Whether the text is a Discord ID, i.e. digits that fit in a {@code long}, as JDA needs them.
+     */
+    private static boolean isId(String id) {
+        if (!id.chars().allMatch(Character::isDigit)) {
+            return false;
+        }
+
+        try {
+            Long.parseLong(id);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     /**

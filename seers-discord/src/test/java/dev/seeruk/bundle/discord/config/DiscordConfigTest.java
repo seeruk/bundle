@@ -58,6 +58,12 @@ public class DiscordConfigTest {
     }
 
     @Test
+    void shouldRefuseChannelIdsTooLongToBeIds() {
+        // e.g. two IDs pasted together
+        assertTrue(parse("12345678901234567891234567890123456789").isError());
+    }
+
+    @Test
     void shouldHideTheTokenWhenPrinted() {
         final var parsed = parse("123").getOrThrow();
         final var config = new DiscordConfig("secret-token", "123", parsed.discord(), parsed.game());

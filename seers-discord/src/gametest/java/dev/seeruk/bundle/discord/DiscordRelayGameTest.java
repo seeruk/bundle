@@ -35,6 +35,29 @@ public class DiscordRelayGameTest {
     );
 
     @GameTest
+    public void chatIsNotSentWithAnEmptyFormat(GameTestHelper helper) {
+        final var player = player(helper);
+
+        final var message = relay(player, ChatType.CHAT, Component.literal("Testing"), withChat(""));
+
+        // Discord refuses a message with nothing in it
+        helper.assertValueEqual(message, Optional.empty(), "message");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void linkedItemsAreStillSentWithAnEmptyFormat(GameTestHelper helper) {
+        final var player = player(helper);
+        final var sword = new ItemStack(Items.DIAMOND_SWORD);
+
+        final var message = relay(player, ChatType.CHAT, sword.getDisplayName(), withChat("")).orElseThrow();
+
+        helper.assertValueEqual(message.content(), "", "content");
+        helper.assertValueEqual(message.embeds().size(), 1, "embeds");
+        helper.succeed();
+    }
+
+    @GameTest
     public void chatIsSentAsThePlayer(GameTestHelper helper) {
         final var player = player(helper);
 
@@ -124,8 +147,30 @@ public class DiscordRelayGameTest {
     /**
      * The message for Discord, for the player sending the content as the given kind of message.
      */
-    private static Optional<WebhookMessage> relay(ServerPlayer player, ResourceKey<ChatType> chatType, Component content) {
+    private static Optional<WebhookMessage> relay(
+        ServerPlayer player,
+        ResourceKey<ChatType> chatType,
+        Component content
+    ) {
+        return relay(player, chatType, content, FORMATS);
+    }
+
+    private static Optional<WebhookMessage> relay(
+        ServerPlayer player,
+        ResourceKey<ChatType> chatType,
+        Component content,
+        DiscordConfig.DiscordSettings settings
+    ) {
         final var message = PlayerChatMessage.system(content.getString()).withUnsignedContent(content);
-        return DiscordRelay.message(message, ChatType.bind(chatType, player), player, FORMATS);
+        return DiscordRelay.message(message, ChatType.bind(chatType, player), player, settings);
+    }
+
+    private static DiscordConfig.DiscordSettings withChat(String format) {
+        return new DiscordConfig.DiscordSettings(
+            new DiscordTemplate(format),
+            FORMATS.emote(),
+            FORMATS.events(),
+            FORMATS.commands()
+        );
     }
 }

@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.Team;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,19 +36,19 @@ public final class DiscordRelay {
      * @param message The message as it was sent, after any formatting.
      * @param chat    The kind of message (only chat and emotes are relayed), and who sent it.
      * @param sender  The player who sent it.
-     * @param formats How messages are written in Discord.
+     * @param settings How chat is written in Discord.
      */
     public static Optional<WebhookMessage> message(
         PlayerChatMessage message,
         ChatType.Bound chat,
         ServerPlayer sender,
-        DiscordConfig.DiscordSettings formats
+        DiscordConfig.DiscordSettings settings
     ) {
         final DiscordTemplate format;
         if (chat.chatType().is(ChatType.CHAT)) {
-            format = formats.chat();
+            format = settings.chat();
         } else if (chat.chatType().is(ChatType.EMOTE_COMMAND)) {
-            format = formats.emote();
+            format = settings.emote();
         } else {
             return Optional.empty();
         }
@@ -59,12 +60,14 @@ public final class DiscordRelay {
             "message", MarkdownRenderer.render(message.decoratedContent())
         ));
 
-        return Optional.of(new WebhookMessage(
-            username(displayName),
-            avatarUrl(sender.getUUID()),
-            content,
-            ItemEmbeds.of(message.decoratedContent(), sender)
-        ));
+        // Discord refuses a message with nothing in it, e.g. if the format's been emptied to stop
+        // chat being sent
+        final var embeds = ItemEmbeds.of(message.decoratedContent(), sender);
+        if (content.isBlank() && embeds.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new WebhookMessage(username(displayName), avatarUrl(sender.getUUID()), content, embeds));
     }
 
     /**
@@ -89,6 +92,13 @@ public final class DiscordRelay {
      * @param events  Which events are sent, and how they look.
      */
     public static Optional<WebhookMessage> died(ServerPlayer player, Component message, EventsConfig events) {
+        // A player's team can hide their death message from players outside it (or everyone), in
+        // which case it's not sent to Discord either, where anyone could see it
+        final var team = player.getTeam();
+        if (team != null && !showsDeathsToOthers(team.getDeathMessageVisibility())) {
+            return Optional.empty();
+        }
+
         return event(events.death(), player, Map.of("message", message.getString()));
     }
 
@@ -115,6 +125,13 @@ public final class DiscordRelay {
      */
     public static Optional<WebhookMessage> serverStopped(EventsConfig events) {
         return event(events.serverStop(), null, Map.of());
+    }
+
+    /**
+     * Whether a team's death messages are shown to players outside it.
+     */
+    private static boolean showsDeathsToOthers(Team.Visibility visibility) {
+        return visibility == Team.Visibility.ALWAYS || visibility == Team.Visibility.HIDE_FOR_OWN_TEAM;
     }
 
     /**

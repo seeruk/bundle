@@ -10,7 +10,9 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.Team;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -75,6 +77,26 @@ public class DiscordEventsGameTest {
 
         helper.assertValueEqual(embed.getAuthor().getName(), name(player) + " was slain by Zombie", "line");
         helper.assertValueEqual(embed.getColorRaw(), 0xFF5555, "colour");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void deathsHiddenByTheirTeamAreNotSent(GameTestHelper helper) {
+        final var death = Component.literal("Died");
+
+        for (final var hidden : List.of(Team.Visibility.NEVER, Team.Visibility.HIDE_FOR_OTHER_TEAMS)) {
+            final var player = onTeam(helper, hidden);
+            helper.assertValueEqual(DiscordRelay.died(player, death, EVENTS), Optional.empty(), hidden + " death");
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void deathsShownOutsideTheirTeamAreSent(GameTestHelper helper) {
+        // Shown to every other team, so most of the server sees it
+        final var player = onTeam(helper, Team.Visibility.HIDE_FOR_OWN_TEAM);
+
+        helper.assertTrue(DiscordRelay.died(player, Component.literal("Died"), EVENTS).isPresent(), "Should be sent");
         helper.succeed();
     }
 
@@ -166,6 +188,18 @@ public class DiscordEventsGameTest {
         helper.assertValueEqual(stopped.getAuthor().getName(), "🔴  The server has stopped", "stopped");
         helper.assertValueEqual(stopped.getColorRaw(), 0xFF5555, "stopped colour");
         helper.succeed();
+    }
+
+    /**
+     * Returns a player on a team of their own, with the given death message visibility.
+     */
+    private static ServerPlayer onTeam(GameTestHelper helper, Team.Visibility deathMessages) {
+        final var player = player(helper);
+        final var scoreboard = helper.getLevel().getServer().getScoreboard();
+        final var team = scoreboard.addPlayerTeam(name(player));
+        team.setDeathMessageVisibility(deathMessages);
+        scoreboard.addPlayerToTeam(player.getScoreboardName(), team);
+        return player;
     }
 
     private static String name(ServerPlayer player) {

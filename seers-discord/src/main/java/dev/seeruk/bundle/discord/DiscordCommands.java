@@ -170,6 +170,13 @@ public final class DiscordCommands {
             .collect(Collectors.joining(" / "));
     }
 
+    /**
+     * Returns the reply to any command while the server's stopping, when it can't answer them.
+     */
+    static MessageEmbed stopping() {
+        return new EmbedBuilder().setDescription("The server is stopping.").build();
+    }
+
     private static MessageEmbed unavailable() {
         return new EmbedBuilder().setDescription("That command isn't available.").build();
     }
