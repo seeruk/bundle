@@ -1,5 +1,7 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.config.CommandsConfig;
+import dev.seeruk.bundle.discord.config.DiscordConfig;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;

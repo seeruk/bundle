@@ -1,5 +1,7 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.config.DiscordConfig;
+import dev.seeruk.bundle.discord.config.EventsConfig;
 import dev.seeruk.bundle.discord.markdown.MarkdownRenderer;
 import dev.seeruk.bundle.text.TextComponents;
 import net.dv8tion.jda.api.EmbedBuilder;

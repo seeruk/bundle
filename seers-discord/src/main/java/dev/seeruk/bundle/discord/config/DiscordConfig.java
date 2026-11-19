@@ -1,8 +1,9 @@
-package dev.seeruk.bundle.discord;
+package dev.seeruk.bundle.discord.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.seeruk.bundle.discord.DiscordTemplate;
 import dev.seeruk.bundle.text.TextTemplate;
 
 /**

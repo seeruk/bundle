@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.config.CommandsConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;

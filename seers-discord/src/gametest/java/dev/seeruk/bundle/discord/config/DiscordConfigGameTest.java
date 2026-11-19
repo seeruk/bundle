@@ -1,6 +1,7 @@
-package dev.seeruk.bundle.discord;
+package dev.seeruk.bundle.discord.config;
 
 import dev.seeruk.bundle.core.config.ModConfig;
+import dev.seeruk.bundle.discord.SeersDiscord;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 

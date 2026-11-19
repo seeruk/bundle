@@ -1,4 +1,4 @@
-package dev.seeruk.bundle.discord;
+package dev.seeruk.bundle.discord.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.config.CommandsConfig;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;

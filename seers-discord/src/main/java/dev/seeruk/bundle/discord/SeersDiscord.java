@@ -2,6 +2,7 @@ package dev.seeruk.bundle.discord;
 
 import dev.seeruk.bundle.core.api.PlayerEvents;
 import dev.seeruk.bundle.core.config.ModConfig;
+import dev.seeruk.bundle.discord.config.DiscordConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;

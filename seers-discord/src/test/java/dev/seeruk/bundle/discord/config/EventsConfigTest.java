@@ -1,4 +1,4 @@
-package dev.seeruk.bundle.discord;
+package dev.seeruk.bundle.discord.config;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JavaOps;

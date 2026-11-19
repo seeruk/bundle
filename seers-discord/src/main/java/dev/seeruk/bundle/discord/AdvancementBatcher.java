@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.config.EventsConfig;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.minecraft.server.level.ServerPlayer;

@@ -2,6 +2,7 @@ package dev.seeruk.bundle.discord;
 
 import dev.seeruk.bundle.afk.api.AfkEvents;
 import dev.seeruk.bundle.afk.api.AfkPlayers;
+import dev.seeruk.bundle.discord.config.EventsConfig;
 import net.minecraft.server.level.ServerPlayer;
 
 /**

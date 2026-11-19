@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.config.DiscordConfig;
 import dev.seeruk.bundle.discord.markdown.ComponentRenderer;
 import dev.seeruk.bundle.text.TextColours;
 import dev.seeruk.bundle.text.TextComponents;

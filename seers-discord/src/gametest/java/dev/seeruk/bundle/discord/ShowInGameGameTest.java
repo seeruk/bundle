@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.discord;
 
+import dev.seeruk.bundle.discord.config.DiscordConfig;
 import dev.seeruk.bundle.discord.markdown.Mentions;
 import dev.seeruk.bundle.text.TextTemplate;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;

@@ -1,6 +1,8 @@
 package dev.seeruk.bundle.discord;
 
 import dev.seeruk.bundle.core.config.ModConfig;
+import dev.seeruk.bundle.discord.config.DiscordConfig;
+import dev.seeruk.bundle.discord.config.EventsConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
