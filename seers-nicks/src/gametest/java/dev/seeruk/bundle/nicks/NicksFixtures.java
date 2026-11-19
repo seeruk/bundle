@@ -4,11 +4,16 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.NameAndId;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Shared helpers for Nicks' GameTests.
  */
 public final class NicksFixtures {
+    // Counts up for each unique name, so no two in a run are the same. Each run starts with a fresh
+    // world, so names from earlier runs aren't stored.
+    private static final AtomicInteger NEXT = new AtomicInteger();
+
     private NicksFixtures() {}
 
     public static NameAndId nameAndId(ServerPlayer player) {
@@ -31,6 +36,6 @@ public final class NicksFixtures {
     }
 
     private static String unique(String name) {
-        return name + UUID.randomUUID().toString().substring(0, 4);
+        return name + NEXT.incrementAndGet();
     }
 }

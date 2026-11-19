@@ -74,6 +74,16 @@ if (hasGameTests) {
             eula = true // TODO: Check if this needs to be set to true actually.
         }
     }
+
+    // Each run starts with a fresh world, so nothing a test stores (e.g. nicknames) is left over
+    // from earlier runs to clash with it. Loom's clearRunDirectory option doesn't do this for
+    // server GameTests, so it's done here.
+    val deleteGameTestWorld = tasks.register<Delete>("deleteGameTestWorld") {
+        delete(layout.buildDirectory.dir("run/gameTest/world"))
+    }
+    tasks.named { it == "runGameTest" }.configureEach {
+        dependsOn(deleteGameTestWorld)
+    }
 }
 
 // Set every mod to compile against the right Java version.
