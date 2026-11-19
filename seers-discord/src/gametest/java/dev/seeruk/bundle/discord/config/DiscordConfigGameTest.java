@@ -13,6 +13,8 @@ public class DiscordConfigGameTest {
 
         helper.assertValueEqual(config.botToken(), "", "bot token");
         helper.assertValueEqual(config.channelId(), "", "channel ID");
+        helper.assertValueEqual(config.discord().server().name(), "Minecraft Server", "server name");
+        helper.assertValueEqual(config.discord().server().avatar(), "", "server avatar");
         helper.assertValueEqual(config.discord().chat().template(), "${message}", "chat format");
         helper.assertValueEqual(
             config.discord().emote().template(),

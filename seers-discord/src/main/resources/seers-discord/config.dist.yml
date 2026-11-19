@@ -14,6 +14,15 @@ channel_id: ""
 
 # Everything sent to Discord.
 discord:
+  # How the server looks in Discord, i.e. the name and avatar events from the game are sent with.
+  # Discord doesn't allow "Discord" or "Clyde" in the name. avatar is a URL, or a file (relative to
+  # the server's folder). If it's empty, the server's icon (server-icon.png) is used, or the avatar
+  # is left as it is if there isn't one. Replies to the bot's commands come from the bot itself,
+  # whose name and avatar are set in the Discord developer portal.
+  server:
+    name: "Minecraft Server"
+    avatar: ""
+
   # How players' chat messages and emotes (/me) are written in Discord, where they're sent as the
   # player, with their name and face. ${message} is the message, with any formatting from the game
   # (e.g. bold) turned into Discord's. ${display_name} is the player's name, as it's shown in chat

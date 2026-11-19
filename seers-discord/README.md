@@ -35,6 +35,10 @@ Discord, including properly handling things like rate limits.
    chat with, and choose Copy Channel ID.
 4. Set `bot_token` and `channel_id` in the config, and restart the server.
 
+Replies to the bot's commands come from the bot itself, so its name and avatar are the ones set for
+its application in the developer portal. Events from the game are sent with the server's own name
+and avatar, which are set in the config (by default, "Minecraft Server", and the server's icon).
+
 The server log says whether the bot connected, or what's wrong if it couldn't (e.g. a missing
 permission). The server starts either way, and Discord stays off until it's set up.
 
@@ -47,6 +51,7 @@ setting and their defaults).
 |--------------------|--------------------------------|------------------------------------------------------------------------------|
 | `bot_token`        | `""`                           | The bot's token. Keep it secret!                                             |
 | `channel_id`       | `""`                           | The channel to bridge chat with.                                             |
+| `discord.server`   | See `config.dist.yml`          | The name and avatar events are sent with in Discord.                         |
 | `discord.chat`     | `${message}`                   | How chat messages are written in Discord.                                    |
 | `discord.emote`    | `_${display_name} ${message}_` | How emotes (`/me`) are written in Discord.                                   |
 | `discord.events`   | See `config.dist.yml`          | Which events from the game are sent to Discord, and how they look.           |
@@ -106,9 +111,9 @@ aren't shown, so messages relayed from the game don't endlessly echo.
 
 ### Game Events in Discord
 
-Things that happen in game are sent to the bot's channel as small embeds, from the webhook itself
-rather than a player, with the player's face where there is one. By default, they're worded and
-coloured like the game shows them:
+Things that happen in game are sent to the bot's channel as small embeds, as the server (with the
+name and avatar in the config's `discord.server`), rather than a player, with the player's face
+where there is one. By default, they're worded and coloured like the game shows them:
 
 - **Joining and leaving:** e.g. "Seer joined the game", in yellow.
 - **Deaths:** the game's death message, e.g. "Seer was slain by Zombie", in red. These are only sent

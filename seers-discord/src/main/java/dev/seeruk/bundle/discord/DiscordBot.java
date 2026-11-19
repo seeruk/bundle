@@ -5,6 +5,7 @@ import dev.seeruk.bundle.discord.config.DiscordConfig;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -13,6 +14,8 @@ import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -45,8 +48,13 @@ public final class DiscordBot {
 
     private static final Duration SHUTDOWN_TIMEOUT = Duration.ofSeconds(5);
 
-    // Discord doesn't allow "Discord" in a webhook's name
-    private static final String WEBHOOK_NAME = "Minecraft Chat";
+    // How long reading the webhook's avatar can take, e.g. if it's a URL that doesn't respond
+    private static final int AVATAR_TIMEOUT_MILLIS = 10_000;
+
+    // How the webhook looks: its name, and where its avatar is, if anywhere. Set when the bot
+    // starts, before it logs in.
+    private record Profile(String name, Optional<URI> avatar) {}
+    private static volatile Profile profile;
 
     private static final Object LOCK = new Object();
 
@@ -71,11 +79,13 @@ public final class DiscordBot {
      * Logs in to Discord in the background, if the config has a bot and a channel.
      *
      * @param config   The mod's config.
+     * @param avatar   Where the webhook's avatar is, if anywhere.
      * @param received Given each message sent in the bot's channel, on one of JDA's threads.
      * @param commands Answers the bot's slash commands, called on one of JDA's threads.
      */
     public static void start(
         DiscordConfig config,
+        Optional<URI> avatar,
         Consumer<DiscordMessage> received,
         DiscordListener.CommandHandler commands
     ) {
@@ -83,6 +93,8 @@ public final class DiscordBot {
             LOGGER.info("Could not start, as bot_token and channel_id aren't both set in its config.yml");
             return;
         }
+
+        profile = new Profile(config.discord().server().name(), avatar);
 
         // Messages sent while logging in (e.g. the server starting) wait for the webhook
         synchronized (LOCK) {
@@ -229,17 +241,21 @@ public final class DiscordBot {
     }
 
     /**
-     * The webhook the bot made in the channel before, or a new one if there isn't one.
-     * Logs what went wrong if neither works.
+     * The webhook the bot made in the channel before, or a new one if there isn't one, looking as
+     * it's configured to. Logs what went wrong if neither works.
      */
     private static Optional<Webhook> findOrCreateWebhook(JDA connected, TextChannel channel) {
         try {
             final var self = connected.getSelfUser().getIdLong();
-            return Optional.of(channel.retrieveWebhooks().complete().stream()
+            final var current = profile;
+            final var found = channel.retrieveWebhooks().complete().stream()
                 .filter(existing -> existing.getOwnerAsUser() != null && existing.getOwnerAsUser().getIdLong() == self)
                 .filter(existing -> existing.getToken() != null)
                 .findFirst()
-                .orElseGet(() -> channel.createWebhook(WEBHOOK_NAME).complete()));
+                .orElseGet(() -> channel.createWebhook(current.name()).complete());
+
+            updateProfile(connected, found, current);
+            return Optional.of(found);
         } catch (RuntimeException e) {
             // If we're signalling some kind of change to our JDA instance (e.g. shutting down),
             // then it's not worth logging an error.
@@ -250,6 +266,41 @@ public final class DiscordBot {
                     e
                 );
             }
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Sets the webhook's name and avatar, which messages without their own are sent with, so
+     * they're up to date with the config. If its avatar can't be read, it's left as it is, and if
+     * Discord refuses the change, the webhook still works as it was.
+     */
+    private static void updateProfile(JDA connected, Webhook webhook, Profile current) {
+        final var manager = webhook.getManager().setName(current.name());
+        current.avatar().flatMap(DiscordBot::icon).ifPresent(manager::setAvatar);
+
+        try {
+            manager.complete();
+        } catch (RuntimeException e) {
+            if (isCurrent(connected)) {
+                LOGGER.warn("Couldn't update the name and avatar of the bot's webhook in Discord", e);
+            }
+        }
+    }
+
+    /**
+     * Reads an avatar from a file or URL, logging what went wrong if it can't.
+     */
+    private static Optional<Icon> icon(URI location) {
+        try {
+            final var connection = location.toURL().openConnection();
+            connection.setConnectTimeout(AVATAR_TIMEOUT_MILLIS);
+            connection.setReadTimeout(AVATAR_TIMEOUT_MILLIS);
+            try (var stream = connection.getInputStream()) {
+                return Optional.of(Icon.from(stream));
+            }
+        } catch (IOException | IllegalArgumentException e) {
+            LOGGER.warn("Couldn't read the webhook's avatar from {}, so it's left as it is: {}", location, e.toString());
             return Optional.empty();
         }
     }

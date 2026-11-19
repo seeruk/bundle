@@ -28,22 +28,26 @@ public record DiscordConfig(String botToken, String channelId, DiscordSettings d
     ).apply(instance, DiscordConfig::new));
 
     /**
-     * Everything in Discord: how what's sent there looks, and the bot's commands. The chat formats
-     * can use {@code ${display_name}} for the player's name, as it's shown in chat, and
-     * {@code ${message}} for their message.
+     * Configuration for how everything landing in Discord looks, including the server's own name
+     * and icon, along with formats for player events and messages.The chat formats can use
+     * {@code ${display_name}} for the player's name, as it's shown in chat, and {@code ${message}}
+     * for their message.
      *
+     * @param server   How the server looks in Discord, where events are sent as it.
      * @param chat     How chat messages are written.
      * @param emote    How emotes (i.e. {@code /me}) are written.
      * @param events   Which events from the game are sent, and how they look.
      * @param commands Which of the bot's slash commands are available.
      */
     public record DiscordSettings(
+        ServerConfig server,
         DiscordTemplate chat,
         DiscordTemplate emote,
         EventsConfig events,
         CommandsConfig commands
     ) {
         public static final Codec<DiscordSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ServerConfig.CODEC.fieldOf("server").forGetter(DiscordSettings::server),
             DiscordTemplate.CODEC.fieldOf("chat").forGetter(DiscordSettings::chat),
             DiscordTemplate.CODEC.fieldOf("emote").forGetter(DiscordSettings::emote),
             EventsConfig.CODEC.fieldOf("events").forGetter(DiscordSettings::events),

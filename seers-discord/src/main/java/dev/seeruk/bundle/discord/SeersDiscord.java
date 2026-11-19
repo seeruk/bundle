@@ -15,8 +15,11 @@ import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class SeersDiscord implements ModInitializer {
@@ -42,6 +45,7 @@ public class SeersDiscord implements ModInitializer {
             // the server's own
             DiscordBot.start(
                 config,
+                config.discord().server().avatarLocation(server.getServerDirectory(), serverIcon(server)),
                 message -> server.execute(() -> broadcast(server, message, config.game())),
                 (command, reply) -> {
                     // A stopping server won't run anything else on its thread, so it'd never reply
@@ -104,5 +108,15 @@ public class SeersDiscord implements ModInitializer {
     static void broadcast(MinecraftServer server, DiscordMessage message, DiscordConfig.GameSettings settings) {
         GameRelay.message(message, settings)
             .ifPresent(shown -> server.getPlayerList().broadcastSystemMessage(shown, false));
+    }
+
+    /**
+     * Returns the server's icon, if it has one, i.e. the picture the server list shows for it: its
+     * server-icon.png, or in single player, the world's icon.
+     */
+    private static Optional<Path> serverIcon(MinecraftServer server) {
+        return Optional.of(server.getFile("server-icon.png"))
+            .filter(Files::isRegularFile)
+            .or(() -> server.getWorldScreenshotFile().filter(Files::isRegularFile));
     }
 }

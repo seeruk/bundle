@@ -77,6 +77,7 @@ public class DiscordConfigTest {
                 "bot_token", "token",
                 "channel_id", channelId,
                 "discord", Map.of(
+                    "server", Map.of("name", "Minecraft Server", "avatar", ""),
                     "chat", "${message}",
                     "emote", "_${message}_",
                     "events", EVENTS,

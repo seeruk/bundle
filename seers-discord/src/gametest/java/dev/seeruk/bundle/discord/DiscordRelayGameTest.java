@@ -27,9 +27,10 @@ public class DiscordRelayGameTest {
     ).discord();
 
     private static final DiscordConfig.DiscordSettings FORMATS = new DiscordConfig.DiscordSettings(
+        // Chat only uses the chat and emote formats, so the rest are the defaults
+        DEFAULTS.server(),
         new DiscordTemplate("${message}"),
         new DiscordTemplate("_${display_name} ${message}_"),
-        // Chat doesn't use these, so the defaults are fine
         DEFAULTS.events(),
         DEFAULTS.commands()
     );
@@ -167,6 +168,7 @@ public class DiscordRelayGameTest {
 
     private static DiscordConfig.DiscordSettings withChat(String format) {
         return new DiscordConfig.DiscordSettings(
+            FORMATS.server(),
             new DiscordTemplate(format),
             FORMATS.emote(),
             FORMATS.events(),
