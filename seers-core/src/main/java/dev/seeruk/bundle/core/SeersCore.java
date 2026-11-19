@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.core;
 
+import dev.seeruk.bundle.core.tick.TickStats;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -15,6 +16,8 @@ public class SeersCore implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        TickStats.register();
+
         LOGGER.info("Initialized");
     }
 }

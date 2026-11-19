@@ -17,7 +17,8 @@
             "dev.seeruk.bundle.core.config.ModConfigGameTest",
             "dev.seeruk.bundle.core.stats.ScoreboardStatGameTest",
             "dev.seeruk.bundle.core.storage.WorldStorageGameTest",
-            "dev.seeruk.bundle.core.tablist.TabListGameTest"
+            "dev.seeruk.bundle.core.tablist.TabListGameTest",
+            "dev.seeruk.bundle.core.tick.TickStatsGameTest"
         ]
     },
     "depends": {
