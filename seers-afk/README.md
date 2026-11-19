@@ -41,6 +41,14 @@ it includes any nickname or team colours).
 |---------|--------------------------|
 | `/afk`  | Toggles your AFK status. |
 
+### API
+
+Other mods can check whether a player is AFK with:
+
+```java
+dev.seeruk.bundle.afk.api.AfkPlayers.isAfk(player)
+```
+
 ### Events
 
 #### AfkEvents.STATUS_CHANGED
