@@ -46,7 +46,7 @@ public final class GameRelay {
      * @param message The message from Discord.
      * @param formats How messages from Discord are shown.
      */
-    public static Optional<Component> message(DiscordMessage message, DiscordConfig.GameFormats formats) {
+    public static Optional<Component> message(DiscordMessage message, DiscordConfig.GameSettings formats) {
         final var rendered = ComponentRenderer.render(message.content(), message.mentions());
 
         // If it's cut down, hovering over the end shows the rest of it
@@ -128,7 +128,7 @@ public final class GameRelay {
     /**
      * Returns the reply format, filled in with the message that's been replied to.
      */
-    private static Component replied(DiscordMessage.Reply reply, DiscordConfig.GameFormats formats) {
+    private static Component replied(DiscordMessage.Reply reply, DiscordConfig.GameSettings formats) {
         return formats.reply().format(Map.of(
             "display_name", ComponentRenderer.literal(reply.displayName()),
             "username", Component.literal(reply.username()),

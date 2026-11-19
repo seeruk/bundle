@@ -28,6 +28,9 @@ public class DiscordConfigGameTest {
             "<gray><hover '${display_name}: ${message}'>➥</hover></gray> ",
             "game reply format"
         );
+        helper.assertValueEqual(config.discord().commands().publicReplies(), false, "public replies");
+        helper.assertTrue(config.discord().commands().players().enabled(), "/players should be on");
+        helper.assertTrue(config.discord().commands().status().enabled(), "/status should be on");
         helper.succeed();
     }
 }

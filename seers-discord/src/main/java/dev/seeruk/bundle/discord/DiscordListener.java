@@ -4,10 +4,12 @@ import dev.seeruk.bundle.discord.markdown.Mentions;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -24,24 +26,34 @@ import static dev.seeruk.bundle.discord.SeersDiscord.LOGGER;
 
 /**
  * Listens for messages people send in the bot's channel, and passes them on, as
- * {@link DiscordMessage}s. Messages from bots and webhooks are left out, which includes the ones
- * the bot relays from the game, so they don't come straight back. Also says what to fix if Discord
- * refuses the bot's connection because of the intents it asks for.
+ * {@link DiscordMessage}s, and also listens for the bot's slash commands. Messages from bots and
+ * webhooks are ignored, including those from this bot, so they don't come straight back.
  *
- * <p>JDA calls this on its own threads, so whatever messages are passed to needs to hand them to
- * the right thread itself.
+ * <p>JDA calls this on its own threads, so whatever messages and commands are passed to needs to
+ * hand them to the right thread itself.
  */
 final class DiscordListener extends ListenerAdapter {
     private final long channelId;
     private final Consumer<DiscordMessage> received;
+    private final CommandHandler commands;
+    private final boolean publicReplies;
 
     /**
-     * @param channelId The bot's channel, which is the only one listened to.
-     * @param received  Given each message.
+     * @param channelId     The ID of the channel the bot listens to.
+     * @param received      A callback that every message is passed to.
+     * @param commands      A callback that every command call is passed to.
+     * @param publicReplies Whether everyone sees command replies, rather than only whoever ran it.
      */
-    DiscordListener(String channelId, Consumer<DiscordMessage> received) {
+    DiscordListener(
+        String channelId,
+        Consumer<DiscordMessage> received,
+        CommandHandler commands,
+        boolean publicReplies
+    ) {
         this.channelId = Long.parseLong(channelId);
         this.received = received;
+        this.commands = commands;
+        this.publicReplies = publicReplies;
     }
 
     @Override
@@ -72,6 +84,25 @@ final class DiscordListener extends ListenerAdapter {
                 .toList(),
             message.getStickers().stream().map(StickerItem::getName).toList()
         ));
+    }
+
+    /**
+     * Represents a function that can answer a command interaction.
+     */
+    @FunctionalInterface
+    interface CommandHandler {
+        /**
+         * @param command The command's name.
+         * @param reply   Given the reply, once there is one, on any thread.
+         */
+        void answer(String command, Consumer<MessageEmbed> reply);
+    }
+
+    @Override
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+        // Reply straight away to Discord, so it knows the command was received.
+        event.deferReply(!publicReplies).queue();
+        commands.answer(event.getName(), reply -> event.getHook().sendMessageEmbeds(reply).queue());
     }
 
     /**

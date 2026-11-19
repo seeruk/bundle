@@ -32,7 +32,7 @@ public class GameRelayTest {
         Bootstrap.bootStrap();
     }
 
-    private static final DiscordConfig.GameFormats FORMATS = new DiscordConfig.GameFormats(
+    private static final DiscordConfig.GameSettings FORMATS = new DiscordConfig.GameSettings(
         // The default formats
         TextTemplate.parse(
             "${reply}<blue><<hover 'Discord user @${username}'>${display_name}</hover>></blue> ${message}"

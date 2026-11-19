@@ -12,7 +12,7 @@ import java.util.UUID;
 import static dev.seeruk.bundle.discord.DiscordFixtures.gameMessagesContaining;
 
 public class ShowInGameGameTest {
-    private static final DiscordConfig.GameFormats FORMATS = new DiscordConfig.GameFormats(
+    private static final DiscordConfig.GameSettings FORMATS = new DiscordConfig.GameSettings(
         TextTemplate.parse("[Discord] ${display_name}: ${message}"),
         TextTemplate.parse("")
     );

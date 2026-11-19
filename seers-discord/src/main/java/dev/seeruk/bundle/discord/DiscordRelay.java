@@ -39,7 +39,7 @@ public final class DiscordRelay {
         PlayerChatMessage message,
         ChatType.Bound chat,
         ServerPlayer sender,
-        DiscordConfig.DiscordFormats formats
+        DiscordConfig.DiscordSettings formats
     ) {
         final DiscordTemplate format;
         if (chat.chatType().is(ChatType.CHAT)) {

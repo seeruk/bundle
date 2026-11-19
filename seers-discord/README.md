@@ -28,8 +28,9 @@ Discord, including properly handling things like rate limits.
 1. Create an application in the [Discord developer portal][2], and copy its bot's token from the
    Bot page. On the same page, turn on Message Content Intent, so the bot can read messages in its
    channel.
-2. Invite the bot to your Discord server, from the OAuth2 page: choose the `bot` scope, and the View
-   Channels, Send Messages, Embed Links, and Manage Webhooks permissions.
+2. Invite the bot to your Discord server, from the OAuth2 page: choose the `bot` and
+   `applications.commands` scopes (for its slash commands), and the View Channels, Send Messages,
+   Embed Links, and Manage Webhooks permissions.
 3. Turn on Developer Mode in Discord's advanced settings, then right-click the channel to bridge
    chat with, and choose Copy Channel ID.
 4. Set `bot_token` and `channel_id` in the config, and restart the server.
@@ -42,15 +43,16 @@ permission). The server starts either way, and Discord stays off until it's set 
 Settings live in `config/seers-discord/config.yml` (see `config.dist.yml` next to it for every
 setting and their defaults).
 
-| Setting          | Default                        | Description                                                        |
-|------------------|--------------------------------|--------------------------------------------------------------------|
-| `bot_token`      | `""`                           | The bot's token. Keep it secret!                                   |
-| `channel_id`     | `""`                           | The channel to bridge chat with.                                   |
-| `discord.chat`   | `${message}`                   | How chat messages are written in Discord.                          |
-| `discord.emote`  | `_${display_name} ${message}_` | How emotes (`/me`) are written in Discord.                         |
-| `discord.events` | See `config.dist.yml`          | Which events from the game are sent to Discord, and how they look. |
-| `game.chat`      | See `config.dist.yml`          | How Discord messages are shown in game.                            |
-| `game.reply`     | See `config.dist.yml`          | How what a Discord reply replied to is shown in game.              |
+| Setting            | Default                        | Description                                                                  |
+|--------------------|--------------------------------|------------------------------------------------------------------------------|
+| `bot_token`        | `""`                           | The bot's token. Keep it secret!                                             |
+| `channel_id`       | `""`                           | The channel to bridge chat with.                                             |
+| `discord.chat`     | `${message}`                   | How chat messages are written in Discord.                                    |
+| `discord.emote`    | `_${display_name} ${message}_` | How emotes (`/me`) are written in Discord.                                   |
+| `discord.events`   | See `config.dist.yml`          | Which events from the game are sent to Discord, and how they look.           |
+| `discord.commands` | See `config.dist.yml`          | Which of the bot's slash commands are available, and who sees their replies. |
+| `game.chat`        | See `config.dist.yml`          | How Discord messages are shown in game.                                      |
+| `game.reply`       | See `config.dist.yml`          | How what a Discord reply replied to is shown in game.                        |
 
 Formats for Discord can use Discord's formatting (e.g. `_italics_`), `${message}` for the message,
 and `${display_name}` for the player's name, as it's shown in chat.
@@ -123,6 +125,18 @@ coloured like the game shows them:
 Each can be turned off, reworded, or recoloured in the config's `discord.events` section, using
 Minecraft's colour names (e.g. `gold`) or hex (e.g. `#FFAA00`). See `config.dist.yml` for each
 event's placeholders.
+
+### Commands in Discord
+
+The bot adds slash commands to its Discord server, which work in any of its channels:
+
+| Command                    | Description                                                                                                                                                |
+|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/players` (`/playerlist`) | Shows who's online, as a bulleted list of their names as chat shows them, in alphabetical order. AFK players are listed last (if Seer's AFK is installed). |
+| `/status`                  | Shows how long the server's been up, how many players are online, its version, and its TPS and MSPT, averaged over 1, 5, and 15 minutes.                   |
+
+By default, replies are only shown to whoever ran the command. Who can use the commands, and where,
+can be changed in the Discord server's settings, under Integrations.
 
 ### Events
 

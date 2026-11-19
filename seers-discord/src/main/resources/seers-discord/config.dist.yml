@@ -71,12 +71,24 @@ discord:
 
     server_start:
       enabled: true
-      format: "🟢 The server has started"
+      format: "🟢  The server has started"
       colour: green
     server_stop:
       enabled: true
-      format: "🔴 The server has stopped"
+      format: "🔴  The server has stopped"
       colour: red
+
+  # The bot's slash commands in Discord: /players (or /playerlist) shows who's online, and /status
+  # shows how the server's doing. They're added to the bot's server, and work in any of its
+  # channels. Who can use them, and where, can be changed in the server's settings, under
+  # Integrations. public_replies shows replies to everyone in the channel, rather than only whoever
+  # ran the command.
+  commands:
+    public_replies: false
+    players:
+      enabled: true
+    status:
+      enabled: true
 
 # Everything shown in game from Discord.
 game:

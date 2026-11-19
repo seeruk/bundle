@@ -20,11 +20,17 @@ import java.util.Optional;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
 public class DiscordRelayGameTest {
-    private static final DiscordConfig.DiscordFormats FORMATS = new DiscordConfig.DiscordFormats(
+    private static final DiscordConfig.DiscordSettings DEFAULTS = ModConfig.load(
+        SeersDiscord.MOD_ID,
+        DiscordConfig.CODEC
+    ).discord();
+
+    private static final DiscordConfig.DiscordSettings FORMATS = new DiscordConfig.DiscordSettings(
         new DiscordTemplate("${message}"),
         new DiscordTemplate("_${display_name} ${message}_"),
-        // Chat doesn't use them, so the defaults are fine
-        ModConfig.load(SeersDiscord.MOD_ID, DiscordConfig.CODEC).discord().events()
+        // Chat doesn't use these, so the defaults are fine
+        DEFAULTS.events(),
+        DEFAULTS.commands()
     );
 
     @GameTest

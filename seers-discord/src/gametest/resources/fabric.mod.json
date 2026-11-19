@@ -12,6 +12,7 @@
         "fabric-gametest": [
             "dev.seeruk.bundle.discord.AdvancementBatcherGameTest",
             "dev.seeruk.bundle.discord.DiscordRelayGameTest",
+            "dev.seeruk.bundle.discord.DiscordCommandsGameTest",
             "dev.seeruk.bundle.discord.DiscordConfigGameTest",
             "dev.seeruk.bundle.discord.DiscordEventsGameTest",
             "dev.seeruk.bundle.discord.ItemEmbedsGameTest",

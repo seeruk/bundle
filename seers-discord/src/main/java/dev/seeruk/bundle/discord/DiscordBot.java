@@ -70,8 +70,13 @@ public final class DiscordBot {
      *
      * @param config   The mod's config.
      * @param received Given each message sent in the bot's channel, on one of JDA's threads.
+     * @param commands Answers the bot's slash commands, called on one of JDA's threads.
      */
-    public static void start(DiscordConfig config, Consumer<DiscordMessage> received) {
+    public static void start(
+        DiscordConfig config,
+        Consumer<DiscordMessage> received,
+        DiscordListener.CommandHandler commands
+    ) {
         if (config.botToken().isBlank() || config.channelId().isBlank()) {
             LOGGER.info("Could not start, as bot_token and channel_id aren't both set in its config.yml");
             return;
@@ -84,7 +89,7 @@ public final class DiscordBot {
             dropped = 0;
         }
 
-        Thread.ofVirtual().name("seers-discord-login").start(() -> login(config, received));
+        Thread.ofVirtual().name("seers-discord-login").start(() -> login(config, received, commands));
     }
 
     /**
@@ -121,11 +126,20 @@ public final class DiscordBot {
         closeHttpClient(current);
     }
 
-    private static void login(DiscordConfig config, Consumer<DiscordMessage> received) {
+    private static void login(
+        DiscordConfig config,
+        Consumer<DiscordMessage> received,
+        DiscordListener.CommandHandler commands
+    ) {
         final JDA connected;
         try {
             connected = JDABuilder.createLight(config.botToken(), INTENTS)
-                .addEventListeners(new DiscordListener(config.channelId(), received))
+                .addEventListeners(new DiscordListener(
+                    config.channelId(),
+                    received,
+                    commands,
+                    config.discord().commands().publicReplies()
+                ))
                 .setEnableShutdownHook(false) // The server controls the shutdown
                 .build();
         } catch (InvalidTokenException e) {
@@ -156,8 +170,20 @@ public final class DiscordBot {
             return;
         }
 
-        ready(connected, usableChannel(connected, config.channelId())
-            .flatMap(channel -> findOrCreateWebhook(connected, channel)));
+        final var channel = usableChannel(connected, config.channelId());
+        channel.ifPresent(found -> addCommands(found, config.discord().commands()));
+        ready(connected, channel.flatMap(found -> findOrCreateWebhook(connected, found)));
+    }
+
+    /**
+     * Adds the bot's slash commands that are turned on to its server, replacing whatever it had
+     * before, so ones that have been turned off are removed. They're added to its server rather
+     * than everywhere, as Discord shows those straight away.
+     */
+    private static void addCommands(TextChannel channel, CommandsConfig config) {
+        channel.getGuild().updateCommands()
+            .addCommands(DiscordCommands.enabled(config))
+            .queue(null, error -> LOGGER.warn("Couldn't add the bot's commands in Discord", error));
     }
 
     /**

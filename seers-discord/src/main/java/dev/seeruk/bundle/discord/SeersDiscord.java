@@ -10,8 +10,13 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.function.Predicate;
 
 public class SeersDiscord implements ModInitializer {
     public static final String MOD_ID = "seers-discord";
@@ -26,12 +31,24 @@ public class SeersDiscord implements ModInitializer {
         final var config = ModConfig.load(MOD_ID, DiscordConfig.CODEC);
 
         final var events = config.discord().events();
+        final var isAfkLoaded = FabricLoader.getInstance().isModLoaded("seers-afk");
+        final Predicate<ServerPlayer> isAfk = isAfkLoaded ? AfkEventsBridge::isAfk : player -> false;
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            // Messages from Discord arrive on JDA's threads, so they're shown from the server's own
+            final var started = Instant.now();
+
+            // Messages and commands from Discord arrive on JDA's threads, so they're handled on
+            // the server's own
             DiscordBot.start(
-                config, message ->
-                    server.execute(() -> broadcast(server, message, config.game()))
+                config,
+                message -> server.execute(() -> broadcast(server, message, config.game())),
+                (command, reply) -> server.execute(() -> reply.accept(DiscordCommands.reply(
+                    command,
+                    server,
+                    Duration.between(started, Instant.now()),
+                    isAfk,
+                    config.discord().commands()
+                )))
             );
 
             // Sent once the bot's logged in, which happens in the background
@@ -60,7 +77,7 @@ public class SeersDiscord implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(server ->
             advancements.flush(events).forEach(DiscordBot::send));
 
-        if (FabricLoader.getInstance().isModLoaded("seers-afk")) {
+        if (isAfkLoaded) {
             AfkEventsBridge.register(events);
         }
 
@@ -75,7 +92,7 @@ public class SeersDiscord implements ModInitializer {
      * Broadcasts a message from Discord in game, to every player (and the server's log), unless
      * there's nothing in it the game can show.
      */
-    static void broadcast(MinecraftServer server, DiscordMessage message, DiscordConfig.GameFormats formats) {
+    static void broadcast(MinecraftServer server, DiscordMessage message, DiscordConfig.GameSettings formats) {
         GameRelay.message(message, formats)
             .ifPresent(shown -> server.getPlayerList().broadcastSystemMessage(shown, false));
     }

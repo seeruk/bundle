@@ -70,7 +70,16 @@ public class DiscordConfigTest {
             JavaOps.INSTANCE, Map.of(
                 "bot_token", "token",
                 "channel_id", channelId,
-                "discord", Map.of("chat", "${message}", "emote", "_${message}_", "events", EVENTS),
+                "discord", Map.of(
+                    "chat", "${message}",
+                    "emote", "_${message}_",
+                    "events", EVENTS,
+                    "commands", Map.of(
+                        "public_replies", false,
+                        "players", Map.of("enabled", true),
+                        "status", Map.of("enabled", true)
+                    )
+                ),
                 "game", Map.of("chat", "${display_name}: ${message}", "reply", "${message}")
             )
         );
