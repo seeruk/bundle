@@ -10,8 +10,8 @@ A mod that adds Discord integration to a server.
   server start/stop, player join/leave, achievements, deaths, etc.
 - **Supports Linked Items**: Items linked in chat show up in Discord as embeds. Should work with 
   most mods that enable linking items in chat.
-- **Slash Commands**: Adds `/playerlist` to see who's online, and `/status` to check in on the 
-  server performance from Discord.
+- **Slash Commands**: Adds `/playerlist` (and `/players`) to see who's online, and `/status` to 
+  check in on the server performance from Discord.
 
 ## Usage
 
