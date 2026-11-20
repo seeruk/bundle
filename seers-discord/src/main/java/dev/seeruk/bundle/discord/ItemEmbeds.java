@@ -103,7 +103,8 @@ public final class ItemEmbeds {
             .setTitle(TextComponents.truncate(title, MessageEmbed.TITLE_MAX_LENGTH))
             .setColor(colour(name))
             .setDescription(TextComponents.truncate(description, MessageEmbed.DESCRIPTION_MAX_LENGTH))
-            // What the item is, even if it's been renamed. Footers aren't Markdown, so it's as it is
+            // The original item name, so that it's clear what the item is even if it's been
+            // renamed. Embed footers aren't Markdown, so it's left as plain text
             .setFooter(TextComponents.truncate(stack.getItemName().getString(), MessageEmbed.TEXT_MAX_LENGTH))
             .build());
     }

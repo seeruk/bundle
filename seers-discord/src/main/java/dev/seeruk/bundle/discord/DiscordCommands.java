@@ -92,13 +92,13 @@ public final class DiscordCommands {
         final var byAfk = players.stream().collect(Collectors.partitioningBy(isAfk));
 
         final var lines = Stream.concat(
-            // Non-AFK players
-            byAfk.get(false).stream().map(name).sorted(String.CASE_INSENSITIVE_ORDER)
-                .map(MarkdownRenderer::escape),
-            // AFK players
-            byAfk.get(true).stream().map(name).sorted(String.CASE_INSENSITIVE_ORDER)
-                .map(afk -> MarkdownRenderer.escape(afk) + " [AFK]")
-        )
+                // Non-AFK players
+                byAfk.get(false).stream().map(name).sorted(String.CASE_INSENSITIVE_ORDER)
+                    .map(MarkdownRenderer::escape),
+                // AFK players
+                byAfk.get(true).stream().map(name).sorted(String.CASE_INSENSITIVE_ORDER)
+                    .map(afk -> MarkdownRenderer.escape(afk) + " [AFK]")
+            )
             // A list in Discord's Markdown, which it shows with bullets
             .map(line -> "- " + line)
             .toList();

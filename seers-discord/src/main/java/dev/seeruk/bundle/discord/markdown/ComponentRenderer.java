@@ -104,7 +104,8 @@ public final class ComponentRenderer {
             case MarkdownElement.CodeBlock _, MarkdownElement.Code _ -> content.withStyle(ChatFormatting.GRAY);
             case MarkdownElement.Quote _, MarkdownElement.SmallText _ -> content.withStyle(ChatFormatting.GRAY);
             case MarkdownElement.Heading _ -> content.withStyle(ChatFormatting.BOLD);
-            // Dark grey rather than TextColours.HOVERABLE, so a spoiler doesn't draw the eye to itself
+            // Spoilers don't use TextColours.HOVERABLE because that'd stand out a lot for a
+            // spoiler, we just use dark grey to keep it subtle.
             case MarkdownElement.Spoiler _ -> Component.literal("[spoiler]").withStyle(spoiler -> spoiler
                 .withColor(ChatFormatting.DARK_GRAY)
                 .withHoverEvent(new HoverEvent.ShowText(content)));

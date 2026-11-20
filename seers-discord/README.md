@@ -82,7 +82,7 @@ or mention anyone (e.g. with `@everyone`).
 Any items linked in chat (e.g. via Seer's Chat's `<item>`) are shown as embeds under the relayed
 message containing it. The tooltip contents are built into the embed, with the item name colour
 used as the side colour for the embed. This includes all information included in the in-game tooltip
-by default, and also a couple of elements from what would be shown in an advanced tooltip (e.g. 
+by default, and also a couple of elements from what would be shown in an advanced tooltip (e.g.
 durability). The item's own name is shown at the bottom, so it's clear what it is, even if it's been
 renamed.
 
@@ -99,7 +99,7 @@ aren't shown, so messages relayed from the game don't endlessly echo.
 - **Spoilers:** these are shown as a dark grey `[spoiler]`, with what's hidden shown when it's
   hovered over.
 - **Mentions:** these are shown by name, e.g. `@Seer` or `#general`, in green.
-- **Emoji:** ones the game can show are kept, and others are shown by name, e.g. `:smile:`, this 
+- **Emoji:** ones the game can show are kept, and others are shown by name, e.g. `:smile:`, this
   includes custom emojis.
 - **Replies:** these start with a `➥`, which shows who and what was replied to when it's hovered
   over.

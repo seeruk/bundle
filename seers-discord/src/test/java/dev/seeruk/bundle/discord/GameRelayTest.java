@@ -9,11 +9,7 @@ import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextTemplate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.*;
 import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.Test;
 

@@ -54,6 +54,7 @@ public final class DiscordBot {
     // How the webhook looks: its name, and where its avatar is, if anywhere. Set when the bot
     // starts, before it logs in.
     private record Profile(String name, Optional<URI> avatar) {}
+
     private static volatile Profile profile;
 
     private static final Object LOCK = new Object();
@@ -178,8 +179,8 @@ public final class DiscordBot {
         try {
             connected.awaitReady();
         } catch (InterruptedException | IllegalStateException e) {
-            // Stopped before it was ready, either by the server stopping, or by Discord refusing the
-            // connection (which the listener logs)
+            // Stopped before it was ready, either by the server stopping, or by Discord refusing
+            // the connection (which the listener logs)
             ready(connected, Optional.empty());
             return;
         }
@@ -300,7 +301,11 @@ public final class DiscordBot {
                 return Optional.of(Icon.from(stream));
             }
         } catch (IOException | IllegalArgumentException e) {
-            LOGGER.warn("Couldn't read the webhook's avatar from {}, so it's left as it is: {}", location, e.toString());
+            LOGGER.warn(
+                "Couldn't read the webhook's avatar from {}, so it's left as it is: {}",
+                location,
+                e.toString()
+            );
             return Optional.empty();
         }
     }

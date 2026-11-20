@@ -9,9 +9,8 @@ import dev.seeruk.bundle.text.TextTemplate;
 /**
  * @param botToken  The bot's token, which it logs in with.
  * @param channelId The ID of the channel the bot should bridge chat with.
- * @param discord   Everything in Discord, i.e. how chat and events from the game look there, and the
- *                  bot's commands.
- * @param game      How everything shown in game from Discord looks, i.e. chat from Discord.
+ * @param discord   Configuration for everything related to Discord output (i.e. viewed in Discord)
+ * @param game      Configuration for everything related to game output (i.e. viewed in game)
  */
 public record DiscordConfig(String botToken, String channelId, DiscordSettings discord, GameSettings game) {
     // Discord IDs are numbers, which YAML reads as numbers unless they're quoted, so either is fine

@@ -13,8 +13,6 @@ import java.util.Map;
 /**
  * Gathers advancements and allows them to be sent together all at once in a single Discord message
  * (so they don't overwhelm the JDA queue).
- *
- * <p>It's only used on the server thread, where advancements are completed, and ticks end.
  */
 final class AdvancementBatcher {
     // Each player's completed advancements' embeds, in the order they were completed

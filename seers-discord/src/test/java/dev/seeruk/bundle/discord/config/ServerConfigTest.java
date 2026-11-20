@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ServerConfigTest {
     private static final Path SERVER_DIRECTORY = Path.of("/srv/minecraft");
@@ -77,7 +78,10 @@ public class ServerConfigTest {
         final Optional<Path> serverIcon,
         final Optional<URI> expected
     ) {
-        assertEquals(expected, new ServerConfig("Minecraft Server", avatar).avatarLocation(SERVER_DIRECTORY, serverIcon));
+        assertEquals(
+            expected,
+            new ServerConfig("Minecraft Server", avatar).avatarLocation(SERVER_DIRECTORY, serverIcon)
+        );
     }
 
     private static DataResult<ServerConfig> parse(String name, String avatar) {

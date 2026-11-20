@@ -146,7 +146,8 @@ public class ItemEmbedsGameTest {
 
     @GameTest
     public void embedsStopBeforeDiscordsLimitForAMessage(GameTestHelper helper) {
-        // Each has half the limit in lore, so with their titles etc., two are more than Discord allows
+        // Each has half the limit in lore, so with their titles etc.,
+        // two are more than what Discord allows
         final var lore = new ItemLore(List.of(Component.literal("a".repeat(MessageEmbed.EMBED_MAX_LENGTH_BOT / 2))));
         final var items = IntStream.range(0, 2)
             .mapToObj(i -> {
