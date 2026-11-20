@@ -16,12 +16,6 @@ of this mod, and drastically simplifies the code here!
 - **Component Helpers**: Utilities for working with `Component` trees, such as splitting styled
   text into lines, or wrapping it, while keeping its styling.
 - **Text Colours**: Shared colours for text the mods put into messages that can be hovered over
-  (light purple) or clicked (aqua), so they mean the same thing in every mod.
-
-Planned:
-
-- **Text Conversion**: Conversion of Minecraft text into other formats, such as Markdown, ready for
-  use in other contexts (e.g. Discord).
-- **More Component Helpers**: e.g. merging two separately formatted `Component` trees into one.
+  (light purple) or clicked (aqua), so they're consistent across all of my mods.
 
 [1]: https://github.com/Patbox/TextPlaceholderAPI
