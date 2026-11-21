@@ -12,7 +12,7 @@ import java.util.List;
  */
 public final class DisposalEvents {
     /**
-     * Fired when a player closes the disposal inventory with item in it, just after the items have
+     * Fired when a player closes the disposal inventory with items in it, just after the items have
      * been destroyed. The list of items is a copy of the destroyed stacks and will never be empty.
      */
     public static final Event<Disposed> DISPOSED = EventFactory.createArrayBacked(
