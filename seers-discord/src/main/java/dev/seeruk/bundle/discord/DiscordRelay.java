@@ -20,17 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 /**
  * Relays what happens in game to Discord, e.g. players' chat, which is sent as "the player", and
  * events like players joining, which are sent as the webhook itself.
  */
 public final class DiscordRelay {
-    // Discord refuses webhook names longer than this, or with these words in them
-    private static final int MAX_NAME_LENGTH = 80;
-    private static final Pattern RESERVED_WORD = Pattern.compile("(?i)discord|clyde");
-
     private DiscordRelay() {}
 
     /**
@@ -72,7 +67,7 @@ public final class DiscordRelay {
             return Optional.empty();
         }
 
-        return Optional.of(new WebhookMessage(username(displayName), avatarUrl(sender.getUUID()), content, embeds));
+        return Optional.of(new WebhookMessage(WebhookNames.allowed(displayName),avatarUrl(sender.getUUID()), content, embeds));
     }
 
     /**
@@ -262,22 +257,6 @@ public final class DiscordRelay {
             "display_name", player.getDisplayName().getString(),
             "username", player.getGameProfile().name()
         );
-    }
-
-    /**
-     * The name as Discord will allow it as a webhook's name. Reserved words are visibly censored
-     * (e.g. {@code D*****d}), so it's clear the name's been changed.
-     */
-    static String username(String name) {
-        final var allowed = RESERVED_WORD.matcher(name).replaceAll(word -> {
-            final var text = word.group();
-            return text.charAt(0) + "*".repeat(text.length() - 2) + text.charAt(text.length() - 1);
-        });
-        if (allowed.codePointCount(0, allowed.length()) <= MAX_NAME_LENGTH) {
-            return allowed;
-        }
-
-        return allowed.substring(0, allowed.offsetByCodePoints(0, MAX_NAME_LENGTH));
     }
 
     static String avatarUrl(UUID id) {

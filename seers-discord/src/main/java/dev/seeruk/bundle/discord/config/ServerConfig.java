@@ -3,11 +3,10 @@ package dev.seeruk.bundle.discord.config;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.seeruk.bundle.discord.WebhookNames;
 
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -19,17 +18,15 @@ import java.util.Optional;
  *               it's blank, the server's icon is used.
  */
 public record ServerConfig(String name, String avatar) {
-    // Discord's rules for webhook names
-    private static final int MAX_NAME_LENGTH = 80;
-    private static final List<String> NOT_ALLOWED = List.of("discord", "clyde");
-
     private static final Codec<String> NAME_CODEC = Codec.STRING.validate(name -> {
-        if (name.isBlank() || name.length() > MAX_NAME_LENGTH) {
-            return DataResult.error(() -> "The server's name in Discord must be 1 to 80 characters: " + name);
+        if (name.isBlank() || name.length() > WebhookNames.MAX_LENGTH) {
+            return DataResult.error(() -> "The server's name in Discord must be 1 to %d characters: %s".formatted(
+                WebhookNames.MAX_LENGTH,
+                name
+            ));
         }
 
-        final var lower = name.toLowerCase(Locale.ROOT);
-        return NOT_ALLOWED.stream().anyMatch(lower::contains)
+        return WebhookNames.hasReservedWord(name)
             ? DataResult.error(() -> "Discord doesn't allow \"Discord\" or \"Clyde\" in the server's name: " + name)
             : DataResult.success(name);
     });
