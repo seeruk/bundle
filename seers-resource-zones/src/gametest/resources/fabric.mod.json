@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-resource-zones-gametest",
+    "version": "${version}",
+    "name": "Seer's Resource Zones GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.resourcezones.SeersResourceZonesGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.resourcezones.client.SeersResourceZonesClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-resource-zones": "*"
+    }
+}
