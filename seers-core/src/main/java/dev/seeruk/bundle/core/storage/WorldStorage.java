@@ -54,7 +54,7 @@ public final class WorldStorage<T> {
     }
 
     /**
-     * Replaces the value with whatever {@code update} returns for the current one.
+     * Replaces the value with whatever {@code update} returns for the current value.
      */
     public void update(MinecraftServer server, UnaryOperator<T> update) {
         set(server, update.apply(get(server)));

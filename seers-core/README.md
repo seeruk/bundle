@@ -14,6 +14,8 @@ Shared core library mod for my mods.
   and merging defaults with overrides, etc.
 - **Scoreboard Stat Helpers**: Utilities for registering and interacting with scoreboard objectives.
   Keeps names consistent, and mod code compact.
+- **Storage**: Data saved with each player or the world, and also files written for admins and other
+  tools, checked so they can only be saved in the server's folder.
 - **Tab List Names**: Shared functionality to allow several mods change how players are shown in the
   tab list (e.g. adding a nickname, or an AFK marker), and where they're shown, without overriding
   each other.

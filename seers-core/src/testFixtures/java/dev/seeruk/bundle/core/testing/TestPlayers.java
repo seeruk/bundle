@@ -10,7 +10,9 @@ import net.minecraft.network.protocol.game.ServerboundPlayerLoadedPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.players.NameAndId;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.storage.TagValueInput;
 
 import java.util.UUID;
 
@@ -32,8 +34,9 @@ public final class TestPlayers {
 
     /**
      * Like {@link #player(GameTestHelper)}, with a given UUID and name, e.g. so something can be
-     * set up for the player before they join. The name should be unique, so the player doesn't
-     * share scores or name lookups with another.
+     * set up for the player before they join, or so they can rejoin with what was saved when they
+     * left. The name should be unique, so the player doesn't share scores or name lookups with
+     * another.
      */
     public static ServerPlayer player(GameTestHelper helper, NameAndId nameAndId) {
         final var cookie = CommonListenerCookie.createInitial(new GameProfile(nameAndId.id(), nameAndId.name()), false);
@@ -44,6 +47,12 @@ public final class TestPlayers {
             cookie.gameProfile(),
             cookie.clientInformation()
         );
+
+        // What Vanilla loads for a player who's played before, before they join
+        // (see Vanilla's: PrepareSpawnTask.start)
+        server.getPlayerList().loadPlayerData(nameAndId)
+            .map(tag -> TagValueInput.create(ProblemReporter.DISCARDING, server.registryAccess(), tag))
+            .ifPresent(player::load);
 
         final var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
