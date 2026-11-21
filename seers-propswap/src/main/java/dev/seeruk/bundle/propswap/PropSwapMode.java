@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.propswap;
 
 import dev.seeruk.bundle.propswap.network.PropSwapNetworking;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
@@ -12,14 +13,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Tracks which players have PropSwap enabled. This is kept in-memory so it doesn't persist through
  * server restarts.
- *
- * <p>When players relog, this will need to be hooked into to disable PropSwap for the player.
  */
 public final class PropSwapMode {
     /**
      * How long PropSwap can go unused before it turns itself off.
      */
-    public static final int IDLE_TICKS = 5 * 60 * 20;
+    public static final int IDLE_TICKS = 5 * 60 * SharedConstants.TICKS_PER_SECOND;
 
     // Player -> the server tick they last enabled or used PropSwap
     private static final Map<UUID, Integer> LAST_ACTIVE = new ConcurrentHashMap<>();
