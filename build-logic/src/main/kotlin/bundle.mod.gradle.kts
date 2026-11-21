@@ -71,7 +71,6 @@ if (hasGameTests) {
             modId = "${project.name}-gametest"
             enableGameTests = true
             enableClientGameTests = hasClientGameTests
-            eula = true // TODO: Check if this needs to be set to true actually.
         }
     }
 
