@@ -14,7 +14,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "dev.seeruk.bundle.afk.SeersAFK"
+            "dev.seeruk.bundle.afk.SeersAfk"
         ]
     },
     "mixins": [
@@ -24,6 +24,8 @@
         "java": ">=25",
         "minecraft": "~26.3",
         "fabricloader": ">=0.20.1",
-        "fabric-api": "*"
+        "fabric-api": "*",
+        "seers-core": "*",
+        "seers-text": "*"
     }
 }
