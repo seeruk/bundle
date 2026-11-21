@@ -2,7 +2,6 @@ package dev.seeruk.bundle.itemtext.dialog;
 
 import dev.seeruk.bundle.itemtext.LoreEditor;
 import dev.seeruk.bundle.itemtext.LoreInput;
-import dev.seeruk.bundle.itemtext.LoreLines;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -44,7 +43,7 @@ public class LoreDialogGameTest {
     public void savingInvalidLoreChangesNothing(GameTestHelper helper) {
         final var player = holding(player(helper), withLore("Testing"));
 
-        save(player, "Testing\n".repeat(LoreLines.MAX_LINES + 1));
+        save(player, "Testing\n".repeat(LoreEditor.MAX_LINES + 1));
 
         helper.assertValueEqual(LoreEditor.lines(player.getMainHandItem()), literals("Testing"), "lore");
         helper.succeed();

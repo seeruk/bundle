@@ -42,13 +42,13 @@ public class LoreEditorTest {
                 Arguments.of("Drops blank lines at the end", "Testing 1\n\n \n", List.of("Testing 1")),
                 Arguments.of(
                     "Doesn't count formatting tags towards a line's length",
-                    "<red>" + "a".repeat(LoreLines.MAX_LINE_LENGTH) + "</red>",
-                    List.of("a".repeat(LoreLines.MAX_LINE_LENGTH))
+                    "<red>" + "a".repeat(LoreEditor.MAX_LINE_LENGTH) + "</red>",
+                    List.of("a".repeat(LoreEditor.MAX_LINE_LENGTH))
                 ),
                 Arguments.of(
                     "Wraps long lines",
-                    "a".repeat(LoreLines.MAX_LINE_LENGTH - 5) + " wrapped words",
-                    List.of("a".repeat(LoreLines.MAX_LINE_LENGTH - 5), "wrapped words")
+                    "a".repeat(LoreEditor.MAX_LINE_LENGTH - 5) + " wrapped words",
+                    List.of("a".repeat(LoreEditor.MAX_LINE_LENGTH - 5), "wrapped words")
                 )
             );
         }

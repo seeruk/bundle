@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.itemtext;
 
 import dev.seeruk.bundle.itemtext.api.ItemNameEvents;
+import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -31,7 +32,7 @@ public final class NameEditor {
             return new NameEditResult.BlankName();
         }
 
-        if (plain.length() > AnvilMenu.MAX_NAME_LENGTH) {
+        if (TextComponents.length(plain) > AnvilMenu.MAX_NAME_LENGTH) {
             return new NameEditResult.MaxLengthExceeded(AnvilMenu.MAX_NAME_LENGTH, parsed);
         }
 

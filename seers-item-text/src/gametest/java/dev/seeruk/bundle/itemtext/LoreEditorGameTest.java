@@ -152,7 +152,7 @@ public class LoreEditorGameTest {
         final var player = helper.makeMockServerPlayerInLevel();
         final var stack = withLore("Testing");
 
-        final var result = LoreEditor.replace(player, stack, "Testing\n".repeat(LoreLines.MAX_LINES + 1));
+        final var result = LoreEditor.replace(player, stack, "Testing\n".repeat(LoreEditor.MAX_LINES + 1));
 
         helper.assertTrue(result instanceof LoreEditResult.MaxLinesExceeded, "Edit didn't fail with MaxLinesExceeded");
         helper.assertValueEqual(LoreEditor.lines(stack), literals("Testing"), "lore");

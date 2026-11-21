@@ -17,7 +17,7 @@ import java.util.function.BiFunction;
 /**
  * {@code /itemlore}: commands and subcommands for modifying item lore.
  */
-public class ItemLoreCommand {
+public final class ItemLoreCommand {
     static final String NAME = "itemlore";
 
     private ItemLoreCommand() {}

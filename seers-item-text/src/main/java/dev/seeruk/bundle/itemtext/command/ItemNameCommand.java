@@ -10,6 +10,7 @@ import dev.seeruk.bundle.itemtext.EditableItem;
 import dev.seeruk.bundle.itemtext.NameEditResult;
 import dev.seeruk.bundle.itemtext.NameEditor;
 import dev.seeruk.bundle.itemtext.SeersItemText;
+import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,7 +23,7 @@ import java.util.function.BiFunction;
 /**
  * {@code /itemname}: commands and subcommands for modifying item names.
  */
-public class ItemNameCommand {
+public final class ItemNameCommand {
     static final String NAME = "itemname";
 
     private ItemNameCommand() {}
@@ -83,7 +84,7 @@ public class ItemNameCommand {
                 context.getSource().sendFailure(TextParsers.parseAsTrusted(
                     "<red>New name cannot be longer than %d characters (yours is %d)</red>".formatted(
                         failure.maxNameLength(),
-                        failure.name().getString().length()
+                        TextComponents.length(failure.name().getString())
                     )
                 ));
                 yield 0;

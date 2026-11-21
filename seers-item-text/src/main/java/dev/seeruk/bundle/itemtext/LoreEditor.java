@@ -11,7 +11,6 @@ import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * LoreEditor is a service that ties together various disparate pieces of lore-editing related
@@ -21,6 +20,10 @@ import java.util.function.Supplier;
  * events at appropriate points.
  */
 public final class LoreEditor {
+    public static final int MAX_LINES = 10;
+    // Longer lines are wrapped when lore is written (see #parse)
+    public static final int MAX_LINE_LENGTH = 60;
+
     private LoreEditor() {}
 
     /**
@@ -44,11 +47,12 @@ public final class LoreEditor {
      */
     public static LoreEditResult replace(Player player, ItemStack stack, String input) {
         final var lines = parse(input);
-        final var result = edit(player, stack, () -> LoreLines.replace(lines(stack), lines));
-        if (result instanceof LoreEditResult.Edited) {
-            LoreInput.set(stack, input);
+        if (lines.size() > MAX_LINES) {
+            return new LoreEditResult.MaxLinesExceeded(MAX_LINES, lines.size());
         }
 
+        final var result = edit(player, stack, new LoreEditResult.Edited(lines(stack), lines));
+        LoreInput.set(stack, input);
         return result;
     }
 
@@ -60,7 +64,7 @@ public final class LoreEditor {
     public static List<Component> parse(String input) {
         final var lines = new ArrayList<Component>();
         for (final var line : TextComponents.splitLines(TextParsers.parseAsUntrusted(input))) {
-            lines.addAll(TextComponents.wrap(line, LoreLines.MAX_LINE_LENGTH));
+            lines.addAll(TextComponents.wrap(line, MAX_LINE_LENGTH));
         }
 
         while (!lines.isEmpty() && lines.getLast().getString().isBlank()) {
@@ -74,17 +78,16 @@ public final class LoreEditor {
      * Removes all the lore, and the raw input stored on the input.
      */
     public static LoreEditResult remove(Player player, ItemStack stack) {
-        final var result = edit(player, stack, () -> new LoreEditResult.Edited(lines(stack), ItemLore.EMPTY.lines()));
+        final var result = edit(player, stack, new LoreEditResult.Edited(lines(stack), List.of()));
         LoreInput.clear(stack);
         return result;
     }
 
-    private static LoreEditResult edit(Player player, ItemStack stack, Supplier<LoreEditResult> operation) {
-        final var result = operation.get();
+    private static LoreEditResult edit(Player player, ItemStack stack, LoreEditResult.Edited result) {
         // If the lore hasn't changed, we don't want to deny the edit, but we also don't want to do
         // things like fire events - we can just ignore it silently.
-        if (result instanceof LoreEditResult.Edited edited && !edited.original().equals(edited.edited())) {
-            save(player, stack, edited);
+        if (!result.original().equals(result.edited())) {
+            save(player, stack, result);
         }
 
         return result;
