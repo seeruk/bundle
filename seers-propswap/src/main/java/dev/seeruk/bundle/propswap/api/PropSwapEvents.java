@@ -12,8 +12,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public final class PropSwapEvents {
     /**
-     * Fired when a player PropSwaps a block. Only fired when the block has actually changed
-     * (though, not sure how it could not change currently...).
+     * Fired when a player PropSwaps a block. Only fired when the block has actually changed (so,
+     * doesn't count things like a bed splitting, or swaps that are refused.
      */
     public static final Event<Swapped> SWAPPED = EventFactory.createArrayBacked(
         Swapped.class,
