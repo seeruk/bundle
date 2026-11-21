@@ -7,7 +7,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 public class AfkConfigGameTest {
     @GameTest
     public void distConfigIsValid(GameTestHelper helper) {
-        final var config = ModConfig.load(SeersAFK.MOD_ID, AfkConfig.CODEC);
+        final var config = ModConfig.load(SeersAfk.MOD_ID, AfkConfig.CODEC);
 
         helper.assertValueEqual(config.timeoutSeconds(), 300, "timeout");
         helper.assertValueEqual(

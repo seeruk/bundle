@@ -10,7 +10,7 @@ import dev.seeruk.bundle.core.command.NamespacedCommands;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-import static dev.seeruk.bundle.afk.SeersAFK.MOD_ID;
+import static dev.seeruk.bundle.afk.SeersAfk.MOD_ID;
 
 /**
  * {@code /afk}: toggles the calling player's AFK status.

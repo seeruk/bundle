@@ -3,7 +3,7 @@ package dev.seeruk.bundle.afk;
 import dev.seeruk.bundle.core.stats.ScoreboardStat;
 import net.minecraft.server.MinecraftServer;
 
-import static dev.seeruk.bundle.afk.SeersAFK.MOD_ID;
+import static dev.seeruk.bundle.afk.SeersAfk.MOD_ID;
 
 /**
  * Keeps per-player AFK statistics in Vanilla scoreboard objectives (see {@link ScoreboardStat}).
