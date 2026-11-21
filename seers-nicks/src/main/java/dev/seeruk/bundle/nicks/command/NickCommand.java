@@ -10,6 +10,7 @@ import dev.seeruk.bundle.nicks.NickEditResult;
 import dev.seeruk.bundle.nicks.Nickname;
 import dev.seeruk.bundle.nicks.Nicknames;
 import dev.seeruk.bundle.nicks.SeersNicks;
+import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -120,7 +121,7 @@ public final class NickCommand {
                 context.getSource().sendFailure(TextParsers.parseAsTrusted(
                     "<red>Nicknames can't be longer than %d characters (yours is %d)</red>".formatted(
                         failure.maxNameLength(),
-                        Nickname.length(failure.name())
+                        TextComponents.length(failure.name().getString())
                     )
                 ));
                 yield 0;

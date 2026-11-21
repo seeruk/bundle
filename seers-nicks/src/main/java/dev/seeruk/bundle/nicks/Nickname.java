@@ -2,6 +2,7 @@ package dev.seeruk.bundle.nicks;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.network.chat.Component;
 
@@ -50,7 +51,7 @@ public record Nickname(String input, boolean trusted) {
             return Optional.of(new NickEditResult.SurroundingWhitespace());
         }
 
-        if (length(name) > MAX_LENGTH) {
+        if (TextComponents.length(text) > MAX_LENGTH) {
             return Optional.of(new NickEditResult.MaxLengthExceeded(MAX_LENGTH, name));
         }
 
@@ -63,13 +64,5 @@ public record Nickname(String input, boolean trusted) {
         }
 
         return Optional.empty();
-    }
-
-    /**
-     * How many characters the nickname shows, so characters like emoji only count once.
-     */
-    public static int length(Component name) {
-        final var text = name.getString();
-        return text.codePointCount(0, text.length());
     }
 }
