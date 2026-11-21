@@ -5,6 +5,7 @@ import dev.seeruk.bundle.discord.config.EventsConfig;
 import dev.seeruk.bundle.discord.markdown.MarkdownRenderer;
 import dev.seeruk.bundle.text.TextComponents;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
@@ -55,10 +56,14 @@ public final class DiscordRelay {
 
         // The name chat shows, e.g. with the player's nickname, or their team's prefix
         final var displayName = chat.name().getString();
-        final var content = format.format(Map.of(
-            "display_name", MarkdownRenderer.escape(displayName),
-            "message", MarkdownRenderer.render(message.decoratedContent())
-        ));
+        // Tags (e.g. a long item name, many times over) can make a message longer than Discord allows
+        final var content = TextComponents.truncate(
+            format.format(Map.of(
+                "display_name", MarkdownRenderer.escape(displayName),
+                "message", MarkdownRenderer.render(message.decoratedContent())
+            )),
+            Message.MAX_CONTENT_LENGTH
+        );
 
         // Discord refuses a message with nothing in it, e.g. if the format's been emptied to stop
         // chat being sent

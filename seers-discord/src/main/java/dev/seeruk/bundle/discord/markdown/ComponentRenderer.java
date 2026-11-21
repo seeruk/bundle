@@ -158,6 +158,6 @@ public final class ComponentRenderer {
 
     private static String name(Map<Long, String> names, String id, String unknown) {
         // Anyone can write an ID too long to be a real one
-        return id.length() <= 18 ? names.getOrDefault(Long.parseLong(id), unknown) : unknown;
+        return id.length() <= 20 ? names.getOrDefault(Long.parseLong(id), unknown) : unknown;
     }
 }

@@ -3,6 +3,7 @@ package dev.seeruk.bundle.discord;
 import dev.seeruk.bundle.core.config.ModConfig;
 import dev.seeruk.bundle.discord.config.DiscordConfig;
 import dev.seeruk.bundle.discord.markdown.MarkdownRenderer;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.ChatFormatting;
@@ -85,6 +86,20 @@ public class DiscordRelayGameTest {
         final var message = relay(player, ChatType.CHAT, Component.literal("Testing").withStyle(ChatFormatting.BOLD));
 
         helper.assertValueEqual(message.map(WebhookMessage::content), Optional.of("**Testing**"), "content");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void chatIsCutToDiscordsLimit(GameTestHelper helper) {
+        final var player = player(helper);
+
+        final var message = relay(player, ChatType.CHAT, Component.literal("a".repeat(Message.MAX_CONTENT_LENGTH + 1)));
+
+        helper.assertValueEqual(
+            message.map(WebhookMessage::content),
+            Optional.of("a".repeat(Message.MAX_CONTENT_LENGTH)),
+            "content"
+        );
         helper.succeed();
     }
 
