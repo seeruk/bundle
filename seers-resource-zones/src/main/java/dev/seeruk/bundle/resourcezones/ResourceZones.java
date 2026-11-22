@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 import static dev.seeruk.bundle.resourcezones.SeersResourceZones.MOD_ID;
@@ -25,6 +26,13 @@ public final class ResourceZones {
 
     public static boolean contains(MinecraftServer server, ResourceKey<Level> dimension, ChunkPos pos) {
         return STORAGE.get(server).contains(dimension, pos);
+    }
+
+    /**
+     * The chunks in zones in the dimension.
+     */
+    public static Set<ChunkPos> chunks(MinecraftServer server, ResourceKey<Level> dimension) {
+        return STORAGE.get(server).in(dimension);
     }
 
     /**

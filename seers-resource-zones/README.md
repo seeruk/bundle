@@ -34,16 +34,29 @@ TODO
 
 ### Config
 
-TODO
+Settings live in `config/seers-resource-zones/config.yml` (see `config.dist.yml` next to it for
+every setting, and their defaults).
+
+| Setting            | Default | Description                                                           |
+|--------------------|---------|-----------------------------------------------------------------------|
+| `particles.colour` | `gold`  | The particles' colour, as a colour name (e.g. `gold`), or hex.        |
+| `particles.radius` | `16`    | How many blocks around each player (horizontally) zones are outlined. |
+
+Going too much higher than 16 blocks around a player to show particles can result in hitting the 
+client particle cap when using wall + high particles, and they'll stop showing correctly in weird 
+ways.
 
 ### Commands
 
-All commands are for admins only.
-
-| Command                         | Description                                                    |
-|---------------------------------|----------------------------------------------------------------|
-| `/resourcezones add [x z]`      | Adds the chunk you're in (or the one with block x z) to zones. |
-| `/resourcezones remove [x z]`   | Removes the chunk you're in (or the one with block x z).       |
+| Command                                             | Description                                                       |
+|-----------------------------------------------------|-------------------------------------------------------------------|
+| **Players**                                         |                                                                   |
+| `/resourcezones particles`                          | Shows your particle settings.                                     |
+| `/resourcezones particles <off\|low\|medium\|high>` | Sets how many particles outline zones for you, or turns them off. |
+| `/resourcezones particles style <band\|wall>`       | Sets whether particles are a short band, or a taller wall.        |
+| **Admins**                                          |                                                                   |
+| `/resourcezones add [x z]`                          | Adds the chunk you're in (or the one with block x z) to zones.    |
+| `/resourcezones remove [x z]`                       | Removes the chunk you're in (or the one with block x z).          |
 
 ### Events
 

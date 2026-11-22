@@ -30,7 +30,11 @@ public record ZoneChunks(Map<ResourceKey<Level>, Set<ChunkPos>> chunks) {
     }
 
     public boolean contains(ResourceKey<Level> dimension, ChunkPos pos) {
-        return chunks.getOrDefault(dimension, Set.of()).contains(pos);
+        return in(dimension).contains(pos);
+    }
+
+    public Set<ChunkPos> in(ResourceKey<Level> dimension) {
+        return chunks.getOrDefault(dimension, Set.of());
     }
 
     public ZoneChunks with(ResourceKey<Level> dimension, ChunkPos pos) {

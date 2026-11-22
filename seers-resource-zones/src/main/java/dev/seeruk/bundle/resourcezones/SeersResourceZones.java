@@ -1,8 +1,11 @@
 package dev.seeruk.bundle.resourcezones;
 
+import dev.seeruk.bundle.core.config.ModConfig;
 import dev.seeruk.bundle.resourcezones.command.ResourceZonesCommand;
+import dev.seeruk.bundle.resourcezones.particles.ZoneParticles;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +20,12 @@ public class SeersResourceZones implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        final var config = ModConfig.load(MOD_ID, ResourceZonesConfig.CODEC);
+
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
             ResourceZonesCommand.register(dispatcher));
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> ZoneParticles.showAll(server, config.particles()));
 
         LOGGER.info("Initialized");
     }
