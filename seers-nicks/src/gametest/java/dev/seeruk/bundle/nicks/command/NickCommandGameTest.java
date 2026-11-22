@@ -5,15 +5,15 @@ import dev.seeruk.bundle.nicks.Nickname;
 import dev.seeruk.bundle.nicks.Nicknames;
 import dev.seeruk.bundle.nicks.SeersNicks;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.LevelBasedPermissionSet;
 
 import java.util.Optional;
 
+import static dev.seeruk.bundle.core.testing.TestCommands.adminSource;
 import static dev.seeruk.bundle.core.testing.TestCommands.execute;
+import static dev.seeruk.bundle.core.testing.TestCommands.executeAsAdmin;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
 
@@ -141,15 +141,6 @@ public class NickCommandGameTest {
         } catch (CommandSyntaxException e) {
             helper.succeed();
         }
-    }
-
-    private static int executeAsAdmin(GameTestHelper helper, ServerPlayer player, String command) throws CommandSyntaxException {
-        final var dispatcher = helper.getLevel().getServer().getCommands().getDispatcher();
-        return dispatcher.execute(command, adminSource(player));
-    }
-
-    private static CommandSourceStack adminSource(ServerPlayer player) {
-        return player.createCommandSourceStack().withPermission(LevelBasedPermissionSet.GAMEMASTER).withSuppressedOutput();
     }
 
     private static Optional<String> nicknameFor(ServerPlayer player) {
