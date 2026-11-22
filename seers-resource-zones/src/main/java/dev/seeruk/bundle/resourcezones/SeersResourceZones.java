@@ -1,6 +1,8 @@
 package dev.seeruk.bundle.resourcezones;
 
+import dev.seeruk.bundle.resourcezones.command.ResourceZonesCommand;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,9 @@ public class SeersResourceZones implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Hello, World! From {}", MOD_ID);
+        CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
+            ResourceZonesCommand.register(dispatcher));
+
+        LOGGER.info("Initialized");
     }
 }

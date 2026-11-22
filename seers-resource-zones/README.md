@@ -38,7 +38,12 @@ TODO
 
 ### Commands
 
-TODO
+All commands are for admins only.
+
+| Command                         | Description                                                    |
+|---------------------------------|----------------------------------------------------------------|
+| `/resourcezones add [x z]`      | Adds the chunk you're in (or the one with block x z) to zones. |
+| `/resourcezones remove [x z]`   | Removes the chunk you're in (or the one with block x z).       |
 
 ### Events
 

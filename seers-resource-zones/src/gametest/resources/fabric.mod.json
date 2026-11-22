@@ -7,10 +7,8 @@
     "environment": "*",
     "entrypoints": {
         "fabric-gametest": [
-            "dev.seeruk.bundle.resourcezones.SeersResourceZonesGameTest"
-        ],
-        "fabric-client-gametest": [
-            "dev.seeruk.bundle.resourcezones.client.SeersResourceZonesClientGameTest"
+            "dev.seeruk.bundle.resourcezones.ResourceZonesGameTest",
+            "dev.seeruk.bundle.resourcezones.command.ResourceZonesCommandGameTest"
         ]
     },
     "depends": {
