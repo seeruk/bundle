@@ -30,17 +30,31 @@ build worthwhile transport links to them (e.g. nether tunnels, so on).
 
 ### Usage
 
-TODO
+Admins add chunks to resource zones with `/resourcezones add`, and players can turn on particles
+to see them with `/resourcezones particles`.
+
+Whenever zones change (and when the server starts), each dimension's zone chunks are written to a
+file as an MCA Selector selection, e.g. `resource-zones/minecraft/overworld.csv`. The mod never
+resets anything itself. To reset the zones, stop the server, delete the selected chunks in each
+dimension with [MCA Selector][1], then start the server again. With MCA Selector's command line
+mode, that's:
+
+```
+java -jar mcaselector.jar --mode delete --world <world>/dimensions/minecraft/overworld --selection resource-zones/minecraft/overworld.csv
+```
+
+Next time a player visits, the chunks will regenerate fresh.
 
 ### Config
 
 Settings live in `config/seers-resource-zones/config.yml` (see `config.dist.yml` next to it for
 every setting, and their defaults).
 
-| Setting            | Default | Description                                                           |
-|--------------------|---------|-----------------------------------------------------------------------|
-| `particles.colour` | `gold`  | The particles' colour, as a colour name (e.g. `gold`), or hex.        |
-| `particles.radius` | `16`    | How many blocks around each player (horizontally) zones are outlined. |
+| Setting            | Default          | Description                                                           |
+|--------------------|------------------|-----------------------------------------------------------------------|
+| `particles.colour` | `gold`           | The particles' colour, as a colour name (e.g. `gold`), or hex.        |
+| `particles.radius` | `16`             | How many blocks around each player (horizontally) zones are outlined. |
+| `export.folder`    | `resource-zones` | The folder zones are exported to, inside the server's folder.         |
 
 Going too much higher than 16 blocks around a player to show particles can result in hitting the 
 client particle cap when using wall + high particles, and they'll stop showing correctly in weird 
@@ -60,8 +74,23 @@ ways.
 
 ### Events
 
-TODO
+#### ResourceZoneEvents.CHANGED
+
+Fired when chunks are added to or removed from a dimension's resource zones. It's only fired when
+they've actually changed.
+
+```
+dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents.CHANGED
+```
+
+**Callback signature:**
+
+```java
+void onChanged(MinecraftServer server, ResourceKey<Level> dimension);
+```
 
 ### Statistics
 
 TODO
+
+[1]: https://github.com/Querz/mcaselector

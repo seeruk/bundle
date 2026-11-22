@@ -31,3 +31,6 @@ build/
 
 # Dev run folders (from Loom)
 run/
+
+# Local tools
+mcaselector.jar

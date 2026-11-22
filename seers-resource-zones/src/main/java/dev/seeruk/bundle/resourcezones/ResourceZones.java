@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.resourcezones;
 
 import dev.seeruk.bundle.core.storage.WorldStorage;
+import dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.ChunkPos;
@@ -39,17 +40,25 @@ public final class ResourceZones {
      * Adds the chunk to the resource zones, returning whether it wasn't in one already.
      */
     public static boolean add(MinecraftServer server, ResourceKey<Level> dimension, ChunkPos pos) {
-        return change(server, zones -> zones.with(dimension, pos));
+        return change(server, dimension, zones -> zones.with(dimension, pos));
     }
 
     /**
      * Removes the chunk from the resource zones, returning whether it was in one.
      */
     public static boolean remove(MinecraftServer server, ResourceKey<Level> dimension, ChunkPos pos) {
-        return change(server, zones -> zones.without(dimension, pos));
+        return change(server, dimension, zones -> zones.without(dimension, pos));
     }
 
-    private static boolean change(MinecraftServer server, UnaryOperator<ZoneChunks> change) {
+    /**
+     * Saves the change to the dimension's zone chunks, and fires {@link ResourceZoneEvents#CHANGED}
+     * if anything changed, returning whether it did.
+     */
+    private static boolean change(
+        MinecraftServer server,
+        ResourceKey<Level> dimension,
+        UnaryOperator<ZoneChunks> change
+    ) {
         final var current = STORAGE.get(server);
         final var changed = change.apply(current);
         if (changed.equals(current)) {
@@ -57,6 +66,7 @@ public final class ResourceZones {
         }
 
         STORAGE.set(server, changed);
+        ResourceZoneEvents.CHANGED.invoker().onChanged(server, dimension);
         return true;
     }
 }

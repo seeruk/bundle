@@ -10,3 +10,12 @@ particles:
   # so the outline follows them around. Larger means more particles, and the game only shows so
   # many at once, so outlines can get patchy if it's set too high.
   radius: 16
+
+# Each dimension's resource zones are written to a file whenever they change (and when the server
+# starts), as an MCA Selector selection, e.g. resource-zones/minecraft/overworld.csv. To reset
+# zones, stop the server, then delete the selected chunks with MCA Selector, e.g.:
+#   java -jar mcaselector.jar --mode delete --world <world>/dimensions/minecraft/overworld --selection resource-zones/minecraft/overworld.csv
+export:
+  # The folder the files are written to, relative to the server's folder. It can't be outside the
+  # server's folder.
+  folder: resource-zones

@@ -17,6 +17,7 @@ public class ResourceZonesConfigGameTest {
             "particle colour"
         );
         helper.assertValueEqual(config.particles().radius(), 16, "particle radius");
+        helper.assertValueEqual(config.export().folder(), "resource-zones", "export folder");
         helper.succeed();
     }
 }
