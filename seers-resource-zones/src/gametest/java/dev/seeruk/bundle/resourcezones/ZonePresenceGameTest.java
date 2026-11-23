@@ -2,9 +2,10 @@ package dev.seeruk.bundle.resourcezones;
 
 import dev.seeruk.bundle.core.testing.EventLog;
 import dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents;
+import dev.seeruk.bundle.resourcezones.edit.EditMode;
+import dev.seeruk.bundle.resourcezones.edit.ZoneEditor;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
@@ -15,6 +16,7 @@ import java.util.UUID;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.addZoneChunk;
 import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.moveTo;
+import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.respawn;
 
 // Zones are shared by the whole test server, so each test uses its own chunks
 public class ZonePresenceGameTest {
@@ -172,18 +174,39 @@ public class ZonePresenceGameTest {
         helper.succeed();
     }
 
-    /**
-     * Kills the player, then respawns them as a client does, returning the new player they become.
-     */
-    private static ServerPlayer respawn(GameTestHelper helper, ServerPlayer player) {
-        player.kill(helper.getLevel());
-        player.connection.handleClientCommand(
-            new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN)
-        );
+    @GameTest
+    public void editorsArentInZones(GameTestHelper helper) {
+        final var player = player(helper);
+        ZoneEditor.start(player, EditMode.ADD);
+        moveTo(player, new ChunkPos(5100, 0));
+        ZonePresence.update(player);
 
-        final var respawned = helper.getLevel().getServer().getPlayerList().getPlayer(player.getUUID());
-        helper.assertTrue(respawned != player, "Player didn't respawn");
-        return respawned;
+        moveTo(player, addZoneChunk(helper, player, new ChunkPos(5101, 0)));
+        ZonePresence.update(player);
+
+        helper.assertFalse(ZonePresence.isInZone(player), "Editor was in a zone");
+        helper.assertValueEqual(eventsFor(player), List.of(), "events");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void finishingAnEditInAZoneIsntEntering(GameTestHelper helper) {
+        // They were last seen outside a zone before editing, so this only works if they're seen for
+        // the first time after editing
+        final var player = player(helper);
+        final var zone = addZoneChunk(helper, player, new ChunkPos(5110, 0));
+        moveTo(player, new ChunkPos(5111, 0));
+        ZonePresence.update(player);
+        ZoneEditor.start(player, EditMode.PAUSED);
+        moveTo(player, zone);
+        ZonePresence.update(player);
+
+        ZoneEditor.discard(player);
+        ZonePresence.update(player);
+
+        helper.assertTrue(ZonePresence.isInZone(player), "Player wasn't in a zone");
+        helper.assertValueEqual(eventsFor(player), List.of(), "events");
+        helper.succeed();
     }
 
     private static List<Moved> eventsFor(ServerPlayer player) {

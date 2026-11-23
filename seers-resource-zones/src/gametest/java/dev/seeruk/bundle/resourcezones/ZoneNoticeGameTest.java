@@ -1,5 +1,7 @@
 package dev.seeruk.bundle.resourcezones;
 
+import dev.seeruk.bundle.resourcezones.edit.EditMode;
+import dev.seeruk.bundle.resourcezones.edit.ZoneEditor;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
@@ -29,6 +31,16 @@ public class ZoneNoticeGameTest {
         final var player = player(helper);
         addZoneChunk(helper, player, new ChunkPos(4010, 0));
         moveTo(player, new ChunkPos(4011, 0));
+
+        helper.assertValueEqual(ZoneNotice.message(player, NOTICE), Optional.empty(), "notice");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void showsNothingWhileEditing(GameTestHelper helper) {
+        final var player = player(helper);
+        moveTo(player, addZoneChunk(helper, player, new ChunkPos(4020, 0)));
+        ZoneEditor.start(player, EditMode.PAUSED);
 
         helper.assertValueEqual(ZoneNotice.message(player, NOTICE), Optional.empty(), "notice");
         helper.succeed();

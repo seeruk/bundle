@@ -51,6 +51,18 @@ public final class ResourceZones {
     }
 
     /**
+     * Adds and removes the given chunks in one change, returning whether anything changed.
+     */
+    public static boolean apply(
+        MinecraftServer server,
+        ResourceKey<Level> dimension,
+        Set<ChunkPos> added,
+        Set<ChunkPos> removed
+    ) {
+        return change(server, dimension, zones -> zones.withChanges(dimension, added, removed));
+    }
+
+    /**
      * Saves the change to the dimension's zone chunks, and fires {@link ResourceZoneEvents#CHANGED}
      * if anything changed, returning whether it did.
      */

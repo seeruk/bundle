@@ -4,7 +4,10 @@ import dev.seeruk.bundle.core.actionbar.ActionBarMessages;
 import dev.seeruk.bundle.core.config.ModConfig;
 import dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents;
 import dev.seeruk.bundle.resourcezones.command.ResourceZonesCommand;
+import dev.seeruk.bundle.resourcezones.edit.ZoneEditStatus;
+import dev.seeruk.bundle.resourcezones.edit.ZoneEditor;
 import dev.seeruk.bundle.resourcezones.export.ZoneExports;
+import dev.seeruk.bundle.resourcezones.particles.EditMarkers;
 import dev.seeruk.bundle.resourcezones.particles.ZoneParticles;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -37,6 +40,14 @@ public class SeersResourceZones implements ModInitializer {
 
         final var notice = config.notice().format(Map.of());
         ActionBarMessages.register(id("notice"), player -> ZoneNotice.message(player, notice));
+
+        // Editing zones
+        final var edit = config.edit();
+        ServerTickEvents.END_SERVER_TICK.register(ZoneEditor::markAll);
+        ServerTickEvents.END_SERVER_TICK.register(server -> EditMarkers.showAll(server, edit.markers()));
+        ActionBarMessages.register(id("edit_status"), player -> ZoneEditStatus.message(player, edit.status()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ZoneEditor.forget(handler.player));
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ZoneEditor.clear());
 
         // Handle zone exports
         final var exportFolder = config.export().folder();

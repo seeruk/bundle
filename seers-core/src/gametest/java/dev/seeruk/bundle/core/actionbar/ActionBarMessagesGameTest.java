@@ -11,6 +11,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -21,14 +22,20 @@ import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 public class ActionBarMessagesGameTest {
     private static final Identifier FIRST = Identifier.fromNamespaceAndPath("seers-core-gametest", "first");
     private static final Identifier SECOND = Identifier.fromNamespaceAndPath("seers-core-gametest", "second");
+    private static final Identifier CHANGING = Identifier.fromNamespaceAndPath("seers-core-gametest", "changing");
 
     // Which players each message applies to, so each test only sees the messages it turns on
     private static final Set<UUID> FIRST_PLAYERS = ConcurrentHashMap.newKeySet();
     private static final Set<UUID> SECOND_PLAYERS = ConcurrentHashMap.newKeySet();
 
+    // Player -> the changing message's text for them
+    private static final Map<UUID, String> CHANGING_TEXT = new ConcurrentHashMap<>();
+
     static {
         ActionBarMessages.register(FIRST, player -> applies(FIRST_PLAYERS, player, "First"));
         ActionBarMessages.register(SECOND, player -> applies(SECOND_PLAYERS, player, "Second"));
+        ActionBarMessages.register(CHANGING, player ->
+            Optional.ofNullable(CHANGING_TEXT.get(player.getUUID())).map(ActionBarMessagesGameTest::message));
     }
 
     @GameTest
@@ -53,6 +60,38 @@ public class ActionBarMessagesGameTest {
             ActionBarMessages.update(player, now + ActionBarMessages.REFRESH_TICKS),
             "Never refreshed"
         );
+        helper.succeed();
+    }
+
+    @GameTest
+    public void showsChangedTextStraightAway(GameTestHelper helper) {
+        final var player = player(helper);
+        final var now = now(helper);
+        CHANGING_TEXT.put(player.getUUID(), "One");
+        ActionBarMessages.update(player, now);
+
+        CHANGING_TEXT.put(player.getUUID(), "Two");
+
+        helper.assertTrue(ActionBarMessages.update(player, now + 1), "Changed text wasn't sent");
+        helper.assertFalse(ActionBarMessages.update(player, now + 2), "Unchanged text was sent again");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void changedTextDoesntExtendItsTurn(GameTestHelper helper) {
+        final var player = player(helper);
+        final var now = now(helper);
+        FIRST_PLAYERS.add(player.getUUID());
+        CHANGING_TEXT.put(player.getUUID(), "One");
+        ActionBarMessages.update(player, now);
+        ActionBarMessages.update(player, now + ActionBarMessages.REFRESH_TICKS);
+        helper.assertValueEqual(ActionBarMessages.showing(player), Optional.of(CHANGING), "second turn");
+
+        CHANGING_TEXT.put(player.getUUID(), "Two");
+        ActionBarMessages.update(player, now + ActionBarMessages.REFRESH_TICKS + 1);
+        ActionBarMessages.update(player, now + ActionBarMessages.REFRESH_TICKS * 2);
+
+        helper.assertValueEqual(ActionBarMessages.showing(player), Optional.of(FIRST), "third turn");
         helper.succeed();
     }
 

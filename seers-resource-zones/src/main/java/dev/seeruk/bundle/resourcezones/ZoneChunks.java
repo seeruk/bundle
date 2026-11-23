@@ -45,6 +45,13 @@ public record ZoneChunks(Map<ResourceKey<Level>, Set<ChunkPos>> chunks) {
         return changed(dimension, positions -> positions.remove(pos));
     }
 
+    public ZoneChunks withChanges(ResourceKey<Level> dimension, Set<ChunkPos> added, Set<ChunkPos> removed) {
+        return changed(dimension, positions -> {
+            positions.addAll(added);
+            positions.removeAll(removed);
+        });
+    }
+
     /**
      * Returns a copy of the updated collection, with the given changes applied to the given
      * dimension's chunks. If there are no chunks left after the change, the dimension is removed

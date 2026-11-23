@@ -13,7 +13,10 @@
             "dev.seeruk.bundle.resourcezones.ZoneNoticeGameTest",
             "dev.seeruk.bundle.resourcezones.ZonePresenceGameTest",
             "dev.seeruk.bundle.resourcezones.command.ResourceZonesCommandGameTest",
+            "dev.seeruk.bundle.resourcezones.edit.ZoneEditorGameTest",
+            "dev.seeruk.bundle.resourcezones.edit.ZoneEditStatusGameTest",
             "dev.seeruk.bundle.resourcezones.export.ZoneExportsGameTest",
+            "dev.seeruk.bundle.resourcezones.particles.EditMarkersGameTest",
             "dev.seeruk.bundle.resourcezones.particles.ZoneParticlesGameTest"
         ]
     },

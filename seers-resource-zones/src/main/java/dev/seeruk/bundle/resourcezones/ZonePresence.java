@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.resourcezones;
 
 import dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents;
+import dev.seeruk.bundle.resourcezones.edit.ZoneEditor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * and {@link ResourceZoneEvents#PLAYER_LEFT} when they move into or out of one.
  *
  * <p>Players are tracked by UUID, so respawning (which makes a new player) only counts as entering
- * a zone if they weren't already in one. Spectators aren't tracked, as they aren't really there.
+ * a zone if they weren't already in one. Spectators aren't tracked, as they aren't really there,
+ * and nor are players editing zones, so editing doesn't count as entering or leaving them.
  */
 public final class ZonePresence {
     // Player -> whether they're in a zone. Concurrent, as it can be read from many threads.
@@ -36,10 +38,10 @@ public final class ZonePresence {
     /**
      * Notes whether the player is in a zone, firing an event if they've entered or left one since
      * they were last seen. The first time they're seen (e.g. just after joining, or after being a
-     * spectator), nothing's fired.
+     * spectator or editing), nothing's fired.
      */
     public static void update(ServerPlayer player) {
-        if (player.isSpectator()) {
+        if (player.isSpectator() || ZoneEditor.isEditing(player)) {
             forget(player);
             return;
         }

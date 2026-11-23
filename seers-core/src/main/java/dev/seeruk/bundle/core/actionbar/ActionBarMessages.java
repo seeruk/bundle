@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Messages kept in players' action bars for as long as they apply, e.g. "PropSwap enabled". Each
  * mod registers its message, and whichever apply to a player take turns. They're refreshed before
- * they fade, shown straight away when they start to apply (unless backing off), and cleared when
- * none do.
+ * they fade, shown straight away when they start to apply or their text changes (unless backing
+ * off), and cleared when none do.
  *
  * <p>They back off for a few seconds whenever anything else uses the action bar, so they never
  * hide other messages.
@@ -95,7 +95,14 @@ public final class ActionBarMessages {
         }
 
         if (appeared.isEmpty() && stillShowing && now - state.shownAt < REFRESH_TICKS) {
-            return false;
+            // Its text changed (e.g. a count in it), so it's updated, without starting a new turn
+            final var text = applying.get(state.showing);
+            if (text.equals(state.lastSent)) {
+                return false;
+            }
+
+            send(player, state, state.showing, text, state.shownAt);
+            return true;
         }
 
         final var next = appeared.orElseGet(() -> after(List.copyOf(applying.keySet()), state.showing));
@@ -160,11 +167,11 @@ public final class ActionBarMessages {
         return ids.get((index + 1) % ids.size());
     }
 
-    private static void send(ServerPlayer player, State state, Identifier id, Component message, int now) {
+    private static void send(ServerPlayer player, State state, Identifier id, Component message, int shownAt) {
         // Set first, as sending passes the message straight back through packetSent
         state.lastSent = message;
         state.showing = id;
-        state.shownAt = now;
+        state.shownAt = shownAt;
         player.sendOverlayMessage(message);
     }
 

@@ -31,9 +31,30 @@ build worthwhile transport links to them (e.g. nether tunnels, so on).
 
 ### Usage
 
-Admins add chunks to resource zones with `/resourcezones add`, and players can turn on particles
-to see them with `/resourcezones particles`. While a player is in a resource zone, a notice is
-kept in their action bar, so they know that anything they build there will be reset eventually.
+#### For Players
+
+While you're in a resource zone, a notice is kept in your action bar, so you know that anything you
+build there will be reset eventually. Resource zones are otherwise normal areas, so you can still
+build, place beds, and set your respawn point in them.
+
+To see where zones are, turn on particles with `/resourcezones particles <low|medium|high>`. The
+edges of zones near you are then outlined, either as a short band at your height, or as a taller
+wall with `/resourcezones particles style wall`. Particles are off until you turn them on, and
+your choice is remembered.
+
+#### For Admins
+
+Add or remove single chunks with `/resourcezones add` and `/resourcezones remove`, which act on the
+chunk you're in, or the one with the given block `x z`.
+
+To change lots of chunks at once, edit zones by flying over chunks. Start with
+`/resourcezones edit add` (or `remove`), and every chunk you fly over is marked to be added (or
+removed). Flying back over a chunk in the other mode undoes it. While editing, the middle of each
+chunk near you that's in a zone, or being added or removed, is marked with particles (each kind
+with its own colour and shape), and your action bar shows how many chunks you've changed. Use
+`/resourcezones edit pause` to look over your changes, then `commit` or `discard` them. Changes
+aren't saved until they're committed, and are thrown away if you leave the server. Editing doesn't
+count towards your zone statistics or events.
 
 Whenever zones change (and when the server starts), each dimension's zone chunks are written to a
 file as an MCA Selector selection, e.g. `resource-zones/minecraft/overworld.csv`. The mod never
@@ -52,12 +73,17 @@ Next time a player visits, the chunks will regenerate fresh.
 Settings live in `config/seers-resource-zones/config.yml` (see `config.dist.yml` next to it for
 every setting, and their defaults).
 
-| Setting            | Default                                                                  | Description                                                           |
-|--------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| `notice`           | `<gold>Resource zone</gold> <gray>- this area is reset regularly</gray>` | Kept in the action bar while a player is in a resource zone.          |
-| `particles.colour` | `gold`                                                                   | The particles' colour, as a colour name (e.g. `gold`), or hex.        |
-| `particles.radius` | `16`                                                                     | How many blocks around each player (horizontally) zones are outlined. |
-| `export.folder`    | `resource-zones`                                                         | The folder zones are exported to, inside the server's folder.         |
+| Setting                        | Default               | Description                                                           |
+|--------------------------------|-----------------------|-----------------------------------------------------------------------|
+| `notice`                       | See `config.dist.yml` | Kept in the action bar while a player is in a resource zone.          |
+| `particles.colour`             | `gold`                | The particles' colour, as a colour name (e.g. `gold`), or hex.        |
+| `particles.radius_blocks`      | `16`                  | How many blocks around each player (horizontally) zones are outlined. |
+| `edit.status`                  | See `config.dist.yml` | Kept in the action bar while editing zones.                           |
+| `edit.markers.radius_chunks`   | `8`                   | How many chunks around an editing admin are marked.                   |
+| `edit.markers.colours.zone`    | `blue`                | The colour of markers on chunks in a zone that aren't changing.       |
+| `edit.markers.colours.added`   | `green`               | The colour of markers on chunks being added.                          |
+| `edit.markers.colours.removed` | `red`                 | The colour of markers on chunks being removed.                        |
+| `export.folder`                | `resource-zones`      | The folder zones are exported to, inside the server's folder.         |
 
 Going too much higher than 16 blocks around a player to show particles can result in hitting the 
 client particle cap when using wall + high particles, and they'll stop showing correctly in weird 
@@ -74,6 +100,10 @@ ways.
 | **Admins**                                          |                                                                   |
 | `/resourcezones add [x z]`                          | Adds the chunk you're in (or the one with block x z) to zones.    |
 | `/resourcezones remove [x z]`                       | Removes the chunk you're in (or the one with block x z).          |
+| `/resourcezones edit`                               | Shows what you're editing.                                        |
+| `/resourcezones edit <add\|remove>`                 | Starts adding or removing the chunks you fly over.                |
+| `/resourcezones edit pause`                         | Stops marking chunks, keeping your changes.                       |
+| `/resourcezones edit <commit\|discard>`             | Saves or throws away your changes, and stops editing.             |
 
 From the console, `x z` must be given, and chunks are in the overworld unless the command is run
 with `/execute in <dimension> run ...`.
@@ -101,7 +131,7 @@ Fired when a player goes into a resource zone from outside one, or out of one, h
 there (e.g. walking, teleporting, or respawning). Moving between zone chunks isn't entering, and
 neither joining nor leaving the server while in a zone counts as entering or leaving it. Zones being
 added or removed around a player doesn't count either (e.g. an admin adding the chunk they're in),
-and spectators are left out entirely.
+and spectators and players editing zones are left out entirely.
 
 ```
 dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents.PLAYER_ENTERED
@@ -122,7 +152,7 @@ void onPlayerMoved(ServerPlayer player);
 | `seers_resource_zones.zone_entries` | The total number of times a player has entered a resource zone.   |
 | `seers_resource_zones.blocks_mined` | The total number of blocks a player has broken in resource zones. |
 
-Spectators don't count towards zone ticks or entries.
+Spectators and players editing zones don't count towards zone ticks or entries.
 
 Objectives can be removed while the server is running, but will be recreated on server restart.
 Removing an objective will reset it for all players.

@@ -77,4 +77,16 @@ public class ZoneChunksTest {
             assertEquals(ZoneChunks.EMPTY, zones);
         }
     }
+
+    @Nested
+    class WithChanges {
+        @Test
+        void addsAndRemovesTheChunks() {
+            final var zones = ZoneChunks.EMPTY
+                .with(Level.OVERWORLD, CHUNK)
+                .withChanges(Level.OVERWORLD, Set.of(new ChunkPos(0, 0)), Set.of(CHUNK));
+
+            assertEquals(Map.of(Level.OVERWORLD, Set.of(new ChunkPos(0, 0))), zones.chunks());
+        }
+    }
 }

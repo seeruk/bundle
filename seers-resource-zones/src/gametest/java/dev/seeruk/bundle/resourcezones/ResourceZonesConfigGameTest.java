@@ -22,7 +22,22 @@ public class ResourceZonesConfigGameTest {
             TextColor.fromLegacyFormat(ChatFormatting.GOLD),
             "particle colour"
         );
-        helper.assertValueEqual(config.particles().radius(), 16, "particle radius");
+        helper.assertValueEqual(config.particles().radiusBlocks(), 16, "particle radius");
+        helper.assertValueEqual(
+            config.edit().status().template(),
+            "<gold>Editing resource zones</gold> <gray>- ${mode}</gray> <green>+${added}</green> <red>-${removed}</red>",
+            "edit status"
+        );
+        helper.assertValueEqual(config.edit().markers().radiusChunks(), 8, "marker radius");
+        helper.assertValueEqual(
+            config.edit().markers().colours(),
+            new ResourceZonesConfig.MarkerColours(
+                TextColor.fromLegacyFormat(ChatFormatting.BLUE),
+                TextColor.fromLegacyFormat(ChatFormatting.GREEN),
+                TextColor.fromLegacyFormat(ChatFormatting.RED)
+            ),
+            "marker colours"
+        );
         helper.assertValueEqual(config.export().folder(), "resource-zones", "export folder");
         helper.succeed();
     }

@@ -5,11 +5,6 @@ import dev.seeruk.bundle.resourcezones.ResourceZones;
 import dev.seeruk.bundle.resourcezones.ResourceZonesConfig;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.network.protocol.BundlerInfo;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBundlePacket;
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -20,8 +15,8 @@ import static dev.seeruk.bundle.resourcezones.SeersResourceZones.MOD_ID;
 
 /**
  * Outlines resource zones near each player with particles, as each player has chosen (see
- * {@link ParticleSettings}). Particles are only sent to the player they're for, so Vanilla clients
- * see them, and players don't see each other's.
+ * {@link ParticleSettings}). Particles are only sent to the player they're for (see
+ * {@link DustPackets}).
  */
 public final class ZoneParticles {
     private static final PlayerStorage<ParticleSettings> SETTINGS = PlayerStorage.create(
@@ -69,24 +64,12 @@ public final class ZoneParticles {
         }
 
         // Every chunk with a side within the radius, which can be one chunk beyond it
-        final var chunkRadius = config.radius() / SectionPos.SECTION_SIZE + 1;
+        final var chunkRadius = config.radiusBlocks() / SectionPos.SECTION_SIZE + 1;
         final var edges = ZoneOutline.edges(zone, player.chunkPosition(), chunkRadius);
-        final var points = ZoneOutline.points(edges, player.getEyePosition(), config.radius(), intensity, style);
-        if (points.isEmpty()) {
-            return 0;
-        }
+        final var points = ZoneOutline.points(edges, player.getEyePosition(), config.radiusBlocks(), intensity, style);
 
-        // Nearest edges come first, so if there are more particles than fit in one bundle, the
-        // furthest are left out
+        // Nearest edges come first, so if there are too many particles, the furthest are left out
         final var particle = new DustParticleOptions(config.colour().getValue(), 1);
-        final var packets = points.stream()
-            .limit(BundlerInfo.BUNDLE_SIZE_LIMIT)
-            .<Packet<? super ClientGamePacketListener>>map(point -> new ClientboundLevelParticlesPacket(
-                particle, true, false, point.x, point.y, point.z, 0, 0, 0, 0, 0
-            ))
-            .toList();
-
-        player.connection.send(new ClientboundBundlePacket(packets));
-        return packets.size();
+        return DustPackets.send(player, points.stream().map(point -> DustPackets.dust(particle, point)));
     }
 }
