@@ -10,13 +10,15 @@ import net.minecraft.network.chat.TextColor;
  * @param notice    Shown in the action bar while a player is in a resource zone.
  * @param particles How resource zones are outlined with particles.
  * @param edit      How editing resource zones looks.
+ * @param reset     What players are told when resets affect them.
  * @param export    Where resource zones are exported for MCA Selector.
  */
-public record ResourceZonesConfig(TextTemplate notice, Particles particles, Edit edit, Export export) {
+public record ResourceZonesConfig(TextTemplate notice, Particles particles, Edit edit, Reset reset, Export export) {
     public static final Codec<ResourceZonesConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         TextTemplate.CODEC.fieldOf("notice").forGetter(ResourceZonesConfig::notice),
         Particles.CODEC.fieldOf("particles").forGetter(ResourceZonesConfig::particles),
         Edit.CODEC.fieldOf("edit").forGetter(ResourceZonesConfig::edit),
+        Reset.CODEC.fieldOf("reset").forGetter(ResourceZonesConfig::reset),
         Export.CODEC.fieldOf("export").forGetter(ResourceZonesConfig::export)
     ).apply(instance, ResourceZonesConfig::new));
 
@@ -72,6 +74,19 @@ public record ResourceZonesConfig(TextTemplate notice, Particles particles, Edit
                 case REMOVED -> removed;
             };
         }
+    }
+
+    /**
+     * @param movedToRespawnPoint Sent to a player moved to their respawn point, because the chunk
+     *                            they rejoined in was reset while they were away.
+     * @param movedToSpawn        Sent instead when they're moved to world spawn, because they don't
+     *                            have a respawn point, or it's gone.
+     */
+    public record Reset(TextTemplate movedToRespawnPoint, TextTemplate movedToSpawn) {
+        public static final Codec<Reset> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            TextTemplate.CODEC.fieldOf("moved_to_respawn_point").forGetter(Reset::movedToRespawnPoint),
+            TextTemplate.CODEC.fieldOf("moved_to_spawn").forGetter(Reset::movedToSpawn)
+        ).apply(instance, Reset::new));
     }
 
     /**

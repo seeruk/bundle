@@ -68,22 +68,28 @@ java -jar mcaselector.jar --mode delete --world <world>/dimensions/minecraft/ove
 
 Next time a player visits, the chunks will regenerate fresh.
 
+When the server starts, it notices which zone chunks were deleted while it was stopped, and treats
+them as reset. Anyone who logged out inside a reset chunk is moved to their respawn point (e.g.
+their bed) when they next join, or to spawn if they don't have one, and told why. 
+
 ### Config
 
 Settings live in `config/seers-resource-zones/config.yml` (see `config.dist.yml` next to it for
 every setting, and their defaults).
 
-| Setting                        | Default               | Description                                                           |
-|--------------------------------|-----------------------|-----------------------------------------------------------------------|
-| `notice`                       | See `config.dist.yml` | Kept in the action bar while a player is in a resource zone.          |
-| `particles.colour`             | `gold`                | The particles' colour, as a colour name (e.g. `gold`), or hex.        |
-| `particles.radius_blocks`      | `16`                  | How many blocks around each player (horizontally) zones are outlined. |
-| `edit.status`                  | See `config.dist.yml` | Kept in the action bar while editing zones.                           |
-| `edit.markers.radius_chunks`   | `8`                   | How many chunks around an editing admin are marked.                   |
-| `edit.markers.colours.zone`    | `blue`                | The colour of markers on chunks in a zone that aren't changing.       |
-| `edit.markers.colours.added`   | `green`               | The colour of markers on chunks being added.                          |
-| `edit.markers.colours.removed` | `red`                 | The colour of markers on chunks being removed.                        |
-| `export.folder`                | `resource-zones`      | The folder zones are exported to, inside the server's folder.         |
+| Setting                        | Default               | Description                                                                   |
+|--------------------------------|-----------------------|-------------------------------------------------------------------------------|
+| `notice`                       | See `config.dist.yml` | Kept in the action bar while a player is in a resource zone.                  |
+| `particles.colour`             | `gold`                | The particles' colour, as a colour name (e.g. `gold`), or hex.                |
+| `particles.radius_blocks`      | `16`                  | How many blocks around each player (horizontally) zones are outlined.         |
+| `edit.status`                  | See `config.dist.yml` | Kept in the action bar while editing zones.                                   |
+| `edit.markers.radius_chunks`   | `8`                   | How many chunks around an editing admin are marked.                           |
+| `edit.markers.colours.zone`    | `blue`                | The colour of markers on chunks in a zone that aren't changing.               |
+| `edit.markers.colours.added`   | `green`               | The colour of markers on chunks being added.                                  |
+| `edit.markers.colours.removed` | `red`                 | The colour of markers on chunks being removed.                                |
+| `reset.moved_to_respawn_point` | See `config.dist.yml` | Sent to a player moved to their respawn point, because their chunk was reset. |
+| `reset.moved_to_spawn`         | See `config.dist.yml` | Sent instead when they're moved to spawn, because they have no respawn point. |
+| `export.folder`                | `resource-zones`      | The folder zones are exported to, inside the server's folder.                 |
 
 Going too much higher than 16 blocks around a player to show particles can result in hitting the 
 client particle cap when using wall + high particles, and they'll stop showing correctly in weird 
@@ -123,6 +129,22 @@ dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents.CHANGED
 
 ```java
 void onChanged(MinecraftServer server, ResourceKey<Level> dimension);
+```
+
+#### ResourceZoneEvents.RESET
+
+Fired when the server starts, if any resource zone chunks were reset while it was stopped (i.e.
+chunks that had been generated were deleted, e.g. by MCA Selector). It's fired at most once each
+time the server starts, with every reset chunk.
+
+```
+dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents.RESET
+```
+
+**Callback signature:**
+
+```java
+void onReset(MinecraftServer server, Map<ResourceKey<Level>, Set<ChunkPos>> chunks);
 ```
 
 #### ResourceZoneEvents.PLAYER_ENTERED and PLAYER_LEFT

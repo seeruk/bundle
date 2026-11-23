@@ -38,6 +38,16 @@ public class ResourceZonesConfigGameTest {
             ),
             "marker colours"
         );
+        helper.assertValueEqual(
+            config.reset().movedToRespawnPoint().template(),
+            "<gold>The resource zone you were in has been reset</gold> <gray>- you've been moved to your respawn point</gray>",
+            "moved to respawn point"
+        );
+        helper.assertValueEqual(
+            config.reset().movedToSpawn().template(),
+            "<gold>The resource zone you were in has been reset</gold> <gray>- you've been moved to spawn</gray>",
+            "moved to spawn"
+        );
         helper.assertValueEqual(config.export().folder(), "resource-zones", "export folder");
         helper.succeed();
     }

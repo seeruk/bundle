@@ -17,7 +17,8 @@
             "dev.seeruk.bundle.resourcezones.edit.ZoneEditStatusGameTest",
             "dev.seeruk.bundle.resourcezones.export.ZoneExportsGameTest",
             "dev.seeruk.bundle.resourcezones.particles.EditMarkersGameTest",
-            "dev.seeruk.bundle.resourcezones.particles.ZoneParticlesGameTest"
+            "dev.seeruk.bundle.resourcezones.particles.ZoneParticlesGameTest",
+            "dev.seeruk.bundle.resourcezones.reset.ZoneResetsGameTest"
         ]
     },
     "depends": {

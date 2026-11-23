@@ -5,7 +5,11 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Resource Zones' public events API.
@@ -51,6 +55,20 @@ public final class ResourceZoneEvents {
         }
     );
 
+    /**
+     * Fired when the server starts, if any resource zone chunks were reset while it was stopped,
+     * i.e. chunks that had been generated were deleted (e.g. by MCA Selector). Fired at most once
+     * each time the server starts, with every reset chunk.
+     */
+    public static final Event<Reset> RESET = EventFactory.createArrayBacked(
+        Reset.class,
+        (listeners) -> (server, chunks) -> {
+            for (Reset listener : listeners) {
+                listener.onReset(server, chunks);
+            }
+        }
+    );
+
     private ResourceZoneEvents() {}
 
     @FunctionalInterface
@@ -60,6 +78,15 @@ public final class ResourceZoneEvents {
          * @param dimension The dimension whose zone chunks changed.
          */
         void onChanged(MinecraftServer server, ResourceKey<Level> dimension);
+    }
+
+    @FunctionalInterface
+    public interface Reset {
+        /**
+         * @param server The server whose zones were reset.
+         * @param chunks Each dimension's reset chunks.
+         */
+        void onReset(MinecraftServer server, Map<ResourceKey<Level>, Set<ChunkPos>> chunks);
     }
 
     @FunctionalInterface

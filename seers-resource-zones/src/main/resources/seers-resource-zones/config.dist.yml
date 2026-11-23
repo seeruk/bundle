@@ -1,16 +1,18 @@
 # Seer's Resource Zones config. To change a setting, copy it into config.yml in this folder.
 # Anything that's not in config.yml uses the default from this file.
+#
+# Settings that show text (notice, edit.status, and the reset messages) can use any of Text
+# Placeholder API's formatting, see: https://placeholders.pb4.eu/user/text-format/
+# Colours are one of Minecraft's colour names (e.g. gold), or hex (e.g. "#FFAA00").
 
 # Shown in the action bar while a player is in a resource zone. It takes turns with other mods'
 # messages that are kept there (e.g. PropSwap's), and makes way for any other action bar message.
-# It can use any of Text Placeholder API's formatting, see:
-# https://placeholders.pb4.eu/user/text-format/
 notice: "<gold>Resource zone</gold> <gray>- this area is reset regularly</gray>"
 
 # Resource zones are outlined with particles near each player, where they meet chunks that aren't
 # in a zone. They're off until a player turns them on with /resourcezones particles.
 particles:
-  # The particles' colour, as one of Minecraft's colour names (e.g. gold), or hex (e.g. "#FFAA00").
+  # The particles' colour.
   colour: gold
   # How far away from each player zones are outlined, in blocks (1 to 64), measured horizontally,
   # so the outline follows them around. Larger means more particles, and the game only shows so
@@ -28,12 +30,20 @@ edit:
   markers:
     # How far away from each admin chunks are marked, in chunks (1 to 16).
     radius_chunks: 8
-    # Each kind of marker's colour, as one of Minecraft's colour names, or hex (e.g. "#5555FF").
+    # Each kind of marker's colour.
     colours:
       # Chunks in a zone, that aren't being changed.
       zone: blue
       added: green
       removed: red
+
+# When the server starts, any resource zone chunks that were deleted while it was stopped (e.g. by
+# MCA Selector) are noticed as reset. Players who rejoin in a chunk that was reset while they were
+# away are moved to their respawn point (e.g. their bed), or to spawn if they don't have one, and
+# told why with one of these.
+reset:
+  moved_to_respawn_point: "<gold>The resource zone you were in has been reset</gold> <gray>- you've been moved to your respawn point</gray>"
+  moved_to_spawn: "<gold>The resource zone you were in has been reset</gold> <gray>- you've been moved to spawn</gray>"
 
 # Each dimension's resource zones are written to a file whenever they change (and when the server
 # starts), as an MCA Selector selection, e.g. resource-zones/minecraft/overworld.csv. To reset
