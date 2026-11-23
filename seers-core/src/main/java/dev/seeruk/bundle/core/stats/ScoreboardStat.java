@@ -63,6 +63,6 @@ public record ScoreboardStat(String modId, String objectiveName, String displayN
      * but objective names conventionally use underscores, so they're swapped.
      */
     public String objectiveId() {
-        return "%s.%s".formatted(modId.replace('-', '_'), objectiveName);
+        return modId.replace('-', '_') + "." + objectiveName;
     }
 }
