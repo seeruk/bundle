@@ -4,6 +4,9 @@ Shared core library mod for my mods.
 
 ## Features
 
+- **Action Bar Messages**: Lets several mods keep messages in players' action bars while they apply
+  (e.g. a reminder), taking turns between them, while allowing any other action bar messages to 
+  interrupt and be displayed as they pop up.
 - **Command Registration Helpers**: Provides utilities for registering commands along with a
   namespaced alias, ensuring commands remain accessible even if another mod takes the original name.
 - **Player Events**: Events for things Vanilla and Fabric don't have events for: an advancement's
