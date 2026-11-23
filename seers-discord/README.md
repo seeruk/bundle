@@ -88,8 +88,8 @@ renamed.
 
 ### Chat from Discord
 
-Messages sent in the bot's channel are shown in game, by default like players' chat (`<Seer> Hello!`), with the sender's
-name in blue, as it is in the Discord server (e.g. their
+Messages sent in the bot's channel are shown in game, by default like players' chat
+(`<Seer> Hello!`), with the sender's name in blue, as it is in the Discord server (e.g. their
 nickname). Hovering over their name shows their Discord username. Messages from bots and webhooks
 aren't shown, so messages relayed from the game don't endlessly echo.
 
