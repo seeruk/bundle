@@ -9,6 +9,7 @@ import dev.seeruk.bundle.resourcezones.particles.ZoneParticles;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import static dev.seeruk.bundle.core.testing.TestCommands.adminSource;
 import static dev.seeruk.bundle.core.testing.TestCommands.execute;
 import static dev.seeruk.bundle.core.testing.TestCommands.executeAsAdmin;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
+import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.moveTo;
 
 // Zones are shared by the whole test server, so each test uses its own chunk
 public class ResourceZonesCommandGameTest {
@@ -53,7 +55,7 @@ public class ResourceZonesCommandGameTest {
     @GameTest
     public void addsTheCurrentChunk(GameTestHelper helper) throws CommandSyntaxException {
         final var player = player(helper);
-        player.teleportTo(2000 * 16 + 8, 100, 8);
+        moveTo(player, new ChunkPos(2000, 0));
 
         final var result = executeAsAdmin(helper, player, ResourceZonesCommand.NAME + " add");
 
@@ -113,6 +115,28 @@ public class ResourceZonesCommandGameTest {
         final var result = executeAsAdmin(helper, player, ResourceZonesCommand.NAME + " remove 32064 0");
 
         helper.assertValueEqual(result, 0, "command result");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void actingOnTheCurrentChunkNeedsAnEntity(GameTestHelper helper) {
+        // The console runs commands from the world spawn, which it shouldn't add to a zone
+        final var server = helper.getLevel().getServer();
+        final var source = server.createCommandSourceStack().withSuppressedOutput();
+
+        for (final var subcommand : List.of("add", "remove")) {
+            try {
+                server.getCommands().getDispatcher().execute(ResourceZonesCommand.NAME + " " + subcommand, source);
+                helper.fail("The console could " + subcommand + " the current chunk");
+            } catch (CommandSyntaxException e) {
+                // Expected
+            }
+        }
+
+        helper.assertFalse(
+            ResourceZones.contains(server, Level.OVERWORLD, ChunkPos.containing(server.getRespawnData().pos())),
+            "Spawn chunk was in a zone"
+        );
         helper.succeed();
     }
 

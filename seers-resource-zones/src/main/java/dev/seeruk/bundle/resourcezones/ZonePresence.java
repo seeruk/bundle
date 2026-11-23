@@ -1,8 +1,10 @@
 package dev.seeruk.bundle.resourcezones;
 
 import dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 
 import java.util.Map;
 import java.util.UUID;
@@ -10,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Tracks which players are in resource zones, and fires {@link ResourceZoneEvents#PLAYER_ENTERED}
- * and {@link ResourceZoneEvents#PLAYER_LEFT} when that changes.
+ * and {@link ResourceZoneEvents#PLAYER_LEFT} when they move into or out of one.
  *
  * <p>Players are tracked by UUID, so respawning (which makes a new player) only counts as entering
- * a zone if they weren't already in one.
+ * a zone if they weren't already in one. Spectators aren't tracked, as they aren't really there.
  */
 public final class ZonePresence {
     // Player -> whether they're in a zone. Concurrent, as it can be read from many threads.
@@ -33,12 +35,16 @@ public final class ZonePresence {
 
     /**
      * Notes whether the player is in a zone, firing an event if they've entered or left one since
-     * they were last seen. The first time they're seen (e.g. just after joining), nothing's fired.
+     * they were last seen. The first time they're seen (e.g. just after joining, or after being a
+     * spectator), nothing's fired.
      */
     public static void update(ServerPlayer player) {
-        final var level = player.level();
-        final var inZone = ResourceZones.contains(level.getServer(), level.dimension(), player.chunkPosition());
+        if (player.isSpectator()) {
+            forget(player);
+            return;
+        }
 
+        final var inZone = check(player);
         final var wasInZone = IN_ZONE.put(player.getUUID(), inZone);
         if (wasInZone == null || wasInZone == inZone) {
             return;
@@ -46,6 +52,18 @@ public final class ZonePresence {
 
         final var event = inZone ? ResourceZoneEvents.PLAYER_ENTERED : ResourceZoneEvents.PLAYER_LEFT;
         event.invoker().onPlayerMoved(player);
+    }
+
+    /**
+     * Notes whether each player we know of in the dimension is in a zone, without firing anything,
+     * as the zones changed around them rather than them moving.
+     */
+    public static void zonesChanged(MinecraftServer server, ResourceKey<Level> dimension) {
+        for (final var player : server.getPlayerList().getPlayers()) {
+            if (player.level().dimension() == dimension) {
+                IN_ZONE.computeIfPresent(player.getUUID(), (uuid, wasInZone) -> check(player));
+            }
+        }
     }
 
     /**
@@ -57,5 +75,10 @@ public final class ZonePresence {
 
     public static void clear() {
         IN_ZONE.clear();
+    }
+
+    private static boolean check(ServerPlayer player) {
+        final var level = player.level();
+        return ResourceZones.contains(level.getServer(), level.dimension(), player.chunkPosition());
     }
 }

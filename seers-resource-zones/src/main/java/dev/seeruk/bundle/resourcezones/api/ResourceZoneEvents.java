@@ -27,7 +27,7 @@ public final class ResourceZoneEvents {
     /**
      * Fired when a player goes into a resource zone from outside one, however they got there (e.g.
      * walking, teleporting, or respawning). Moving between zone chunks isn't entering, and nor is
-     * joining the server while in one.
+     * joining the server while in one, a zone being added around them, or spectating.
      */
     public static final Event<PlayerMoved> PLAYER_ENTERED = EventFactory.createArrayBacked(
         PlayerMoved.class,
@@ -40,7 +40,7 @@ public final class ResourceZoneEvents {
 
     /**
      * Fired when a player goes out of a resource zone, however they got there. Leaving the server
-     * while in one isn't leaving it.
+     * while in one isn't leaving it, and nor is the zone being removed around them, or spectating.
      */
     public static final Event<PlayerMoved> PLAYER_LEFT = EventFactory.createArrayBacked(
         PlayerMoved.class,

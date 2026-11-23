@@ -23,7 +23,7 @@ public class ZoneParticlesGameTest {
     public void showsZonesNearThePlayer(GameTestHelper helper) {
         final var player = playerInZone(helper, new ChunkPos(3000, 0));
 
-        // All 4 sides of a chunk, with 17 particles along each size (at each chunk edge), along
+        // All 4 sides of a chunk, with 17 particles along each side (at each chunk edge), along
         // 7 rows. Everything around the chunk should be included.
         helper.assertValueEqual(ZoneParticles.show(player, 0, CONFIG), 4 * 17 * 7, "particles");
         helper.succeed();

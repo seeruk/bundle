@@ -1,7 +1,7 @@
 # Seer's Resource Zones
 
-Allows registered groups of chunks as resource zones, signalling to players they'll be reset, and 
-allowing admins to easily identify them to be reset.
+Allows admins to mark groups of chunks as resource zones, signalling to players that they'll be
+reset, and making it easy for admins to reset them.
 
 But why? In the past I made a "Resource Worlds" mod. That mod added separate copies of each Vanilla
 dimension that players could teleport into, and destroy for resources as they saw fit. There's 
@@ -24,9 +24,10 @@ build worthwhile transport links to them (e.g. nether tunnels, so on).
 
 ## Features
 
-- **Marked Zones**: Players can see them in-game, and are notified on entry. Admins can export them.
-- **MCA Selector CSV Export**: Resource zones can be exported by an admin as a CSV (written as a 
-  file on the hosting server), ready to be imported into MCA Selector.
+- **Marked Zones**: Players are told when they're in one by a notice in their action bar, and can
+  turn on particles to see where zones' edges are.
+- **MCA Selector CSV Export**: Resource zones are automatically written to CSV files on the server
+  whenever they change, ready to be used with MCA Selector.
 
 ### Usage
 
@@ -74,6 +75,9 @@ ways.
 | `/resourcezones add [x z]`                          | Adds the chunk you're in (or the one with block x z) to zones.    |
 | `/resourcezones remove [x z]`                       | Removes the chunk you're in (or the one with block x z).          |
 
+From the console, `x z` must be given, and chunks are in the overworld unless the command is run
+with `/execute in <dimension> run ...`.
+
 ### Events
 
 #### ResourceZoneEvents.CHANGED
@@ -95,7 +99,9 @@ void onChanged(MinecraftServer server, ResourceKey<Level> dimension);
 
 Fired when a player goes into a resource zone from outside one, or out of one, however they got
 there (e.g. walking, teleporting, or respawning). Moving between zone chunks isn't entering, and
-neither joining nor leaving the server while in a zone counts as entering or leaving it.
+neither joining nor leaving the server while in a zone counts as entering or leaving it. Zones being
+added or removed around a player doesn't count either (e.g. an admin adding the chunk they're in),
+and spectators are left out entirely.
 
 ```
 dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents.PLAYER_ENTERED
@@ -115,6 +121,8 @@ void onPlayerMoved(ServerPlayer player);
 | `seers_resource_zones.zone_ticks`   | The total number of ticks a player has spent in resource zones.   |
 | `seers_resource_zones.zone_entries` | The total number of times a player has entered a resource zone.   |
 | `seers_resource_zones.blocks_mined` | The total number of blocks a player has broken in resource zones. |
+
+Spectators don't count towards zone ticks or entries.
 
 Objectives can be removed while the server is running, but will be recreated on server restart.
 Removing an objective will reset it for all players.

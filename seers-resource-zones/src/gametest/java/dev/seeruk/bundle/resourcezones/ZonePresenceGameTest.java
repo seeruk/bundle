@@ -7,6 +7,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.GameType;
 
 import java.util.List;
 import java.util.UUID;
@@ -106,6 +107,68 @@ public class ZonePresenceGameTest {
         ZonePresence.update(respawned);
 
         helper.assertValueEqual(eventsFor(player), List.of(new Moved(player.getUUID(), false)), "events");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void aZoneAddedAroundThePlayerIsntEntering(GameTestHelper helper) {
+        final var player = player(helper);
+        final var chunk = new ChunkPos(5060, 0);
+        moveTo(player, chunk);
+        ZonePresence.update(player);
+
+        addZoneChunk(helper, player, chunk);
+        ZonePresence.update(player);
+
+        helper.assertTrue(ZonePresence.isInZone(player), "Player wasn't in a zone");
+        helper.assertValueEqual(eventsFor(player), List.of(), "events");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void aZoneRemovedAroundThePlayerIsntLeaving(GameTestHelper helper) {
+        final var player = player(helper);
+        final var chunk = addZoneChunk(helper, player, new ChunkPos(5070, 0));
+        moveTo(player, chunk);
+        ZonePresence.update(player);
+
+        ResourceZones.remove(helper.getLevel().getServer(), player.level().dimension(), chunk);
+        ZonePresence.update(player);
+
+        helper.assertFalse(ZonePresence.isInZone(player), "Player was still in a zone");
+        helper.assertValueEqual(eventsFor(player), List.of(), "events");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void spectatorsArentInZones(GameTestHelper helper) {
+        final var player = player(helper);
+        player.setGameMode(GameType.SPECTATOR);
+        moveTo(player, new ChunkPos(5080, 0));
+        ZonePresence.update(player);
+
+        moveTo(player, addZoneChunk(helper, player, new ChunkPos(5081, 0)));
+        ZonePresence.update(player);
+
+        helper.assertFalse(ZonePresence.isInZone(player), "Spectator was in a zone");
+        helper.assertValueEqual(eventsFor(player), List.of(), "events");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void stoppingSpectatingInAZoneIsntEntering(GameTestHelper helper) {
+        final var player = player(helper);
+        moveTo(player, new ChunkPos(5090, 0));
+        ZonePresence.update(player);
+        player.setGameMode(GameType.SPECTATOR);
+        moveTo(player, addZoneChunk(helper, player, new ChunkPos(5091, 0)));
+        ZonePresence.update(player);
+
+        player.setGameMode(GameType.SURVIVAL);
+        ZonePresence.update(player);
+
+        helper.assertTrue(ZonePresence.isInZone(player), "Player wasn't in a zone");
+        helper.assertValueEqual(eventsFor(player), List.of(), "events");
         helper.succeed();
     }
 

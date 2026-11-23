@@ -15,7 +15,6 @@ import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ChunkPos;
 
@@ -43,14 +42,15 @@ public final class ResourceZonesCommand {
     }
 
     /**
-     * Creates a subcommand that optionally accepts a column position argument, and acts on the
-     * chunk at that position.
+     * Creates a subcommand that acts on the chunk at the given column position, or without one, the
+     * chunk the entity running it is in. Without one, it needs an entity, as the console runs
+     * commands from the world spawn.
      */
     private static LiteralArgumentBuilder<CommandSourceStack> chunkCommand(String name, ChunkAction action) {
         return Commands.literal(name)
             .executes(CommandExecutors.logged(context -> {
                 final var source = context.getSource();
-                return action.run(source, ChunkPos.containing(BlockPos.containing(source.getPosition())));
+                return action.run(source, source.getEntityOrException().chunkPosition());
             }))
             .then(Commands.argument("pos", ColumnPosArgument.columnPos())
                 .executes(CommandExecutors.logged(context ->
