@@ -2,14 +2,17 @@ package dev.seeruk.bundle.resourcezones;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.seeruk.bundle.text.TextTemplate;
 import net.minecraft.network.chat.TextColor;
 
 /**
+ * @param notice    Shown in the action bar while a player is in a resource zone.
  * @param particles How resource zones are outlined with particles.
  * @param export    Where resource zones are exported for MCA Selector.
  */
-public record ResourceZonesConfig(Particles particles, Export export) {
+public record ResourceZonesConfig(TextTemplate notice, Particles particles, Export export) {
     public static final Codec<ResourceZonesConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        TextTemplate.CODEC.fieldOf("notice").forGetter(ResourceZonesConfig::notice),
         Particles.CODEC.fieldOf("particles").forGetter(ResourceZonesConfig::particles),
         Export.CODEC.fieldOf("export").forGetter(ResourceZonesConfig::export)
     ).apply(instance, ResourceZonesConfig::new));

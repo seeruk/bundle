@@ -9,6 +9,7 @@
         "fabric-gametest": [
             "dev.seeruk.bundle.resourcezones.ResourceZonesConfigGameTest",
             "dev.seeruk.bundle.resourcezones.ResourceZonesGameTest",
+            "dev.seeruk.bundle.resourcezones.ZoneNoticeGameTest",
             "dev.seeruk.bundle.resourcezones.command.ResourceZonesCommandGameTest",
             "dev.seeruk.bundle.resourcezones.export.ZoneExportsGameTest",
             "dev.seeruk.bundle.resourcezones.particles.ZoneParticlesGameTest"

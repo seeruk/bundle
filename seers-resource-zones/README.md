@@ -31,7 +31,8 @@ build worthwhile transport links to them (e.g. nether tunnels, so on).
 ### Usage
 
 Admins add chunks to resource zones with `/resourcezones add`, and players can turn on particles
-to see them with `/resourcezones particles`.
+to see them with `/resourcezones particles`. While a player is in a resource zone, a notice is
+kept in their action bar, so they know that anything they build there will be reset eventually.
 
 Whenever zones change (and when the server starts), each dimension's zone chunks are written to a
 file as an MCA Selector selection, e.g. `resource-zones/minecraft/overworld.csv`. The mod never
@@ -50,11 +51,12 @@ Next time a player visits, the chunks will regenerate fresh.
 Settings live in `config/seers-resource-zones/config.yml` (see `config.dist.yml` next to it for
 every setting, and their defaults).
 
-| Setting            | Default          | Description                                                           |
-|--------------------|------------------|-----------------------------------------------------------------------|
-| `particles.colour` | `gold`           | The particles' colour, as a colour name (e.g. `gold`), or hex.        |
-| `particles.radius` | `16`             | How many blocks around each player (horizontally) zones are outlined. |
-| `export.folder`    | `resource-zones` | The folder zones are exported to, inside the server's folder.         |
+| Setting            | Default                                                                  | Description                                                           |
+|--------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| `notice`           | `<gold>Resource zone</gold> <gray>- this area is reset regularly</gray>` | Kept in the action bar while a player is in a resource zone.          |
+| `particles.colour` | `gold`                                                                   | The particles' colour, as a colour name (e.g. `gold`), or hex.        |
+| `particles.radius` | `16`                                                                     | How many blocks around each player (horizontally) zones are outlined. |
+| `export.folder`    | `resource-zones`                                                         | The folder zones are exported to, inside the server's folder.         |
 
 Going too much higher than 16 blocks around a player to show particles can result in hitting the 
 client particle cap when using wall + high particles, and they'll stop showing correctly in weird 

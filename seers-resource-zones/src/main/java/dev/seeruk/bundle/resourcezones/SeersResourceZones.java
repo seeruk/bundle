@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.resourcezones;
 
+import dev.seeruk.bundle.core.actionbar.ActionBarMessages;
 import dev.seeruk.bundle.core.config.ModConfig;
 import dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents;
 import dev.seeruk.bundle.resourcezones.command.ResourceZonesCommand;
@@ -12,6 +13,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class SeersResourceZones implements ModInitializer {
     public static final String MOD_ID = "seers-resource-zones";
@@ -29,6 +32,9 @@ public class SeersResourceZones implements ModInitializer {
             ResourceZonesCommand.register(dispatcher));
 
         ServerTickEvents.END_SERVER_TICK.register(server -> ZoneParticles.showAll(server, config.particles()));
+
+        final var notice = config.notice().format(Map.of());
+        ActionBarMessages.register(id("notice"), player -> ZoneNotice.message(player, notice));
 
         // Handle zone exports
         final var exportFolder = config.export().folder();

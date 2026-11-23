@@ -12,6 +12,12 @@ public class ResourceZonesConfigGameTest {
         final var config = ModConfig.load(SeersResourceZones.MOD_ID, ResourceZonesConfig.CODEC);
 
         helper.assertValueEqual(
+            config.notice().template(),
+            "<gold>Resource zone</gold> <gray>- this area is reset regularly</gray>",
+            "notice"
+        );
+
+        helper.assertValueEqual(
             config.particles().colour(),
             TextColor.fromLegacyFormat(ChatFormatting.GOLD),
             "particle colour"

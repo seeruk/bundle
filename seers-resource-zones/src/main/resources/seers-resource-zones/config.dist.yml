@@ -1,6 +1,12 @@
 # Seer's Resource Zones config. To change a setting, copy it into config.yml in this folder.
 # Anything that's not in config.yml uses the default from this file.
 
+# Shown in the action bar while a player is in a resource zone. It takes turns with other mods'
+# messages that are kept there (e.g. PropSwap's), and makes way for any other action bar message.
+# It can use any of Text Placeholder API's formatting, see:
+# https://placeholders.pb4.eu/user/text-format/
+notice: "<gold>Resource zone</gold> <gray>- this area is reset regularly</gray>"
+
 # Resource zones are outlined with particles near each player, where they meet chunks that aren't
 # in a zone. They're off until a player turns them on with /resourcezones particles.
 particles:
