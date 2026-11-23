@@ -6,7 +6,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.seeruk.bundle.core.command.CommandExecutors;
 import dev.seeruk.bundle.core.command.NamespacedCommands;
 import dev.seeruk.bundle.propswap.PropSwapMode;
-import dev.seeruk.bundle.propswap.PropSwapReminder;
 import dev.seeruk.bundle.propswap.SeersPropSwap;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -30,9 +29,6 @@ public final class PropSwapCommand {
     private static int toggle(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         final var player = context.getSource().getPlayerOrException();
         final var enabled = PropSwapMode.toggle(player);
-        if (!enabled) {
-            PropSwapReminder.hide(player);
-        }
 
         context.getSource().sendSuccess(
             () -> Component.literal(enabled ? "PropSwap enabled" : "PropSwap disabled"),

@@ -88,7 +88,6 @@ public final class PropSwapMode {
         }
 
         disable(player);
-        PropSwapReminder.hide(player);
 
         final var minutes = IDLE_TICKS / (60 * 20);
         player.sendSystemMessage(Component.literal("PropSwap disabled after " + minutes + " minutes without use"));

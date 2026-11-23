@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.propswap;
 
+import dev.seeruk.bundle.core.actionbar.ActionBarMessages;
 import dev.seeruk.bundle.propswap.api.PropSwapEvents;
 import dev.seeruk.bundle.propswap.command.PropSwapCommand;
 import dev.seeruk.bundle.propswap.lock.LockedBlocks;
@@ -39,19 +40,14 @@ public class SeersPropSwap implements ModInitializer {
         UseBlockCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, LATE_PHASE);
         UseBlockCallback.EVENT.register(LATE_PHASE, PropSwapInteraction::interact);
 
-        ServerPlayConnectionEvents.DISCONNECT.register((listener, server) -> {
-            PropSwapMode.forget(listener.getPlayer());
-            PropSwapReminder.forget(listener.getPlayer());
-        });
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            PropSwapMode.clear();
-            PropSwapReminder.clear();
-        });
+        ServerPlayConnectionEvents.DISCONNECT.register((listener, server) -> PropSwapMode.forget(listener.getPlayer()));
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> PropSwapMode.clear());
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             LockedBlocks.forgetRecentlyUnlocked();
             PropSwapMode.expireIdle(server);
-            PropSwapReminder.remind(server);
         });
+
+        ActionBarMessages.register(id("reminder"), PropSwapReminder::message);
 
         ServerLifecycleEvents.SERVER_STARTED.register(PropSwapStats::ensureObjectives);
         PropSwapEvents.SWAPPED.register(PropSwapStats::recordSwapped);
