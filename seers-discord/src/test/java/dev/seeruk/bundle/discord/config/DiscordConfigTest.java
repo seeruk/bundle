@@ -34,6 +34,7 @@ public class DiscordConfigTest {
         ),
         "afk", EVENT,
         "afk_return", EVENT,
+        "resource_zones_reset", EVENT,
         "server_start", EVENT,
         "server_stop", EVENT
     );

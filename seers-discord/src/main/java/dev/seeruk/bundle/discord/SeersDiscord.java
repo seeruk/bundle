@@ -94,6 +94,10 @@ public class SeersDiscord implements ModInitializer {
             AfkEventsBridge.register(events);
         }
 
+        if (FabricLoader.getInstance().isModLoaded("seers-resource-zones")) {
+            ResourceZonesEventsBridge.register(events);
+        }
+
         // Fired for messages players send with commands (e.g. /me) too
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, chat) ->
             DiscordRelay.message(message, chat, sender, config.discord()).ifPresent(DiscordBot::send));

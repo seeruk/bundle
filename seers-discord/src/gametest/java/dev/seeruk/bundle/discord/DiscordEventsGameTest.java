@@ -10,11 +10,15 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Team;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
@@ -190,6 +194,23 @@ public class DiscordEventsGameTest {
         helper.succeed();
     }
 
+    @GameTest
+    public void resourceZoneResetsAreSentWithASummary(GameTestHelper helper) {
+        final var reset = DiscordRelay.resourceZonesReset(Map.of(
+            Level.OVERWORLD, Set.of(new ChunkPos(0, 0), new ChunkPos(1, 0)),
+            Level.NETHER, Set.of(new ChunkPos(0, 0))
+        ), EVENTS).orElseThrow().embeds().getFirst();
+
+        helper.assertValueEqual(
+            reset.getAuthor().getName(),
+            "♻️  Resource zones have been reset (2 chunks in Overworld, 1 chunk in The Nether)",
+            "line"
+        );
+        helper.assertTrue(reset.getAuthor().getIconUrl() == null, "Should have no face");
+        helper.assertValueEqual(reset.getColorRaw(), 0x55FF55, "colour");
+        helper.succeed();
+    }
+
     /**
      * Returns a player on a team of their own, with the given death message visibility.
      */
@@ -239,6 +260,7 @@ public class DiscordEventsGameTest {
             EVENTS.advancement(),
             EVENTS.afk(),
             EVENTS.afkReturn(),
+            EVENTS.resourceZonesReset(),
             EVENTS.serverStart(),
             EVENTS.serverStop()
         );
@@ -260,6 +282,7 @@ public class DiscordEventsGameTest {
             ),
             EVENTS.afk(),
             EVENTS.afkReturn(),
+            EVENTS.resourceZonesReset(),
             EVENTS.serverStart(),
             EVENTS.serverStop()
         );

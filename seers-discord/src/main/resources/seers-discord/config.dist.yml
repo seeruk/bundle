@@ -78,6 +78,14 @@ discord:
       format: "${display_name} is no longer AFK"
       colour: yellow
 
+    # Only sent if Seer's Resource Zones is installed, when the server starts after resource zones
+    # were reset. ${chunk_count} is how many chunks were reset, and ${summary} is how many in each
+    # dimension, e.g. "120 chunks in Overworld, 40 chunks in The Nether".
+    resource_zones_reset:
+      enabled: true
+      format: "♻️  Resource zones have been reset (${summary})"
+      colour: green
+
     server_start:
       enabled: true
       format: "🟢  The server has started"

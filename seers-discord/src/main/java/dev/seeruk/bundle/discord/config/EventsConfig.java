@@ -13,15 +13,18 @@ import net.minecraft.network.chat.TextColor;
  * {@code ${display_name}} and {@code ${username}}. Colours (in {@code colour}) are either Minecraft
  * colour names (e.g. {@code yellow}), or hex (e.g. {@code #FFAA00}).
  *
- * @param join        A player joining.
- * @param quit        A player leaving.
- * @param death       A player dying. Its formats can use {@code ${message}} for the game's death
- *                    message.
- * @param advancement A player completing an advancement the game announces in chat.
- * @param afk         A player going AFK.
- * @param afkReturn   A player coming back from being AFK.
- * @param serverStart The server starting.
- * @param serverStop  The server stopping.
+ * @param join               A player joining.
+ * @param quit               A player leaving.
+ * @param death              A player dying. Its formats can use {@code ${message}} for the game's
+ *                           death message.
+ * @param advancement        A player completing an advancement the game announces in chat.
+ * @param afk                A player going AFK.
+ * @param afkReturn          A player coming back from being AFK.
+ * @param resourceZonesReset Resource zones being reset. Its format can use {@code ${chunk_count}}
+ *                           for how many chunks were reset, and {@code ${summary}} for how many in
+ *                           each dimension.
+ * @param serverStart        The server starting.
+ * @param serverStop         The server stopping.
  */
 public record EventsConfig(
     EventFormat join,
@@ -30,6 +33,7 @@ public record EventsConfig(
     AdvancementFormat advancement,
     EventFormat afk,
     EventFormat afkReturn,
+    EventFormat resourceZonesReset,
     EventFormat serverStart,
     EventFormat serverStop
 ) {
@@ -40,6 +44,7 @@ public record EventsConfig(
         AdvancementFormat.CODEC.fieldOf("advancement").forGetter(EventsConfig::advancement),
         EventFormat.CODEC.fieldOf("afk").forGetter(EventsConfig::afk),
         EventFormat.CODEC.fieldOf("afk_return").forGetter(EventsConfig::afkReturn),
+        EventFormat.CODEC.fieldOf("resource_zones_reset").forGetter(EventsConfig::resourceZonesReset),
         EventFormat.CODEC.fieldOf("server_start").forGetter(EventsConfig::serverStart),
         EventFormat.CODEC.fieldOf("server_stop").forGetter(EventsConfig::serverStop)
     ).apply(instance, EventsConfig::new));

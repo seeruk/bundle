@@ -13,13 +13,20 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Team;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Relays what happens in game to Discord, e.g. players' chat, which is sent as "the player", and
@@ -111,6 +118,51 @@ public final class DiscordRelay {
      */
     public static Optional<WebhookMessage> afk(ServerPlayer player, boolean isAfk, EventsConfig events) {
         return event(isAfk ? events.afk() : events.afkReturn(), player, Map.of());
+    }
+
+    /**
+     * Returns a message for when resource zones are reset.
+     *
+     * @param chunks Each dimension's reset chunks.
+     * @param events Which events are sent, and how they look.
+     */
+    public static Optional<WebhookMessage> resourceZonesReset(
+        Map<ResourceKey<Level>, Set<ChunkPos>> chunks,
+        EventsConfig events
+    ) {
+        final var counts = new HashMap<ResourceKey<Level>, Integer>();
+        chunks.forEach((dimension, reset) -> counts.put(dimension, reset.size()));
+
+        return event(events.resourceZonesReset(), null, Map.of(
+            "chunk_count", String.valueOf(counts.values().stream().mapToInt(Integer::intValue).sum()),
+            "summary", resetSummary(counts)
+        ));
+    }
+
+    /**
+     * How many chunks were reset in each dimension, e.g. "120 chunks in Overworld, 1 chunk in The
+     * Nether", in order of the dimensions' IDs.
+     */
+    static String resetSummary(Map<ResourceKey<Level>, Integer> counts) {
+        return counts.entrySet().stream()
+            .filter(count -> count.getValue() > 0)
+            .sorted(Comparator.comparing(count -> count.getKey().identifier()))
+            .map(count -> "%d %s in %s".formatted(
+                count.getValue(),
+                count.getValue() == 1 ? "chunk" : "chunks",
+                dimensionName(count.getKey())
+            ))
+            .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * A dimension's name, from its ID's path in title case, e.g. "The Nether".
+     */
+    private static String dimensionName(ResourceKey<Level> dimension) {
+        return Arrays.stream(dimension.identifier().getPath().split("[_/]"))
+            .filter(word -> !word.isEmpty())
+            .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
+            .collect(Collectors.joining(" "));
     }
 
     /**

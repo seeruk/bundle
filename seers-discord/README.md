@@ -125,6 +125,8 @@ where there is one. By default, they're worded and coloured like the game shows 
   `/advancement grant @s everything`), one summary is sent instead, e.g. "Seer completed 112
   advancements".
 - **Going AFK and coming back:** e.g. "Seer is now AFK", in yellow, if [Seer's AFK][4] is installed.
+- **Resource zones being reset:** e.g. "♻️ Resource zones have been reset (120 chunks in Overworld,
+  40 chunks in The Nether)", in green, if [Seer's Resource Zones][5] is installed.
 - **The server starting and stopping:** e.g. "🟢 The server has started", in green and red.
 
 Each can be turned off, reworded, or recoloured in the config's `discord.events` section, using
@@ -155,3 +157,4 @@ This mod doesn't currently have any statistics.
 [2]: https://discord.com/developers/applications
 [3]: https://mineatar.io/
 [4]: ../seers-afk
+[5]: ../seers-resource-zones

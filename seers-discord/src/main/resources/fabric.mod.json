@@ -26,6 +26,7 @@
         "seers-text": "*"
     },
     "suggests": {
-        "seers-afk": "*"
+        "seers-afk": "*",
+        "seers-resource-zones": "*"
     }
 }
