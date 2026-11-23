@@ -119,14 +119,25 @@ public class ActionBarMessagesGameTest {
     }
 
     @GameTest
+    public void doesNotBackOffForNormalChat(GameTestHelper helper) {
+        final var player = player(helper);
+        final var now = now(helper);
+        track(player, now);
+        FIRST_PLAYERS.add(player.getUUID());
+
+        // Normal chat uses the same packet as action bar messages, without the overlay flag
+        ActionBarMessages.packetSent(player, new ClientboundSystemChatPacket(Component.literal("hi"), false));
+
+        helper.assertTrue(ActionBarMessages.update(player, now), "Backed off for chat");
+        helper.succeed();
+    }
+
+    @GameTest
     public void backsOffForOtherActionBarMessages(GameTestHelper helper) {
         final var player = player(helper);
         final var now = now(helper);
         FIRST_PLAYERS.add(player.getUUID());
-
-        // Check that normal chat isn't backed off for, since it uses the same packet
-        ActionBarMessages.packetSent(player, new ClientboundSystemChatPacket(Component.literal("hi"), false));
-        helper.assertTrue(ActionBarMessages.update(player, now), "Backed off for chat");
+        ActionBarMessages.update(player, now);
 
         ActionBarMessages.packetSent(player, new ClientboundSystemChatPacket(Component.literal("hi"), true));
         helper.assertFalse(
