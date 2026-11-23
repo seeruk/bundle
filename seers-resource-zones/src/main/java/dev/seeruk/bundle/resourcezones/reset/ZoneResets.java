@@ -58,7 +58,10 @@ public final class ZoneResets {
         final var server = level.getServer();
         final var dimension = level.dimension();
         final var pos = chunk.getPos();
-        if (ResourceZones.contains(server, dimension, pos) && !HISTORY.get(server).generated().contains(dimension, pos)) {
+        if (ResourceZones.contains(server, dimension, pos) && !HISTORY.get(server).generated().contains(
+            dimension,
+            pos
+        )) {
             HISTORY.update(server, history -> history.withGenerated(dimension, pos));
         }
     }
@@ -91,7 +94,10 @@ public final class ZoneResets {
             return;
         }
 
-        final var reset = history.missing(dimension, RegionFiles.stored(RegionFiles.folder(server, dimension), generated));
+        final var reset = history.missing(
+            dimension,
+            RegionFiles.stored(RegionFiles.folder(server, dimension), generated)
+        );
         if (!reset.isEmpty()) {
             FOUND.put(dimension, reset);
         }
@@ -124,8 +130,9 @@ public final class ZoneResets {
     }
 
     /**
-     * Moves the player to their respawn point (or world spawn, if they don't have one, or it's
-     * gone) if the chunk they're in was reset since they were last here, and tells them why.
+     * Moves the player (and anything they're riding) to their respawn point (or world spawn, if
+     * they don't have one, or it's gone) if the chunk they're in was reset since they were last
+     * here, and tells them why.
      */
     public static void rejoined(ServerPlayer player, ResourceZonesConfig.Reset config) {
         final var level = player.level();
@@ -133,7 +140,10 @@ public final class ZoneResets {
         if (history.wasResetSince(level.dimension(), player.chunkPosition(), SEEN.get(player))) {
             // Without using up a respawn anchor's charge
             final var respawn = player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
-            player.teleport(respawn);
+
+            // A mount they're riding was saved with them, so it survived the reset, and comes too,
+            // with them still riding it
+            player.getRootVehicle().teleport(respawn);
 
             final var toRespawnPoint = player.getRespawnConfig() != null && !respawn.missingRespawnBlock();
             final var message = toRespawnPoint ? config.movedToRespawnPoint() : config.movedToSpawn();

@@ -5,11 +5,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -46,10 +42,12 @@ public record ZoneChunks(Map<ResourceKey<Level>, Set<ChunkPos>> chunks) {
     }
 
     public ZoneChunks withChanges(ResourceKey<Level> dimension, Set<ChunkPos> added, Set<ChunkPos> removed) {
-        return changed(dimension, positions -> {
-            positions.addAll(added);
-            positions.removeAll(removed);
-        });
+        return changed(
+            dimension, positions -> {
+                positions.addAll(added);
+                positions.removeAll(removed);
+            }
+        );
     }
 
     /**

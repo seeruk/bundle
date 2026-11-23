@@ -64,7 +64,10 @@ public class SeersResourceZones implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> ZoneResets.clear());
         ServerChunkEvents.CHUNK_LOAD.register((level, chunk, generated) -> ZoneResets.chunkLoaded(level, chunk));
         ResourceZoneEvents.CHANGED.register(ZoneResets::refreshGenerated);
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ZoneResets.rejoined(handler.player, reset));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ZoneResets.rejoined(
+            handler.player,
+            reset
+        ));
 
         // Who's in a zone, before stats count their time there
         ServerTickEvents.END_SERVER_TICK.register(ZonePresence::updateAll);

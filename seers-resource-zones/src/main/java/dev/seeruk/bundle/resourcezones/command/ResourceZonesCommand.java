@@ -192,7 +192,8 @@ public final class ResourceZonesCommand {
         }
 
         if (edit.get().pending().isEmpty()) {
-            final var message = TextParsers.parseAsTrusted("<green>Stopped editing resource zones, with nothing to commit</green>");
+            final var message = TextParsers.parseAsTrusted(
+                "<green>Stopped editing resource zones, with nothing to commit</green>");
             source.sendSuccess(() -> message, false);
             return 1;
         }

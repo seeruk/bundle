@@ -2,7 +2,6 @@ package dev.seeruk.bundle.resourcezones;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.seeruk.bundle.resourcezones.particles.ZoneMarkers;
 import dev.seeruk.bundle.text.TextTemplate;
 import net.minecraft.network.chat.TextColor;
 
@@ -66,14 +65,6 @@ public record ResourceZonesConfig(TextTemplate notice, Particles particles, Edit
             TextColor.CODEC.fieldOf("added").forGetter(MarkerColours::added),
             TextColor.CODEC.fieldOf("removed").forGetter(MarkerColours::removed)
         ).apply(instance, MarkerColours::new));
-
-        public TextColor of(ZoneMarkers.Kind kind) {
-            return switch (kind) {
-                case ZONE -> zone;
-                case ADDED -> added;
-                case REMOVED -> removed;
-            };
-        }
     }
 
     /**

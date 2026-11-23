@@ -4,6 +4,7 @@ import dev.seeruk.bundle.resourcezones.ResourceZones;
 import dev.seeruk.bundle.resourcezones.ResourceZonesConfig;
 import dev.seeruk.bundle.resourcezones.edit.ZoneEditor;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -54,12 +55,25 @@ public final class EditMarkers {
 
         final var particles = new EnumMap<ZoneMarkers.Kind, DustParticleOptions>(ZoneMarkers.Kind.class);
         for (final var kind : ZoneMarkers.Kind.values()) {
-            particles.put(kind, new DustParticleOptions(config.colours().of(kind).getValue(), SCALE));
+            particles.put(kind, new DustParticleOptions(colour(config.colours(), kind).getValue(), SCALE));
         }
 
         // Nearest markers come first, so if there are too many particles, the furthest are left out
         final var eyes = player.getEyePosition();
-        return DustPackets.send(player, markers.stream().flatMap(marker -> ZoneMarkers.points(marker, eyes).stream()
-            .map(point -> DustPackets.dust(particles.get(marker.kind()), point))));
+        return DustPackets.send(
+            player, markers.stream().flatMap(marker -> ZoneMarkers.points(marker, eyes).stream()
+                .map(point -> DustPackets.dust(particles.get(marker.kind()), point)))
+        );
+    }
+
+    /**
+     * The configured colour for the kind of marker.
+     */
+    private static TextColor colour(ResourceZonesConfig.MarkerColours colours, ZoneMarkers.Kind kind) {
+        return switch (kind) {
+            case ZONE -> colours.zone();
+            case ADDED -> colours.added();
+            case REMOVED -> colours.removed();
+        };
     }
 }

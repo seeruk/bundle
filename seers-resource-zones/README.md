@@ -26,8 +26,12 @@ build worthwhile transport links to them (e.g. nether tunnels, so on).
 
 - **Marked Zones**: Players are told when they're in one by a notice in their action bar, and can
   turn on particles to see where zones' edges are.
+- **Fly-through Editing**: Admins can add or remove lots of chunks at once by flying over them, and
+  look over their changes before committing them.
 - **MCA Selector CSV Export**: Resource zones are automatically written to CSV files on the server
   whenever they change, ready to be used with MCA Selector.
+- **Reset Detection**: Resets are noticed when the server starts, and players who logged out in a
+  reset chunk are moved to their respawn point (or spawn) when they next join.
 
 ### Usage
 
@@ -70,7 +74,7 @@ Next time a player visits, the chunks will regenerate fresh.
 
 When the server starts, it notices which zone chunks were deleted while it was stopped, and treats
 them as reset. Anyone who logged out inside a reset chunk is moved to their respawn point (e.g.
-their bed) when they next join, or to spawn if they don't have one, and told why. 
+their bed) when they next join, or to spawn if they don't have one, and told why.
 
 ### Config
 

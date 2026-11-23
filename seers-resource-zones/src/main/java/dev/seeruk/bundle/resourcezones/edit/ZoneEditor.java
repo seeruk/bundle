@@ -79,11 +79,13 @@ public final class ZoneEditor {
      */
     public static void mark(ServerPlayer player) {
         final var level = player.level();
-        EDITS.computeIfPresent(player.getUUID(), (uuid, edit) -> edit.mark(
-            level.dimension(),
-            player.chunkPosition(),
-            ResourceZones.chunks(level.getServer(), level.dimension())
-        ));
+        EDITS.computeIfPresent(
+            player.getUUID(), (uuid, edit) -> edit.mark(
+                level.dimension(),
+                player.chunkPosition(),
+                ResourceZones.chunks(level.getServer(), level.dimension())
+            )
+        );
     }
 
     /**

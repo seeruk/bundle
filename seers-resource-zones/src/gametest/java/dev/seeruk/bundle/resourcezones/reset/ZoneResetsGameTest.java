@@ -10,6 +10,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelData;
@@ -127,6 +130,26 @@ public class ZoneResetsGameTest {
     }
 
     @GameTest
+    public void movesTheMountPlayersAreRiding(GameTestHelper helper) {
+        // Vanilla saves a mount with the player riding it, so it survives the reset
+        final var player = player(helper);
+        final var chunk = new ChunkPos(9080, 0);
+        final var respawnPoint = new BlockPos(9081 * 16 + 8, 200, 8);
+        player.setRespawnPosition(
+            new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(Level.OVERWORLD, respawnPoint, 0, 0), true),
+            false
+        );
+        final var horse = ride(helper, player, chunk);
+        ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
+
+        ZoneResets.rejoined(player, CONFIG);
+
+        helper.assertTrue(player.getVehicle() == horse, "Player wasn't still riding");
+        helper.assertValueEqual(horse.chunkPosition(), ChunkPos.containing(respawnPoint), "mount's chunk");
+        helper.succeed();
+    }
+
+    @GameTest
     public void leavesPlayersInAChunkResetBeforeTheyLastJoined(GameTestHelper helper) {
         // Seeing the reset happens when they join
         final var chunk = new ChunkPos(9060, 0);
@@ -153,6 +176,22 @@ public class ZoneResetsGameTest {
 
         helper.assertValueEqual(player.chunkPosition(), chunk, "player's chunk");
         helper.succeed();
+    }
+
+    /**
+     * Puts the player on a horse in the middle of the chunk, returning the horse.
+     */
+    private static Horse ride(GameTestHelper helper, ServerPlayer player, ChunkPos chunk) {
+        final var level = helper.getLevel();
+        level.getChunk(chunk.x(), chunk.z());
+        moveTo(player, chunk);
+
+        final var horse = EntityTypes.HORSE.create(level, EntitySpawnReason.COMMAND);
+        helper.assertTrue(horse != null, "Horse wasn't created");
+        horse.snapTo(player.getX(), player.getY(), player.getZ());
+        level.addFreshEntity(horse);
+        helper.assertTrue(player.startRiding(horse, true, false), "Player couldn't ride the horse");
+        return horse;
     }
 
     private static boolean generated(GameTestHelper helper, ChunkPos chunk) {

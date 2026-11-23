@@ -39,7 +39,10 @@ public record ResetHistory(int resets, ZoneChunks generated, Map<ResourceKey<Lev
     public static final Codec<ResetHistory> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.INT.fieldOf("resets").forGetter(ResetHistory::resets),
         ZoneChunks.CODEC.fieldOf("generated").forGetter(ResetHistory::generated),
-        Codec.unboundedMap(Level.RESOURCE_KEY_CODEC, RESET_AT_CODEC).fieldOf("reset_at").forGetter(ResetHistory::resetAt)
+        Codec.unboundedMap(
+            Level.RESOURCE_KEY_CODEC,
+            RESET_AT_CODEC
+        ).fieldOf("reset_at").forGetter(ResetHistory::resetAt)
     ).apply(instance, ResetHistory::new));
 
     public ResetHistory {

@@ -43,7 +43,10 @@ public final class RegionFiles {
      */
     public static Set<ChunkPos> stored(Path folder, Set<ChunkPos> chunks) {
         final var stored = new HashSet<ChunkPos>();
-        final var byRegion = chunks.stream().collect(Collectors.groupingBy(RegionHeaders::fileName, Collectors.toSet()));
+        final var byRegion = chunks.stream().collect(Collectors.groupingBy(
+            RegionHeaders::fileName,
+            Collectors.toSet()
+        ));
         byRegion.forEach((fileName, inRegion) -> {
             final var path = folder.resolve(fileName);
             try {
