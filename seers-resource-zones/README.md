@@ -4,18 +4,18 @@ Allows admins to mark groups of chunks as resource zones, signalling to players 
 reset, and making it easy for admins to reset them.
 
 But why? In the past I made a "Resource Worlds" mod. That mod added separate copies of each Vanilla
-dimension that players could teleport into, and destroy for resources as they saw fit. There's 
+dimension that players could teleport into, and destroy for resources as they saw fit. There's
 another nice benefit they gave, which is that they also gave access to new blocks and biomes without
 needing to reset anything in the regular dimensions.
 
 The problem is, they depend heavily on having teleport / home / back mods or functionality. Without
-that they don't really work. It's difficult for players to get around in these worlds, but because 
-players know these worlds are temporary they aren't willing to build efficient transport routes 
-between locations in them. I also had to disable portals because they wouldn't link up in an 
+that they don't really work. It's difficult for players to get around in these worlds, but because
+players know these worlds are temporary they aren't willing to build efficient transport routes
+between locations in them. I also had to disable portals because they wouldn't link up in an
 expected way.
 
-Resource _zones_ alleviate these issues. They're areas in the regular Vanilla dimensions. They're 
-easy to reset, but they're static. Players can, and may _want to_ build transport links to them 
+Resource _zones_ alleviate these issues. They're areas in the regular Vanilla dimensions. They're
+easy to reset, but they're static. Players can, and may _want to_ build transport links to them
 because while the zone contents are ephemeral, the location will remain static.
 
 This mod aims to make regular areas in the Vanilla dimensions easy to mark and reset for admins, and
@@ -95,8 +95,8 @@ every setting, and their defaults).
 | `reset.moved_to_spawn`         | See `config.dist.yml` | Sent instead when they're moved to spawn, because they have no respawn point. |
 | `export.folder`                | `resource-zones`      | The folder zones are exported to, inside the server's folder.                 |
 
-Going too much higher than 16 blocks around a player to show particles can result in hitting the 
-client particle cap when using wall + high particles, and they'll stop showing correctly in weird 
+Going too much higher than 16 blocks around a player to show particles can result in hitting the
+client particle cap when using wall + high particles, and they'll stop showing correctly in weird
 ways.
 
 ### Commands

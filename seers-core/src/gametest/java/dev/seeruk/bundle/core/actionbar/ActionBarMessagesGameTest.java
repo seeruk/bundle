@@ -10,11 +10,7 @@ import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
@@ -34,8 +30,10 @@ public class ActionBarMessagesGameTest {
     static {
         ActionBarMessages.register(FIRST, player -> applies(FIRST_PLAYERS, player, "First"));
         ActionBarMessages.register(SECOND, player -> applies(SECOND_PLAYERS, player, "Second"));
-        ActionBarMessages.register(CHANGING, player ->
-            Optional.ofNullable(CHANGING_TEXT.get(player.getUUID())).map(ActionBarMessagesGameTest::message));
+        ActionBarMessages.register(
+            CHANGING, player ->
+                Optional.ofNullable(CHANGING_TEXT.get(player.getUUID())).map(ActionBarMessagesGameTest::message)
+        );
     }
 
     @GameTest
@@ -229,9 +227,11 @@ public class ActionBarMessagesGameTest {
         track(player, now);
         FIRST_PLAYERS.add(player.getUUID());
 
-        ActionBarMessages.packetSent(player, new ClientboundBundlePacket(List.of(
-            new ClientboundSetActionBarTextPacket(Component.literal("hi"))
-        )));
+        ActionBarMessages.packetSent(
+            player, new ClientboundBundlePacket(List.of(
+                new ClientboundSetActionBarTextPacket(Component.literal("hi"))
+            ))
+        );
 
         helper.assertFalse(ActionBarMessages.update(player, now), "Didn't back off");
         helper.succeed();

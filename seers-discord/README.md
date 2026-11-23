@@ -4,13 +4,13 @@ A mod that adds Discord integration to a server.
 
 ## Features
 
-- **Bidirectional Chat**: In-game chat is sent to Discord, and Discord messages are sent to the 
+- **Bidirectional Chat**: In-game chat is sent to Discord, and Discord messages are sent to the
   game, with as much of the formatting left intact as possible.
 - **Server and Player Events**: Relays important server and player events to Discord; for example,
   server start/stop, player join/leave, achievements, deaths, etc.
-- **Supports Linked Items**: Items linked in chat show up in Discord as embeds. Should work with 
+- **Supports Linked Items**: Items linked in chat show up in Discord as embeds. Should work with
   most mods that enable linking items in chat.
-- **Slash Commands**: Adds `/playerlist` (and `/players`) to see who's online, and `/status` to 
+- **Slash Commands**: Adds `/playerlist` (and `/players`) to see who's online, and `/status` to
   check in on the server performance from Discord.
 
 ## Usage
@@ -88,8 +88,8 @@ renamed.
 
 ### Chat from Discord
 
-Messages sent in the bot's channel are shown in game, by default like players' chat
-(`<Seer> Hello!`), with the sender's name in blue, as it is in the Discord server (e.g. their
+Messages sent in the bot's channel are shown in game, by default like players' chat (`<Seer> Hello!`), with the sender's
+name in blue, as it is in the Discord server (e.g. their
 nickname). Hovering over their name shows their Discord username. Messages from bots and webhooks
 aren't shown, so messages relayed from the game don't endlessly echo.
 

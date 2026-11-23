@@ -14,11 +14,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Team;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
@@ -196,10 +192,12 @@ public class DiscordEventsGameTest {
 
     @GameTest
     public void resourceZoneResetsAreSentWithASummary(GameTestHelper helper) {
-        final var reset = DiscordRelay.resourceZonesReset(Map.of(
-            Level.OVERWORLD, Set.of(new ChunkPos(0, 0), new ChunkPos(1, 0)),
-            Level.NETHER, Set.of(new ChunkPos(0, 0))
-        ), EVENTS).orElseThrow().embeds().getFirst();
+        final var reset = DiscordRelay.resourceZonesReset(
+            Map.of(
+                Level.OVERWORLD, Set.of(new ChunkPos(0, 0), new ChunkPos(1, 0)),
+                Level.NETHER, Set.of(new ChunkPos(0, 0))
+            ), EVENTS
+        ).orElseThrow().embeds().getFirst();
 
         helper.assertValueEqual(
             reset.getAuthor().getName(),

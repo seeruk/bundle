@@ -19,13 +19,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Team;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -74,7 +68,12 @@ public final class DiscordRelay {
             return Optional.empty();
         }
 
-        return Optional.of(new WebhookMessage(WebhookNames.allowed(displayName),avatarUrl(sender.getUUID()), content, embeds));
+        return Optional.of(new WebhookMessage(
+            WebhookNames.allowed(displayName),
+            avatarUrl(sender.getUUID()),
+            content,
+            embeds
+        ));
     }
 
     /**
@@ -133,10 +132,12 @@ public final class DiscordRelay {
         final var counts = new HashMap<ResourceKey<Level>, Integer>();
         chunks.forEach((dimension, reset) -> counts.put(dimension, reset.size()));
 
-        return event(events.resourceZonesReset(), null, Map.of(
-            "chunk_count", String.valueOf(counts.values().stream().mapToInt(Integer::intValue).sum()),
-            "summary", resetSummary(counts)
-        ));
+        return event(
+            events.resourceZonesReset(), null, Map.of(
+                "chunk_count", String.valueOf(counts.values().stream().mapToInt(Integer::intValue).sum()),
+                "summary", resetSummary(counts)
+            )
+        );
     }
 
     /**
