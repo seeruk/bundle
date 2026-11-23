@@ -1,6 +1,5 @@
 package dev.seeruk.bundle.resourcezones.particles;
 
-import dev.seeruk.bundle.resourcezones.ResourceZones;
 import dev.seeruk.bundle.resourcezones.ResourceZonesConfig;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.ChatFormatting;
@@ -10,6 +9,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
+import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.addZoneChunk;
+import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.moveTo;
 
 // Zones are shared by the whole test server, so each test uses its own chunk, far from the others
 public class ZoneParticlesGameTest {
@@ -39,6 +40,7 @@ public class ZoneParticlesGameTest {
     @GameTest
     public void showsNothingWithoutZonesNearby(GameTestHelper helper) {
         final var player = player(helper);
+        ZoneParticles.updateSettings(player, settings -> settings.withIntensity(ParticleIntensity.MEDIUM));
         moveTo(player, new ChunkPos(3020, 0));
 
         helper.assertValueEqual(ZoneParticles.show(player, 0, CONFIG), 0, "particles");
@@ -48,8 +50,7 @@ public class ZoneParticlesGameTest {
     @GameTest
     public void showsNothingUntilThePlayerTurnsThemOn(GameTestHelper helper) {
         final var player = player(helper);
-        ResourceZones.add(helper.getLevel().getServer(), player.level().dimension(), new ChunkPos(3030, 0));
-        moveTo(player, new ChunkPos(3030, 0));
+        moveTo(player, addZoneChunk(helper, player, new ChunkPos(3030, 0)));
 
         helper.assertValueEqual(ZoneParticles.show(player, 0, CONFIG), 0, "particles");
         helper.succeed();
@@ -72,12 +73,7 @@ public class ZoneParticlesGameTest {
     private static ServerPlayer playerInZone(GameTestHelper helper, ChunkPos chunk) {
         final var player = player(helper);
         ZoneParticles.updateSettings(player, settings -> settings.withIntensity(ParticleIntensity.MEDIUM));
-        ResourceZones.add(helper.getLevel().getServer(), player.level().dimension(), chunk);
-        moveTo(player, chunk);
+        moveTo(player, addZoneChunk(helper, player, chunk));
         return player;
-    }
-
-    private static void moveTo(ServerPlayer player, ChunkPos chunk) {
-        player.teleportTo(chunk.getMiddleBlockX(), 100, chunk.getMiddleBlockZ());
     }
 }

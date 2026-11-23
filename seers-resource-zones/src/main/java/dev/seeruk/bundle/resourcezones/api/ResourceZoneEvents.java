@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 /**
@@ -23,6 +24,33 @@ public final class ResourceZoneEvents {
         }
     );
 
+    /**
+     * Fired when a player goes into a resource zone from outside one, however they got there (e.g.
+     * walking, teleporting, or respawning). Moving between zone chunks isn't entering, and nor is
+     * joining the server while in one.
+     */
+    public static final Event<PlayerMoved> PLAYER_ENTERED = EventFactory.createArrayBacked(
+        PlayerMoved.class,
+        (listeners) -> player -> {
+            for (PlayerMoved listener : listeners) {
+                listener.onPlayerMoved(player);
+            }
+        }
+    );
+
+    /**
+     * Fired when a player goes out of a resource zone, however they got there. Leaving the server
+     * while in one isn't leaving it.
+     */
+    public static final Event<PlayerMoved> PLAYER_LEFT = EventFactory.createArrayBacked(
+        PlayerMoved.class,
+        (listeners) -> player -> {
+            for (PlayerMoved listener : listeners) {
+                listener.onPlayerMoved(player);
+            }
+        }
+    );
+
     private ResourceZoneEvents() {}
 
     @FunctionalInterface
@@ -32,5 +60,13 @@ public final class ResourceZoneEvents {
          * @param dimension The dimension whose zone chunks changed.
          */
         void onChanged(MinecraftServer server, ResourceKey<Level> dimension);
+    }
+
+    @FunctionalInterface
+    public interface PlayerMoved {
+        /**
+         * @param player The player who entered or left a resource zone.
+         */
+        void onPlayerMoved(ServerPlayer player);
     }
 }

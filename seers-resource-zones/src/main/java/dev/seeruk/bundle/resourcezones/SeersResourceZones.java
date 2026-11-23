@@ -10,6 +10,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,17 @@ public class SeersResourceZones implements ModInitializer {
         final var exportFolder = config.export().folder();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> ZoneExports.exportAll(server, exportFolder));
         ResourceZoneEvents.CHANGED.register((server, dimension) -> ZoneExports.export(server, exportFolder, dimension));
+
+        // Who's in a zone, before stats count their time there
+        ServerTickEvents.END_SERVER_TICK.register(ZonePresence::updateAll);
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ZonePresence.forget(handler.player));
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ZonePresence.clear());
+
+        ServerLifecycleEvents.SERVER_STARTED.register(ResourceZonesStats::ensureObjectives);
+        ServerTickEvents.END_SERVER_TICK.register(ResourceZonesStats::recordZoneTick);
+        ResourceZoneEvents.PLAYER_ENTERED.register(ResourceZonesStats::recordZoneEntered);
+        PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) ->
+            ResourceZonesStats.recordBlockMined(level, player, pos));
 
         LOGGER.info("Initialized");
     }

@@ -91,8 +91,32 @@ dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents.CHANGED
 void onChanged(MinecraftServer server, ResourceKey<Level> dimension);
 ```
 
+#### ResourceZoneEvents.PLAYER_ENTERED and PLAYER_LEFT
+
+Fired when a player goes into a resource zone from outside one, or out of one, however they got
+there (e.g. walking, teleporting, or respawning). Moving between zone chunks isn't entering, and
+neither joining nor leaving the server while in a zone counts as entering or leaving it.
+
+```
+dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents.PLAYER_ENTERED
+dev.seeruk.bundle.resourcezones.api.ResourceZoneEvents.PLAYER_LEFT
+```
+
+**Callback signature:**
+
+```java
+void onPlayerMoved(ServerPlayer player);
+```
+
 ### Statistics
 
-TODO
+| Scoreboard Objective                | Description                                                       |
+|-------------------------------------|-------------------------------------------------------------------|
+| `seers_resource_zones.zone_ticks`   | The total number of ticks a player has spent in resource zones.   |
+| `seers_resource_zones.zone_entries` | The total number of times a player has entered a resource zone.   |
+| `seers_resource_zones.blocks_mined` | The total number of blocks a player has broken in resource zones. |
+
+Objectives can be removed while the server is running, but will be recreated on server restart.
+Removing an objective will reset it for all players.
 
 [1]: https://github.com/Querz/mcaselector
