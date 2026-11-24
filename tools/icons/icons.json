@@ -1,0 +1,21 @@
+{
+  "output": "../../{mod}/src/main/resources/assets/{mod}/icon.png",
+  "defaults": {
+    "size": 512,
+    "radius": 96,
+    "symbolScale": 0.6,
+    "symbolColour": "#ffffff"
+  },
+  "mods": {
+    "seers-afk": { "colour": "#22229a", "symbol": "zzz" },
+    "seers-chat": { "colour": "#059669", "symbol": "message-text" },
+    "seers-core": { "colour": "#475569", "symbol": "server" },
+    "seers-discord": { "colour": "#7c3aed", "symbol": "link" },
+    "seers-disposal": { "colour": "#dc2626", "symbol": "trash" },
+    "seers-item-text": { "colour": "#d97706", "symbol": "pencil" },
+    "seers-nicks": { "colour": "#db2777", "symbol": "label" },
+    "seers-propswap": { "colour": "#0891b2", "symbol": "refresh" },
+    "seers-resource-zones": { "colour": "#65a30d", "symbol": "grid-3x3" },
+    "seers-text": { "colour": "#2563eb", "symbol": "quote-text-inline" }
+  }
+}

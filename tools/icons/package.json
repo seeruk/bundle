@@ -1,0 +1,12 @@
+{
+  "name": "seers-icons",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "pixelarticons": "^2.4.2"
+  }
+}
