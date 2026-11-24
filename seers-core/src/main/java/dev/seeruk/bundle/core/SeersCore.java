@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.core;
 
 import dev.seeruk.bundle.core.actionbar.ActionBarMessages;
+import dev.seeruk.bundle.core.stats.AllPlayerStats;
 import dev.seeruk.bundle.core.tick.TickStats;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -25,6 +26,7 @@ public class SeersCore implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(ActionBarMessages::tick);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ActionBarMessages.forget(handler.player));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> ActionBarMessages.clear());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> AllPlayerStats.clear());
 
         LOGGER.info("Initialized");
     }

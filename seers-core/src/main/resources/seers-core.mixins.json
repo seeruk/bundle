@@ -6,7 +6,8 @@
         "PlayerAdvancementsMixin",
         "ServerCommonPacketListenerImplMixin",
         "ServerPlayerMixin",
-        "ServerScoreboardMixin"
+        "ServerScoreboardMixin",
+        "StatsCounterAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

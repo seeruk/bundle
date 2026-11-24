@@ -16,6 +16,7 @@
             "dev.seeruk.bundle.core.api.PlayerEventsGameTest",
             "dev.seeruk.bundle.core.command.NamespacedCommandsGameTest",
             "dev.seeruk.bundle.core.config.ModConfigGameTest",
+            "dev.seeruk.bundle.core.stats.AllPlayerStatsGameTest",
             "dev.seeruk.bundle.core.stats.ScoreboardStatGameTest",
             "dev.seeruk.bundle.core.storage.PlayerStorageGameTest",
             "dev.seeruk.bundle.core.storage.WorldStorageGameTest",
