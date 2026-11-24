@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-leaders-gametest",
+    "version": "${version}",
+    "name": "Seer's Leaders GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.leaders.SeersLeadersGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.leaders.client.SeersLeadersClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-leaders": "*"
+    }
+}

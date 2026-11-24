@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-digest-gametest",
+    "version": "${version}",
+    "name": "Seer's Digest GameTests",
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.seeruk.bundle.digest.SeersDigestGameTest"
+        ],
+        "fabric-client-gametest": [
+            "dev.seeruk.bundle.digest.client.SeersDigestClientGameTest"
+        ]
+    },
+    "depends": {
+        "seers-digest": "*"
+    }
+}

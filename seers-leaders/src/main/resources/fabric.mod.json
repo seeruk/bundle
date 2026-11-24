@@ -1,0 +1,29 @@
+{
+    "schemaVersion": 1,
+    "id": "seers-leaders",
+    "version": "${version}",
+    "name": "Seer's Leaders",
+    "description": "An in-world leaderboard for your server using mannequins, supporting any stats you configure!",
+    "authors": [
+        "Elliot Wright"
+    ],
+    "contact": {
+        "sources": "https://github.com/seeruk/bundle"
+    },
+    "license": "MPL-2.0",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "dev.seeruk.bundle.leaders.SeersLeaders"
+        ],
+        "client": [
+            "dev.seeruk.bundle.leaders.client.SeersLeadersClient"
+        ]
+    },
+    "depends": {
+        "java": ">=25",
+        "minecraft": "~26.3",
+        "fabricloader": ">=0.20.1",
+        "fabric-api": "*"
+    }
+}
