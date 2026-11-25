@@ -1,9 +1,9 @@
 package dev.seeruk.bundle.core.stats;
 
 import dev.seeruk.bundle.core.mixin.StatsCounterAccessor;
+import dev.seeruk.bundle.core.names.PlayerNames;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.NameAndId;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.StatsCounter;
 import net.minecraft.world.level.storage.LevelResource;
@@ -116,7 +116,7 @@ public final class AllPlayerStats {
      */
     private static void addScores(MinecraftServer server, Map<UUID, Map<String, Integer>> values) {
         final var idsByName = new HashMap<String, UUID>();
-        values.keySet().forEach(id -> name(server, id).ifPresent(name -> idsByName.put(
+        values.keySet().forEach(id -> PlayerNames.username(server, id).ifPresent(name -> idsByName.put(
             name.toLowerCase(Locale.ROOT),
             id
         )));
@@ -130,11 +130,5 @@ public final class AllPlayerStats {
                 }
             }
         }
-    }
-
-    private static Optional<String> name(MinecraftServer server, UUID id) {
-        return Optional.ofNullable(server.getPlayerList().getPlayer(id))
-            .map(player -> player.getGameProfile().name())
-            .or(() -> server.services().nameToIdCache().get(id).map(NameAndId::name));
     }
 }
