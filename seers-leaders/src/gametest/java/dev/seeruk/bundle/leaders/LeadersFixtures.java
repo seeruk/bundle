@@ -30,7 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
@@ -51,6 +51,11 @@ public final class LeadersFixtures implements ModInitializer {
 
     // The block mannequins are placed on in tests
     public static final BlockPos BLOCK = new BlockPos(2, 1, 2);
+
+    // How many unique days have been handed out. Each is far enough from the next that tests can
+    // use the days (and years) after theirs without reaching another test's.
+    private static final AtomicLong DAYS = new AtomicLong();
+    private static final long DAYS_APART = 10_000;
 
     private static final EventLog<Changed> EVENTS = new EventLog<>();
     private static final EventLog<PeriodEnded> PERIOD_EVENTS = new EventLog<>();
@@ -82,7 +87,15 @@ public final class LeadersFixtures implements ModInitializer {
      * stick.
      */
     public static LeadersConfig config(String category, Objective objective) {
-        return config(List.of(), category(category, objective, Optional.empty()));
+        return config(category(category, objective, true));
+    }
+
+    /**
+     * A config with the given categories, and no periods. New leaders are announced as
+     * "<player> leads Test", so each test can find its own players' announcements.
+     */
+    public static LeadersConfig config(Category... categories) {
+        return config(List.of(), List.of(categories));
     }
 
     /**
@@ -93,22 +106,33 @@ public final class LeadersFixtures implements ModInitializer {
     public static LeadersConfig periodConfig(String period, Objective objective, Schedule schedule) {
         return config(
             List.of(new Period(period, TextTemplate.parse(period), schedule)),
-            category(period, objective, Optional.of(period))
+            List.of(category(period, objective, Optional.of(period), true))
         );
     }
 
-    private static LeadersConfig config(List<Period> periods, Category category) {
+    /**
+     * A category titled "Test", ranked by the given objective's scores.
+     *
+     * @param id              The category's ID.
+     * @param objective       The objective it's ranked by.
+     * @param announceChanges Whether its new leaders are announced.
+     */
+    public static Category category(String id, Objective objective, boolean announceChanges) {
+        return category(id, objective, Optional.empty(), announceChanges);
+    }
+
+    private static LeadersConfig config(List<Period> periods, List<Category> categories) {
         return new LeadersConfig(
             300,
             ZoneOffset.UTC,
-            new Announcement(false, TextTemplate.parse("${player} leads ${category}")),
+            new Announcement(true, TextTemplate.parse("${player} leads ${category}")),
             new PeriodAnnouncement(true, TextTemplate.parse("${period} ended"), TextTemplate.parse("${category}: ${player}")),
             periods,
-            List.of(category)
+            categories
         );
     }
 
-    private static Category category(String id, Objective objective, Optional<String> period) {
+    private static Category category(String id, Objective objective, Optional<String> period, boolean announceChanges) {
         return new Category(
             id,
             TextTemplate.parse("Test"),
@@ -121,7 +145,7 @@ public final class LeadersFixtures implements ModInitializer {
             TextTemplate.parse("Nobody yet"),
             Optional.of(TextTemplate.parse("Last: ${player}")),
             Optional.of(Items.STICK),
-            true
+            announceChanges
         );
     }
 
@@ -131,7 +155,7 @@ public final class LeadersFixtures implements ModInitializer {
      * days.
      */
     public static ZonedDateTime uniqueDay() {
-        final var day = LocalDate.of(2000, 1, 1).plusDays(ThreadLocalRandom.current().nextInt(1_000_000));
+        final var day = LocalDate.of(2000, 1, 1).plusDays(DAYS.getAndIncrement() * DAYS_APART);
         return ZonedDateTime.of(day, LocalTime.of(19, 0), ZoneOffset.UTC);
     }
 

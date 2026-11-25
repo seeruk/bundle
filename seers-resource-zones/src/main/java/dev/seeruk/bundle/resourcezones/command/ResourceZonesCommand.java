@@ -25,6 +25,10 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
+import static dev.seeruk.bundle.core.command.CommandReplies.fail;
+import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
+import static dev.seeruk.bundle.core.command.CommandReplies.succeedAndBroadcast;
+
 /**
  * {@code /resourcezones}: all resource-zone related commands. For admins, managing resource zones
  * and their chunks, one at a time or by editing; and for all players, to manage particle settings.
@@ -120,32 +124,28 @@ public final class ResourceZonesCommand {
 
     private static int add(CommandSourceStack source, ChunkPos pos) {
         if (!ResourceZones.add(source.getServer(), source.getLevel().dimension(), pos)) {
-            source.sendFailure(TextParsers.parseAsTrusted(
+            return fail(source, TextParsers.parseAsTrusted(
                 "<yellow>Chunk %s is already in a resource zone</yellow>".formatted(describe(pos))
             ));
-            return 0;
         }
 
         final var message = TextParsers.parseAsTrusted(
             "<green>Added chunk %s to resource zones</green>".formatted(describe(pos))
         );
-        source.sendSuccess(() -> message, true);
-        return 1;
+        return succeedAndBroadcast(source, message);
     }
 
     private static int remove(CommandSourceStack source, ChunkPos pos) {
         if (!ResourceZones.remove(source.getServer(), source.getLevel().dimension(), pos)) {
-            source.sendFailure(TextParsers.parseAsTrusted(
+            return fail(source, TextParsers.parseAsTrusted(
                 "<yellow>Chunk %s isn't in a resource zone</yellow>".formatted(describe(pos))
             ));
-            return 0;
         }
 
         final var message = TextParsers.parseAsTrusted(
             "<green>Removed chunk %s from resource zones</green>".formatted(describe(pos))
         );
-        source.sendSuccess(() -> message, true);
-        return 1;
+        return succeedAndBroadcast(source, message);
     }
 
     private static int describeEdit(CommandSourceStack source) throws CommandSyntaxException {
@@ -159,8 +159,7 @@ public final class ResourceZonesCommand {
             describe(edit.get())
         ));
 
-        source.sendSuccess(() -> message, false);
-        return 1;
+        return succeed(source, message);
     }
 
     private static int startEdit(CommandSourceStack source, EditMode mode) throws CommandSyntaxException {
@@ -170,8 +169,7 @@ public final class ResourceZonesCommand {
             ? "<green>Adding chunks to resource zones</green>"
             : "<green>Removing chunks from resource zones</green>");
 
-        source.sendSuccess(() -> message, false);
-        return 1;
+        return succeed(source, message);
     }
 
     private static int pauseEdit(CommandSourceStack source) throws CommandSyntaxException {
@@ -181,8 +179,7 @@ public final class ResourceZonesCommand {
 
         final var message = TextParsers.parseAsTrusted("<green>Paused editing resource zones</green>");
 
-        source.sendSuccess(() -> message, false);
-        return 1;
+        return succeed(source, message);
     }
 
     private static int commitEdit(CommandSourceStack source) throws CommandSyntaxException {
@@ -194,8 +191,7 @@ public final class ResourceZonesCommand {
         if (edit.get().pending().isEmpty()) {
             final var message = TextParsers.parseAsTrusted(
                 "<green>Stopped editing resource zones, with nothing to commit</green>");
-            source.sendSuccess(() -> message, false);
-            return 1;
+            return succeed(source, message);
         }
 
         final var message = TextParsers.parseAsTrusted(
@@ -205,8 +201,7 @@ public final class ResourceZonesCommand {
             )
         );
 
-        source.sendSuccess(() -> message, true);
-        return 1;
+        return succeedAndBroadcast(source, message);
     }
 
     private static int discardEdit(CommandSourceStack source) throws CommandSyntaxException {
@@ -219,13 +214,11 @@ public final class ResourceZonesCommand {
             "<green>Discarded changes to resource zones: %s</green>".formatted(describe(edit.get()))
         );
 
-        source.sendSuccess(() -> message, false);
-        return 1;
+        return succeed(source, message);
     }
 
     private static int notEditing(CommandSourceStack source) {
-        source.sendFailure(TextParsers.parseAsTrusted("<yellow>You're not editing resource zones</yellow>"));
-        return 0;
+        return fail(source, TextParsers.parseAsTrusted("<yellow>You're not editing resource zones</yellow>"));
     }
 
     private static int describeParticles(CommandSourceStack source) throws CommandSyntaxException {
@@ -235,8 +228,7 @@ public final class ResourceZonesCommand {
             settings.style().getSerializedName()
         ));
 
-        source.sendSuccess(() -> message, false);
-        return 1;
+        return succeed(source, message);
     }
 
     private static int changeParticles(
@@ -247,8 +239,7 @@ public final class ResourceZonesCommand {
         ZoneParticles.updateSettings(source.getPlayerOrException(), update);
 
         final var changed = TextParsers.parseAsTrusted("<green>" + message + "</green>");
-        source.sendSuccess(() -> changed, false);
-        return 1;
+        return succeed(source, changed);
     }
 
     private static String describe(ZoneEdit edit) {

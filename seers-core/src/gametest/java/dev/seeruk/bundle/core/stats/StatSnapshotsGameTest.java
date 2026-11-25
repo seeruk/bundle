@@ -7,7 +7,7 @@ import net.minecraft.stats.Stats;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
@@ -16,9 +16,13 @@ public class StatSnapshotsGameTest {
 
     private static final String JUMP = "minecraft.custom:minecraft.jump";
 
-    // A moment nothing else holds a snapshot of
+    // How many unique moments have been handed out
+    private static final AtomicLong MOMENTS = new AtomicLong();
+
+    // A moment nothing else holds a snapshot of. Real snapshots are for recent moments, so these
+    // start in 1970.
     private static Instant uniqueMoment() {
-        return Instant.ofEpochSecond(UUID.randomUUID().getMostSignificantBits() >>> 16);
+        return Instant.ofEpochSecond(MOMENTS.getAndIncrement());
     }
 
     @GameTest

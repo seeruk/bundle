@@ -2,7 +2,9 @@ package dev.seeruk.bundle.leaders;
 
 import dev.seeruk.bundle.core.names.PlayerNames;
 import dev.seeruk.bundle.leaders.Leaderboard.Standing;
+import dev.seeruk.bundle.leaders.LeadersConfig.Category;
 import dev.seeruk.bundle.leaders.mixin.MannequinInvoker;
+import dev.seeruk.bundle.text.TextTemplate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.core.Direction;
@@ -154,23 +156,37 @@ public final class LeaderMannequins {
         }
 
         final var standing = Leaders.standing(seat);
+        showText(mannequin, seat, category.get(), standing);
+        showLook(mannequin, category.get(), standing);
+    }
+
+    // Its name and description, for whoever's in the seat, or for an empty seat
+    private static void showText(Mannequin mannequin, Seat seat, Category category, Optional<Standing> standing) {
         // Who held the seat last period, shown while nobody holds it, if the category says how
-        final var previous = standing.isPresent() || category.get().previousDescription().isEmpty()
+        final var previous = standing.isPresent() || category.previousDescription().isEmpty()
             ? Optional.<Standing>empty()
             : Leaders.previous(mannequin.level().getServer(), seat);
 
-        final var values = values(mannequin, seat, category.get(), standing.or(() -> previous));
-        final var name = standing.isPresent() ? category.get().name() : category.get().emptyName();
-        final var description = standing.isPresent() ? category.get().description()
-            : previous.isPresent() ? category.get().previousDescription().get()
-            : category.get().emptyDescription();
+        final TextTemplate name;
+        final TextTemplate description;
+        if (standing.isPresent()) {
+            name = category.name();
+            description = category.description();
+        } else {
+            name = category.emptyName();
+            description = previous.isPresent() ? category.previousDescription().get() : category.emptyDescription();
+        }
 
+        final var values = values(mannequin, seat, category, standing.or(() -> previous));
         mannequin.setCustomName(name.format(values));
         mannequin.setCustomNameVisible(true);
         ((MannequinInvoker) mannequin).invokeSetDescription(description.format(values));
+    }
 
-        // Only changed when someone else takes the seat, so the skin isn't looked up again each time.
-        // Last period's holder doesn't get the skin, as the seat's still empty.
+    // Its skin and held item. Each is only changed when it's different, so a skin isn't looked up
+    // again on every refresh. An empty seat gets the default skin, even if last period's holder is
+    // named, as nobody's in it now.
+    private static void showLook(Mannequin mannequin, Category category, Optional<Standing> standing) {
         final var profile = standing
             .map(found -> ResolvableProfile.createUnresolved(found.player()))
             .orElse(Mannequin.DEFAULT_PROFILE);
@@ -178,7 +194,7 @@ public final class LeaderMannequins {
             mannequin.setComponent(DataComponents.PROFILE, profile);
         }
 
-        final var item = category.get().item().map(ItemStack::new).orElse(ItemStack.EMPTY);
+        final var item = category.item().map(ItemStack::new).orElse(ItemStack.EMPTY);
         if (!mannequin.getMainHandItem().is(item.getItem())) {
             mannequin.setItemSlot(EquipmentSlot.MAINHAND, item);
         }
@@ -187,7 +203,7 @@ public final class LeaderMannequins {
     private static Map<String, Component> values(
         Mannequin mannequin,
         Seat seat,
-        LeadersConfig.Category category,
+        Category category,
         Optional<Standing> standing
     ) {
         final var values = new HashMap<String, Component>();

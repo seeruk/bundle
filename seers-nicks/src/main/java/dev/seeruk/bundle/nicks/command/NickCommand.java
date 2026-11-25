@@ -21,6 +21,9 @@ import net.minecraft.server.players.NameAndId;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static dev.seeruk.bundle.core.command.CommandReplies.fail;
+import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
+
 /**
  * {@code /nick}: commands for players to change their own nickname, and for admins to change
  * anyone's.
@@ -83,8 +86,7 @@ public final class NickCommand {
     ) throws CommandSyntaxException {
         final var targets = GameProfileArgument.getGameProfiles(context, "player");
         if (targets.size() != 1) {
-            context.getSource().sendFailure(TextParsers.parseAsTrusted("<red>Choose a single player</red>"));
-            return 0;
+            return fail(context.getSource(), TextParsers.parseAsTrusted("<red>Choose a single player</red>"));
         }
 
         final var target = targets.iterator().next();
@@ -102,48 +104,41 @@ public final class NickCommand {
                         .append(nickname))
                     .orElseGet(() -> TextParsers.parseAsTrusted("<green>" + whose + " has been reset</green>"));
 
-                context.getSource().sendSuccess(() -> message, false);
-                yield 1;
+                yield succeed(context.getSource(), message);
             }
-            case NickEditResult.BlankName _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+            case NickEditResult.BlankName _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>Nicknames can't be blank</red>"
-                ));
-                yield 0;
-            }
-            case NickEditResult.SurroundingWhitespace _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case NickEditResult.SurroundingWhitespace _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>Nicknames can't start or end with spaces</red>"
-                ));
-                yield 0;
-            }
-            case NickEditResult.MaxLengthExceeded failure -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case NickEditResult.MaxLengthExceeded failure -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>Nicknames can't be longer than %d characters (yours is %d)</red>".formatted(
                         failure.maxNameLength(),
                         TextComponents.length(failure.name().getString())
                     )
-                ));
-                yield 0;
-            }
-            case NickEditResult.UsernameTaken _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case NickEditResult.UsernameTaken _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>That's another player's username</red>"
-                ));
-                yield 0;
-            }
-            case NickEditResult.NicknameTaken _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case NickEditResult.NicknameTaken _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>That's another player's nickname</red>"
-                ));
-                yield 0;
-            }
-            case NickEditResult.NoNickname _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case NickEditResult.NoNickname _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>" + (own ? "You don't" : target.name() + " doesn't") + " have a nickname</red>"
-                ));
-                yield 0;
-            }
+                )
+            );
         };
     }
 }

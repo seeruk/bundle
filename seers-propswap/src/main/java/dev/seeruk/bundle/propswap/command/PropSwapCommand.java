@@ -11,6 +11,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
+import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
+
 /**
  * {@code /propswap}: toggles PropSwap for the player running it.
  */
@@ -30,11 +32,6 @@ public final class PropSwapCommand {
         final var player = context.getSource().getPlayerOrException();
         final var enabled = PropSwapMode.toggle(player);
 
-        context.getSource().sendSuccess(
-            () -> Component.literal(enabled ? "PropSwap enabled" : "PropSwap disabled"),
-            false
-        );
-
-        return 1;
+        return succeed(context.getSource(), Component.literal(enabled ? "PropSwap enabled" : "PropSwap disabled"));
     }
 }

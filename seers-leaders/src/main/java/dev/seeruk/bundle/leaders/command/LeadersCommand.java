@@ -7,18 +7,16 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.seeruk.bundle.core.command.CommandExecutors;
 import dev.seeruk.bundle.core.command.NamespacedCommands;
-import dev.seeruk.bundle.leaders.LeaderMannequins;
-import dev.seeruk.bundle.leaders.LeadersConfig;
-import dev.seeruk.bundle.leaders.PlaceResult;
-import dev.seeruk.bundle.leaders.RemoveResult;
-import dev.seeruk.bundle.leaders.Seat;
-import dev.seeruk.bundle.leaders.SeersLeaders;
+import dev.seeruk.bundle.leaders.*;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 
 import java.util.function.Predicate;
+
+import static dev.seeruk.bundle.core.command.CommandReplies.fail;
+import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
 
 /**
  * {@code /leaders}: placing and removing leader mannequins.
@@ -55,30 +53,26 @@ public final class LeadersCommand {
         final var seat = new Seat(StringArgumentType.getString(context, "category"), rank);
 
         return switch (LeaderMannequins.place(player, config, seat)) {
-            case PlaceResult.Placed _ -> {
-                context.getSource().sendSuccess(() -> TextParsers.parseAsTrusted(
+            case PlaceResult.Placed _ -> succeed(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<green>Placed a leader mannequin for %s #%d</green>".formatted(seat.category(), seat.rank())
-                ), false);
-                yield 1;
-            }
-            case PlaceResult.UnknownCategory failure -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case PlaceResult.UnknownCategory failure -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>There's no category called %s</red>".formatted(failure.category())
-                ));
-                yield 0;
-            }
-            case PlaceResult.NoBlockInSight _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case PlaceResult.NoBlockInSight _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>Look at the block to place the mannequin on</red>"
-                ));
-                yield 0;
-            }
-            case PlaceResult.Obstructed _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case PlaceResult.Obstructed _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>There isn't room for a mannequin there</red>"
-                ));
-                yield 0;
-            }
+                )
+            );
         };
     }
 
@@ -86,21 +80,19 @@ public final class LeadersCommand {
         final var player = context.getSource().getPlayerOrException();
 
         return switch (LeaderMannequins.remove(player)) {
-            case RemoveResult.Removed removed -> {
-                context.getSource().sendSuccess(() -> TextParsers.parseAsTrusted(
+            case RemoveResult.Removed removed -> succeed(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<green>Removed the leader mannequin for %s #%d</green>".formatted(
                         removed.seat().category(),
                         removed.seat().rank()
                     )
-                ), false);
-                yield 1;
-            }
-            case RemoveResult.NotLookingAtLeaderMannequin _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case RemoveResult.NotLookingAtLeaderMannequin _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>Look at the leader mannequin to remove</red>"
-                ));
-                yield 0;
-            }
+                )
+            );
         };
     }
 }

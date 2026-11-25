@@ -39,7 +39,7 @@ public final class LeaderAnnouncements {
             .toList();
 
         if (!lines.isEmpty()) {
-            server.getPlayerList().broadcastSystemMessage(ComponentUtils.formatList(lines, Component.literal("\n")), false);
+            broadcast(server, lines);
         }
     }
 
@@ -49,17 +49,16 @@ public final class LeaderAnnouncements {
     public static void announcePeriod(
         MinecraftServer server,
         LeadersConfig config,
-        String period,
+        LeadersConfig.Period period,
         List<LeaderEvents.Winner> winners
     ) {
         final var announcement = config.periodAnnouncement();
-        final var found = config.periods().stream().filter(p -> p.id().equals(period)).findFirst();
-        if (!announcement.enabled() || winners.isEmpty() || found.isEmpty()) {
+        if (!announcement.enabled() || winners.isEmpty()) {
             return;
         }
 
         final var lines = new ArrayList<Component>();
-        lines.add(announcement.header().format(Map.of("period", found.get().title().format(Map.of()))));
+        lines.add(announcement.header().format(Map.of("period", period.title().format(Map.of()))));
         for (final var winner : winners) {
             config.category(winner.category()).ifPresent(category -> lines.add(announcement.line().format(Map.of(
                 "category", category.title().format(Map.of()),
@@ -68,6 +67,11 @@ public final class LeaderAnnouncements {
             ))));
         }
 
+        broadcast(server, lines);
+    }
+
+    // Sends the lines to everyone online as one message, so they arrive together
+    private static void broadcast(MinecraftServer server, List<Component> lines) {
         server.getPlayerList().broadcastSystemMessage(ComponentUtils.formatList(lines, Component.literal("\n")), false);
     }
 }

@@ -14,6 +14,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.function.BiFunction;
 
+import static dev.seeruk.bundle.core.command.CommandReplies.fail;
+import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
+
 /**
  * {@code /itemlore}: commands and subcommands for modifying item lore.
  */
@@ -61,11 +64,9 @@ public final class ItemLoreCommand {
         final var result = callback.apply(player, stack.get());
         final var message = LoreEditMessages.of(result);
         if (result instanceof LoreEditResult.Edited) {
-            context.getSource().sendSuccess(() -> message, false);
-            return 1;
+            return succeed(context.getSource(), message);
         }
 
-        context.getSource().sendFailure(message);
-        return 0;
+        return fail(context.getSource(), message);
     }
 }

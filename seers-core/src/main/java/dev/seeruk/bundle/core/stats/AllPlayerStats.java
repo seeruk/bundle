@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.StatsCounter;
 import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,6 +53,19 @@ public final class AllPlayerStats {
         // Adding scoreboard scores is the same for online or offline players.
         addScores(server, values);
         return values;
+    }
+
+    /**
+     * The selection's exact stat names (see {@link StatSelection#exactNames()}) that aren't a
+     * Vanilla stat or a scoreboard objective, e.g. typos. Objectives may not exist yet on a new
+     * world, until the mods that add them start.
+     */
+    public static List<String> unknownNames(MinecraftServer server, StatSelection selection) {
+        return selection.exactNames().stream()
+            .filter(name -> name.startsWith(SCOREBOARD_PREFIX)
+                ? server.getScoreboard().getObjective(name.substring(SCOREBOARD_PREFIX.length())) == null
+                : ObjectiveCriteria.byName(name).isEmpty())
+            .toList();
     }
 
     /**

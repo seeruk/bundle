@@ -10,7 +10,6 @@ import dev.seeruk.bundle.leaders.api.LeaderEvents;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -59,7 +58,8 @@ public final class Leaders {
     private Leaders() {}
 
     public static void started(MinecraftServer server, LeadersConfig config) {
-        warnUnknownStats(server, config);
+        config.categories().forEach(category -> AllPlayerStats.unknownNames(server, category.stats()).forEach(name ->
+            LOGGER.warn("Category '{}' uses '{}', which isn't a stat (yet), so it's counted as 0", category.id(), name)));
         forgetRemovedResults(server, config);
         Periods.forgetRemoved(server, config);
         Periods.check(server, config, ZonedDateTime.now(config.timezone()));
@@ -184,21 +184,6 @@ public final class Leaders {
             final var kept = new HashMap<>(results);
             kept.keySet().retainAll(ids);
             RESULTS.set(server, Map.copyOf(kept));
-        }
-    }
-
-    // Scoreboard objectives may not exist yet on a new world, until the mods that add them start
-    private static void warnUnknownStats(MinecraftServer server, LeadersConfig config) {
-        for (final var category : config.categories()) {
-            for (final var name : category.stats().exactNames()) {
-                final var known = name.startsWith(AllPlayerStats.SCOREBOARD_PREFIX)
-                    ? server.getScoreboard().getObjective(name.substring(AllPlayerStats.SCOREBOARD_PREFIX.length())) != null
-                    : ObjectiveCriteria.byName(name).isPresent();
-
-                if (!known) {
-                    LOGGER.warn("Category '{}' uses '{}', which isn't a stat (yet), so it's counted as 0", category.id(), name);
-                }
-            }
         }
     }
 }

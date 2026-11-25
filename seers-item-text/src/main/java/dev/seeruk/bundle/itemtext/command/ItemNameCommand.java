@@ -20,6 +20,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.function.BiFunction;
 
+import static dev.seeruk.bundle.core.command.CommandReplies.fail;
+import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
+
 /**
  * {@code /itemname}: commands and subcommands for modifying item names.
  */
@@ -65,36 +68,29 @@ public final class ItemNameCommand {
         final var result = callback.apply(player, stack.get());
 
         return switch (result) {
-            case NameEditResult.Edited _ -> {
-                context.getSource().sendSuccess(
-                    () -> Component.empty()
-                        .append(TextParsers.parseAsTrusted("<green>Name updated:</green>\n"))
-                        .append(stack.get().getStyledHoverName()),
-                    false
-                );
-                yield 1;
-            }
-            case NameEditResult.BlankName _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+            case NameEditResult.Edited _ -> succeed(
+                context.getSource(), Component.empty()
+                    .append(TextParsers.parseAsTrusted("<green>Name updated:</green>\n"))
+                    .append(stack.get().getStyledHoverName())
+            );
+            case NameEditResult.BlankName _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>New name cannot be blank</red>"
-                ));
-                yield 0;
-            }
-            case NameEditResult.MaxLengthExceeded failure -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case NameEditResult.MaxLengthExceeded failure -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>New name cannot be longer than %d characters (yours is %d)</red>".formatted(
                         failure.maxNameLength(),
                         TextComponents.length(failure.name().getString())
                     )
-                ));
-                yield 0;
-            }
-            case NameEditResult.NoCustomName _ -> {
-                context.getSource().sendFailure(TextParsers.parseAsTrusted(
+                )
+            );
+            case NameEditResult.NoCustomName _ -> fail(
+                context.getSource(), TextParsers.parseAsTrusted(
                     "<red>This item has no custom name</red>"
-                ));
-                yield 0;
-            }
+                )
+            );
         };
     }
 }
