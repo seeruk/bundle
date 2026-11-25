@@ -1,0 +1,136 @@
+# Seer's Leaders config. To change a setting, copy it into config.yml in this folder.
+# Anything that's not in config.yml uses the default from this file.
+#
+# Settings that show text can use any of Text Placeholder API's formatting, see:
+# https://placeholders.pb4.eu/user/text-format/
+
+# How often leaders are worked out again, in seconds (1 to 86400).
+refresh_seconds: 300
+
+# Sent to everyone online when a category has a new leader. ${player} is the new leader, and
+# ${category} is the category's title.
+announcement:
+  enabled: true
+  format: "<gold>${player} is now the top ${category}!</gold>"
+
+# What players are ranked by. Setting categories in config.yml replaces this whole list, so copy
+# any of these you want to keep.
+#
+# Each category has:
+#   id: Names it in commands (e.g. /leaders place miner), and on mannequins showing it, so it
+#     shouldn't change once mannequins use it. Only a-z, 0-9, _ and -.
+#   title: Names it to players, as ${category}.
+#   stats: The stats added up for each player. Vanilla stats use their scoreboard criterion names
+#     (e.g. minecraft.mined:minecraft.stone), and scoreboard objectives are scoreboard:<objective>
+#     (e.g. scoreboard:seers_chat.messages_sent). A * matches anything (e.g. minecraft.mined:* is
+#     every block mined), and a pattern starting with ! leaves out whatever it matches. Each stat is
+#     only counted once, however many patterns match it.
+#   unit: How the total is shown: count, distance (blocks), or time (hours).
+#   name: A mannequin's name. ${player} is who holds its rank, ${value} is their total, ${rank} is
+#     the rank, and ${category} is the title.
+#   description: Shown under a mannequin's name, with the same placeholders.
+#   empty_name and empty_description: Used instead when nobody holds the rank yet, with ${rank} and
+#     ${category}.
+#   item: What mannequins hold (optional).
+categories:
+  - id: miner
+    title: Miner
+    stats:
+      - "minecraft.mined:*"
+    unit: count
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} blocks mined</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    item: minecraft:diamond_pickaxe
+
+  - id: explorer
+    title: Explorer
+    stats:
+      - "minecraft.custom:minecraft.*_one_cm"
+      - "!minecraft.custom:minecraft.fall_one_cm"
+      - "!minecraft.custom:minecraft.climb_one_cm"
+      - "!minecraft.custom:minecraft.fly_one_cm"
+    unit: distance
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} blocks travelled</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    item: minecraft:compass
+
+  - id: slayer
+    title: Slayer
+    stats:
+      - "minecraft.killed:*"
+    unit: count
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} mobs slain</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    item: minecraft:diamond_sword
+
+  # Vanilla doesn't count harvests, so this counts crops broken (ripe or not) and animals bred.
+  - id: farmer
+    title: Farmer
+    stats:
+      - "minecraft.custom:minecraft.animals_bred"
+      - "minecraft.mined:minecraft.wheat"
+      - "minecraft.mined:minecraft.carrots"
+      - "minecraft.mined:minecraft.potatoes"
+      - "minecraft.mined:minecraft.beetroots"
+      - "minecraft.mined:minecraft.nether_wart"
+      - "minecraft.mined:minecraft.melon"
+      - "minecraft.mined:minecraft.pumpkin"
+      - "minecraft.mined:minecraft.sugar_cane"
+      - "minecraft.mined:minecraft.cocoa"
+    unit: count
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} crops and animals</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    item: minecraft:diamond_hoe
+
+  - id: trader
+    title: Trader
+    stats:
+      - "minecraft.custom:minecraft.traded_with_villager"
+    unit: count
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} trades</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    item: minecraft:emerald
+
+  - id: angler
+    title: Angler
+    stats:
+      - "minecraft.custom:minecraft.fish_caught"
+    unit: count
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} fish caught</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    item: minecraft:fishing_rod
+
+  - id: veteran
+    title: Veteran
+    stats:
+      - "minecraft.custom:minecraft.play_time"
+    unit: time
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} hours played</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    item: minecraft:clock
+
+  # Needs Seer's Chat, which counts messages players send.
+  - id: socialite
+    title: Socialite
+    stats:
+      - "scoreboard:seers_chat.messages_sent"
+    unit: count
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} messages sent</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    item: minecraft:writable_book
