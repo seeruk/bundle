@@ -1,5 +1,6 @@
 package dev.seeruk.bundle.nicks;
 
+import dev.seeruk.bundle.core.names.PlayerNames;
 import dev.seeruk.bundle.core.tablist.TabList;
 import dev.seeruk.bundle.nicks.api.NicksEvents;
 import dev.seeruk.bundle.nicks.command.NickCommand;
@@ -35,6 +36,7 @@ public class SeersNicks implements ModInitializer {
             ));
 
         TabList.NAME.register(TabList.REPLACE, NicksTabList::name);
+        PlayerNames.NAME.register((server, id) -> Nicknames.displayName(id));
 
         ServerLifecycleEvents.SERVER_STARTED.register(NicksStats::ensureObjectives);
         NicksEvents.CHANGED.register(NicksStats::recordNickChanged);
