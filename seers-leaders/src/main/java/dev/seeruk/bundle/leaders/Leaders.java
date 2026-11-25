@@ -54,7 +54,8 @@ public final class Leaders {
 
     /**
      * Ranks every category again from players' current stats, firing
-     * {@link LeaderEvents#CHANGED} for any category with a new leader.
+     * {@link LeaderEvents#CHANGED} for any category with a new leader, then updates loaded leader
+     * mannequins.
      */
     public static void refresh(MinecraftServer server, LeadersConfig config) {
         final var stats = AllPlayerStats.read(server);
@@ -69,14 +70,16 @@ public final class Leaders {
 
             recordLeader(server, category.id(), board.stream().findFirst().map(Standing::player));
         }
+
+        LeaderMannequins.showAll(config);
     }
 
     /**
-     * Who holds the given rank (starting at 1) in a category, as of the last refresh.
+     * Who is sitting in the seat, as of the last refresh, if anyone.
      */
-    public static Optional<Standing> standing(String category, int rank) {
-        final var board = BOARDS.getOrDefault(category, List.of());
-        return rank >= 1 && rank <= board.size() ? Optional.of(board.get(rank - 1)) : Optional.empty();
+    public static Optional<Standing> standing(Seat seat) {
+        final var board = BOARDS.getOrDefault(seat.category(), List.of());
+        return seat.rank() <= board.size() ? Optional.of(board.get(seat.rank() - 1)) : Optional.empty();
     }
 
     public static void clear() {

@@ -2,7 +2,10 @@ package dev.seeruk.bundle.leaders;
 
 import dev.seeruk.bundle.core.config.ModConfig;
 import dev.seeruk.bundle.leaders.api.LeaderEvents;
+import dev.seeruk.bundle.leaders.command.LeadersCommand;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.resources.Identifier;
@@ -21,12 +24,20 @@ public class SeersLeaders implements ModInitializer {
     public void onInitialize() {
         final var config = ModConfig.load(MOD_ID, LeadersConfig.CODEC);
 
+        CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
+            LeadersCommand.register(dispatcher, config));
+
         ServerLifecycleEvents.SERVER_STARTED.register(server -> Leaders.started(server, config));
         ServerTickEvents.END_SERVER_TICK.register(server -> Leaders.tick(server, config));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> Leaders.clear());
 
         LeaderEvents.CHANGED.register((server, category, previous, leader) ->
             LeaderAnnouncements.announce(server, config, category, leader));
+
+        LeaderMannequins.init();
+        ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> LeaderMannequins.loaded(entity, config));
+        ServerEntityEvents.ENTITY_UNLOAD.register((entity, level) -> LeaderMannequins.unloaded(entity));
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> LeaderMannequins.clear());
 
         LOGGER.info("Initialized");
     }

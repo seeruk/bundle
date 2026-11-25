@@ -33,9 +33,9 @@ public class LeadersGameTest {
             setScore(first, objective, 5);
             Leaders.refresh(server, config);
 
-            helper.assertValueEqual(Leaders.standing("ranks", 1), Optional.of(new Standing(first.getUUID(), 5)), "first");
-            helper.assertValueEqual(Leaders.standing("ranks", 2), Optional.of(new Standing(second.getUUID(), 3)), "second");
-            helper.assertValueEqual(Leaders.standing("ranks", 3), Optional.empty(), "third");
+            helper.assertValueEqual(Leaders.standing(new Seat("ranks", 1)), Optional.of(new Standing(first.getUUID(), 5)), "first");
+            helper.assertValueEqual(Leaders.standing(new Seat("ranks", 2)), Optional.of(new Standing(second.getUUID(), 3)), "second");
+            helper.assertValueEqual(Leaders.standing(new Seat("ranks", 3)), Optional.empty(), "third");
         } finally {
             server.getScoreboard().removeObjective(objective);
         }
@@ -106,7 +106,7 @@ public class LeadersGameTest {
             setScore(challenger, objective, 5);
             Leaders.refresh(server, config);
 
-            helper.assertValueEqual(Leaders.standing("tie", 1).map(Standing::player), Optional.of(leader.getUUID()), "leader");
+            helper.assertValueEqual(Leaders.standing(new Seat("tie", 1)).map(Standing::player), Optional.of(leader.getUUID()), "leader");
             helper.assertValueEqual(eventsFor("tie"), List.of(), "events");
         } finally {
             server.getScoreboard().removeObjective(objective);

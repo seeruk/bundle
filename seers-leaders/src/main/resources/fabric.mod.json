@@ -17,6 +17,9 @@
             "dev.seeruk.bundle.leaders.SeersLeaders"
         ]
     },
+    "mixins": [
+        "seers-leaders.mixins.json"
+    ],
     "depends": {
         "java": ">=25",
         "minecraft": "~26.3",

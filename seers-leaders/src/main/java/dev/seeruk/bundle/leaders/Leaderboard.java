@@ -12,6 +12,9 @@ public final class Leaderboard {
     private Leaderboard() {}
 
     /**
+     * Who is on a leaderboard, and their total. Their rank is where they are in the ranked list, so
+     * it isn't kept here. Compare with {@link Seat}, which is the place itself, whoever holds it.
+     *
      * @param player Who holds the rank.
      * @param value  Their total.
      */

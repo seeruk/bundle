@@ -10,7 +10,9 @@
             "dev.seeruk.bundle.leaders.LeadersFixtures"
         ],
         "fabric-gametest": [
-            "dev.seeruk.bundle.leaders.LeadersGameTest"
+            "dev.seeruk.bundle.leaders.LeaderMannequinsGameTest",
+            "dev.seeruk.bundle.leaders.LeadersGameTest",
+            "dev.seeruk.bundle.leaders.command.LeadersCommandGameTest"
         ]
     },
     "depends": {

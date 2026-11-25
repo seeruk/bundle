@@ -1,0 +1,14 @@
+{
+    "required": true,
+    "package": "dev.seeruk.bundle.leaders.mixin",
+    "compatibilityLevel": "JAVA_25",
+    "mixins": [
+        "MannequinInvoker"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+        "requireAnnotations": true
+    }
+}
