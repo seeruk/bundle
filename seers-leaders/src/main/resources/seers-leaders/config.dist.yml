@@ -7,19 +7,60 @@
 # How often leaders are worked out again, in seconds (1 to 86400).
 refresh_seconds: 300
 
+# The time zone periods' schedules are in, e.g. Europe/London. Defaults to the server's.
+# timezone: Europe/London
+
 # Sent to everyone online when a category has a new leader. ${player} is the new leader, and
-# ${category} is the category's title.
+# ${category} is the category's title. Leaders taking over from nobody (e.g. on a new world, or when
+# a period starts again) aren't announced, and categories with new leaders at the same time are
+# announced together, in one message.
 announcement:
   enabled: true
   format: "<gold>${player} is now the top ${category}!</gold>"
 
-# What players are ranked by. Setting categories in config.yml replaces this whole list, so copy
-# any of these you want to keep.
+# Sent to everyone online when a defined period that's used by at least one category ends, as one
+# message: the header (${period} is the period's title), then a line for each of its categories that
+# someone scored in. ${category} is the category's title, ${player} is who won it, and ${value} is
+# their total.
+period_announcement:
+  enabled: true
+  header: "<gold>The ${period} leaders are in!</gold>"
+  line: "<gray>-</gray> <yellow>${category}</yellow>: ${player} <gray>(${value})</gray>"
+
+# Periods are spans of time that a category can count stats over, rather than for all time, so
+# anyone can top it. When one ends, its winners are announced, and the next one starts straight away
+# from nothing. Setting periods in config.yml replaces this whole list.
+#
+# Each period has:
+#   id: Names it in categories. Only a-z, 0-9, _ and -.
+#   title: Names it to players, as ${period}.
+#   every: day, week, or month.
+#   on: For week, a day (e.g. sunday). For month, a day of the month (1 to 31), or last. A day past
+#     the end of a shorter month means its last day. Not used for day.
+#   at: The time it ends, as HH:MM in the time zone above. Pick a time players are usually around,
+#     so they see the announcement.
+periods:
+  - id: weekly
+    title: weekly
+    every: week
+    on: sunday
+    at: "18:00"
+
+  - id: monthly
+    title: monthly
+    every: month
+    on: last
+    at: "18:00"
+
+# Categories are what players are ranked by. Setting categories in config.yml replaces this whole
+# list, so copy any of these you want to keep into your config.yml.
 #
 # Each category has:
 #   id: Names it in commands (e.g. /leaders place miner), and on mannequins showing it, so it
 #     shouldn't change once mannequins use it. Only a-z, 0-9, _ and -.
 #   title: Names it to players, as ${category}.
+#   period: Only counts stats from the current period, if set (e.g. monthly). Otherwise, stats are
+#     counted for all time.
 #   stats: The stats added up for each player. Vanilla stats use their scoreboard criterion names
 #     (e.g. minecraft.mined:minecraft.stone), and scoreboard objectives are scoreboard:<objective>
 #     (e.g. scoreboard:seers_chat.messages_sent). A * matches anything (e.g. minecraft.mined:* is
@@ -31,6 +72,12 @@ announcement:
 #   description: Shown under a mannequin's name, with the same placeholders.
 #   empty_name and empty_description: Used instead when nobody holds the rank yet, with ${rank} and
 #     ${category}.
+#   previous_description: Used instead of empty_description for a periodic category, when nobody
+#     holds the rank yet but someone did when the last period ended (optional). Has the same
+#     placeholders as description, for whoever that was.
+#   announce_changes: Whether a new leader is announced (optional, true by default). Periodic
+#     categories here don't, as early in a period the lead changes often, and their winners are
+#     announced when it ends anyway.
 #   item: What mannequins hold (optional).
 categories:
   - id: miner
@@ -134,3 +181,49 @@ categories:
     empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
     empty_description: "<gray>Nobody yet</gray>"
     item: minecraft:writable_book
+
+  # The same as some of the above, but only counting this month, so newer players can top them too.
+  - id: monthly_miner
+    title: Miner of the Month
+    period: monthly
+    stats:
+      - "minecraft.mined:*"
+    unit: count
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} blocks mined</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    previous_description: "<gray>Last month:</gray> ${player}"
+    announce_changes: false
+    item: minecraft:iron_pickaxe
+
+  - id: monthly_explorer
+    title: Explorer of the Month
+    period: monthly
+    stats:
+      - "minecraft.custom:minecraft.*_one_cm"
+      - "!minecraft.custom:minecraft.fall_one_cm"
+      - "!minecraft.custom:minecraft.climb_one_cm"
+      - "!minecraft.custom:minecraft.fly_one_cm"
+    unit: distance
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} blocks travelled</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    previous_description: "<gray>Last month:</gray> ${player}"
+    announce_changes: false
+    item: minecraft:map
+
+  - id: monthly_slayer
+    title: Slayer of the Month
+    period: monthly
+    stats:
+      - "minecraft.killed:*"
+    unit: count
+    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    description: "${player} <gray>- ${value} mobs slain</gray>"
+    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+    empty_description: "<gray>Nobody yet</gray>"
+    previous_description: "<gray>Last month:</gray> ${player}"
+    announce_changes: false
+    item: minecraft:iron_sword

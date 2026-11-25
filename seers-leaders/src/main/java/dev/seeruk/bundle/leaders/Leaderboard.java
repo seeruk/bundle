@@ -1,12 +1,16 @@
 package dev.seeruk.bundle.leaders;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.UUIDUtil;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Ranks players by their totals in a category.
+ * Utilities for ranking players on a category's leaderboard.
  */
 public final class Leaderboard {
     private Leaderboard() {}
@@ -18,7 +22,12 @@ public final class Leaderboard {
      * @param player Who holds the rank.
      * @param value  Their total.
      */
-    public record Standing(UUID player, long value) {}
+    public record Standing(UUID player, long value) {
+        public static final Codec<Standing> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            UUIDUtil.STRING_CODEC.fieldOf("player").forGetter(Standing::player),
+            Codec.LONG.fieldOf("value").forGetter(Standing::value)
+        ).apply(instance, Standing::new));
+    }
 
     /**
      * Ranks players from highest total to lowest, leaving out anyone on zero. Players on the same

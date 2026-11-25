@@ -25,7 +25,6 @@ import java.util.function.Predicate;
  */
 public final class LeadersCommand {
     static final String NAME = "leaders";
-    static final int MAX_RANK = 100;
 
     private static final Predicate<CommandSourceStack> ADMIN = Commands.hasPermission(Commands.LEVEL_GAMEMASTERS);
 
@@ -42,7 +41,7 @@ public final class LeadersCommand {
                             builder
                         ))
                         .executes(CommandExecutors.logged(context -> place(context, config, 1)))
-                        .then(Commands.argument("rank", IntegerArgumentType.integer(1, MAX_RANK))
+                        .then(Commands.argument("rank", IntegerArgumentType.integer(1, Seat.MAX_RANK))
                             .executes(CommandExecutors.logged(context ->
                                 place(context, config, IntegerArgumentType.getInteger(context, "rank")))))))
                 .then(Commands.literal("remove")

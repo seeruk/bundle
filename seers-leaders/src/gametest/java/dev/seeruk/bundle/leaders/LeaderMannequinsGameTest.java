@@ -18,9 +18,12 @@ import java.util.UUID;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.BLOCK;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.DAILY;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.addObjective;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.config;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.periodConfig;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.playerFacingBlock;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.uniqueDay;
 
 public class LeaderMannequinsGameTest {
     private static void setScore(ServerPlayer player, Objective objective, int score) {
@@ -228,6 +231,7 @@ public class LeaderMannequinsGameTest {
         final var player = playerFacingBlock(helper);
 
         try {
+            // Unloading stops refreshes updating it, as it's no longer tracked
             final var mannequin = placed(helper, LeaderMannequins.place(player, config, new Seat("loaded", 1)));
             LeaderMannequins.unloaded(mannequin);
 
@@ -238,6 +242,32 @@ public class LeaderMannequinsGameTest {
             LeaderMannequins.loaded(mannequin, config);
             helper.assertValueEqual(description(mannequin), player.getGameProfile().name() + " - 5", "description once loaded");
             helper.assertValueEqual(profileId(mannequin), Optional.of(player.getUUID()), "profile once loaded");
+        } finally {
+            server.getScoreboard().removeObjective(objective);
+        }
+
+        helper.succeed();
+    }
+
+    @GameTest
+    public void emptyPeriodicSeatShowsWhoHeldItLastPeriod(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var objective = addObjective(server, "mannequins_previous");
+        final var config = periodConfig("previous", objective, DAILY);
+        final var player = playerFacingBlock(helper);
+
+        try {
+            final var day = uniqueDay();
+            Periods.check(server, config, day);
+            setScore(player, objective, 5);
+            final var mannequin = placed(helper, LeaderMannequins.place(player, config, new Seat("previous", 1)));
+
+            // Ending the period empties the seat, so the mannequin shows who held it instead (from
+            // the config's previous_description), but not their skin, as they don't hold it now
+            Periods.check(server, config, day.plusDays(1));
+
+            helper.assertValueEqual(description(mannequin), "Last: " + player.getGameProfile().name(), "description");
+            helper.assertValueEqual(profileId(mannequin), Optional.empty(), "profile");
         } finally {
             server.getScoreboard().removeObjective(objective);
         }

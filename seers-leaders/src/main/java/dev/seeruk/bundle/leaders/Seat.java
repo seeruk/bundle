@@ -8,11 +8,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  * leader mannequin shows one seat, and {@link Leaders#standing(Seat)} says who's sitting in it.
  *
  * @param category The category's ID.
- * @param rank     The rank, from 1 (the leader).
+ * @param rank     The rank, from 1 (the leader) to {@link #MAX_RANK}.
  */
 public record Seat(String category, int rank) {
+    public static final int MAX_RANK = 100;
+
     public static final Codec<Seat> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.STRING.fieldOf("category").forGetter(Seat::category),
-        Codec.intRange(1, Integer.MAX_VALUE).fieldOf("rank").forGetter(Seat::rank)
+        Codec.intRange(1, MAX_RANK).fieldOf("rank").forGetter(Seat::rank)
     ).apply(instance, Seat::new));
 }

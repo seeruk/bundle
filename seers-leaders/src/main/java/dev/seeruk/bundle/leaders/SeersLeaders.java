@@ -1,7 +1,6 @@
 package dev.seeruk.bundle.leaders;
 
 import dev.seeruk.bundle.core.config.ModConfig;
-import dev.seeruk.bundle.leaders.api.LeaderEvents;
 import dev.seeruk.bundle.leaders.command.LeadersCommand;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -31,8 +30,6 @@ public class SeersLeaders implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(server -> Leaders.tick(server, config));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> Leaders.clear());
 
-        LeaderEvents.CHANGED.register((server, category, previous, leader) ->
-            LeaderAnnouncements.announce(server, config, category, leader));
 
         LeaderMannequins.init();
         ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> LeaderMannequins.loaded(entity, config));

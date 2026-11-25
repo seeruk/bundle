@@ -33,7 +33,7 @@ import static dev.seeruk.bundle.leaders.SeersLeaders.LOGGER;
 
 /**
  * Mannequins that show who's sitting in a {@link Seat}, with their skin, name, and total. Each one
- * only remembers its seat, and is brought up to date whenever it loads, and on every refresh.
+ * only remembers its seat.
  */
 public final class LeaderMannequins {
     private static final AttachmentType<Seat> SEAT = AttachmentRegistry.createPersistent(
@@ -154,15 +154,23 @@ public final class LeaderMannequins {
         }
 
         final var standing = Leaders.standing(seat);
-        final var values = values(mannequin, seat, category.get(), standing);
+        // Who held the seat last period, shown while nobody holds it, if the category says how
+        final var previous = standing.isPresent() || category.get().previousDescription().isEmpty()
+            ? Optional.<Standing>empty()
+            : Leaders.previous(mannequin.level().getServer(), seat);
+
+        final var values = values(mannequin, seat, category.get(), standing.or(() -> previous));
         final var name = standing.isPresent() ? category.get().name() : category.get().emptyName();
-        final var description = standing.isPresent() ? category.get().description() : category.get().emptyDescription();
+        final var description = standing.isPresent() ? category.get().description()
+            : previous.isPresent() ? category.get().previousDescription().get()
+            : category.get().emptyDescription();
 
         mannequin.setCustomName(name.format(values));
         mannequin.setCustomNameVisible(true);
         ((MannequinInvoker) mannequin).invokeSetDescription(description.format(values));
 
-        // Only changed when someone else takes the seat, so the skin isn't looked up again each time
+        // Only changed when someone else takes the seat, so the skin isn't looked up again each time.
+        // Last period's holder doesn't get the skin, as the seat's still empty.
         final var profile = standing
             .map(found -> ResolvableProfile.createUnresolved(found.player()))
             .orElse(Mannequin.DEFAULT_PROFILE);
