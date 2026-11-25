@@ -5,6 +5,7 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerLoadedPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,13 +15,37 @@ import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.storage.TagValueInput;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Test utilities for mock players for GameTests.
  */
 public final class TestPlayers {
+    // Each player's connection, which keeps what's sent to them, by UUID. Concurrent, as tests run
+    // alongside each other.
+    private static final Map<UUID, EmbeddedChannel> CHANNELS = new ConcurrentHashMap<>();
+
     private TestPlayers() {}
+
+    /**
+     * The chat messages sent to the player by the server (e.g. announcements) since this was last
+     * called for them, as plain text, oldest first. Messages from players and action bar messages
+     * aren't included.
+     */
+    public static List<String> systemMessages(ServerPlayer player) {
+        final var channel = CHANNELS.get(player.getUUID());
+        final var messages = new ArrayList<String>();
+        for (Object packet = channel.readOutbound(); packet != null; packet = channel.readOutbound()) {
+            if (packet instanceof ClientboundSystemChatPacket chat && !chat.overlay()) {
+                messages.add(chat.content().getString());
+            }
+        }
+        return messages;
+    }
 
     /**
      * Returns a survival mode player in the test's level, with a unique name, set up the same way
@@ -55,7 +80,7 @@ public final class TestPlayers {
             .ifPresent(player::load);
 
         final var connection = new Connection(PacketFlow.SERVERBOUND);
-        new EmbeddedChannel(connection);
+        CHANNELS.put(nameAndId.id(), new EmbeddedChannel(connection));
         server.getPlayerList().placeNewPlayer(connection, player, cookie);
         // The GameTest server's default game mode is creative
         player.setGameMode(GameType.SURVIVAL);
