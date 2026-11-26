@@ -40,15 +40,6 @@ public final class Leaders {
         MOD_ID, "results", Codec.unboundedMap(Codec.STRING, Standing.CODEC.listOf()), Map::of
     );
 
-    /**
-     * A category's leader changing, between one refresh and the next.
-     *
-     * @param category The category's ID.
-     * @param previous Who led it before, if anyone.
-     * @param leader   Who leads it now, if anyone.
-     */
-    public record Change(String category, Optional<UUID> previous, Optional<UUID> leader) {}
-
     private record Leader(Optional<UUID> player) {
         private static final Codec<Leader> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             UUIDUtil.STRING_CODEC.optionalFieldOf("player").forGetter(Leader::player)
@@ -62,7 +53,8 @@ public final class Leaders {
             LOGGER.warn("Category '{}' uses '{}', which isn't a stat (yet), so it's counted as 0", category.id(), name)));
         forgetRemovedResults(server, config);
         Periods.forgetRemoved(server, config);
-        Periods.check(server, config, ZonedDateTime.now(config.timezone()));
+        // Periods are checked from the first tick, rather than here, so a period that ended while
+        // the server was stopped only ends once every mod has started, and can listen for it
         refresh(server, config);
     }
 
@@ -85,7 +77,7 @@ public final class Leaders {
      */
     public static void refresh(MinecraftServer server, LeadersConfig config) {
         final var stats = AllPlayerStats.read(server);
-        final var changes = new ArrayList<Change>();
+        final var changes = new ArrayList<LeaderEvents.Change>();
         // Each period's stats, worked out the first time a category in it needs them
         final var sinceStart = new HashMap<String, Map<UUID, Map<String, Integer>>>();
 
@@ -96,7 +88,7 @@ public final class Leaders {
 
             final var board = rank(category, counted);
             BOARDS.put(category.id(), board);
-            recordLeader(server, category.id(), board.stream().findFirst().map(Standing::player)).ifPresent(changes::add);
+            recordLeader(server, category, board.stream().findFirst().map(Standing::player)).ifPresent(changes::add);
         }
 
         LeaderAnnouncements.announce(server, config, changes);
@@ -130,8 +122,13 @@ public final class Leaders {
             final var board = BOARDS.getOrDefault(category.id(), List.of());
             // Only as many ranks as a seat can show are kept, so the saved data stays small
             results.put(category.id(), List.copyOf(board.subList(0, Math.min(board.size(), Seat.MAX_RANK))));
-            board.stream().findFirst().ifPresent(winner ->
-                winners.add(new LeaderEvents.Winner(category.id(), winner.player(), winner.value())));
+            board.stream().findFirst().ifPresent(winner -> winners.add(new LeaderEvents.Winner(
+                category.id(),
+                category.displayTitle(),
+                winner.player(),
+                winner.value(),
+                category.unit().format(winner.value())
+            )));
         }
 
         RESULTS.set(server, Map.copyOf(results));
@@ -156,23 +153,27 @@ public final class Leaders {
     }
 
     // Saves the category's leader, and returns the change if it's someone else (or nobody) now
-    private static Optional<Change> recordLeader(MinecraftServer server, String category, Optional<UUID> leader) {
+    private static Optional<LeaderEvents.Change> recordLeader(MinecraftServer server, Category category, Optional<UUID> leader) {
         // Nothing recorded means the category has never been ranked, which isn't a change. A
         // recorded leader of nobody is, so the first person to score in a category is a change.
-        final var recorded = Optional.ofNullable(LEADERS.get(server).get(category)).map(Leader::player);
+        final var recorded = Optional.ofNullable(LEADERS.get(server).get(category.id())).map(Leader::player);
         if (recorded.equals(Optional.of(leader))) {
             return Optional.empty();
         }
 
         LEADERS.update(server, leaders -> {
             final var updated = new HashMap<>(leaders);
-            updated.put(category, new Leader(leader));
+            updated.put(category.id(), new Leader(leader));
             return Map.copyOf(updated);
         });
 
         return recorded.map(previous -> {
-            LeaderEvents.CHANGED.invoker().onLeaderChanged(server, category, previous, leader);
-            return new Change(category, previous, leader);
+            // Only someone taking the lead from someone else is news. Being first in an empty
+            // category isn't, and nor is a period starting again with nobody in the lead.
+            final var announceable = previous.isPresent() && leader.isPresent() && category.announceChanges();
+            final var change = new LeaderEvents.Change(category.id(), category.displayTitle(), previous, leader, announceable);
+            LeaderEvents.CHANGED.invoker().onLeaderChanged(server, change);
+            return change;
         });
     }
 

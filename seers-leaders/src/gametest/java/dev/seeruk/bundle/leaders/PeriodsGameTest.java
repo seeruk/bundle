@@ -3,7 +3,7 @@ package dev.seeruk.bundle.leaders;
 import dev.seeruk.bundle.core.time.Schedule;
 import dev.seeruk.bundle.leaders.Leaderboard.Standing;
 import dev.seeruk.bundle.leaders.LeadersFixtures.PeriodEnded;
-import dev.seeruk.bundle.leaders.api.LeaderEvents.Winner;
+import dev.seeruk.bundle.leaders.LeadersFixtures.Won;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -79,7 +79,7 @@ public class PeriodsGameTest {
             // checked the day after the period started.
             helper.assertValueEqual(
                 periodEventsFor("ends"),
-                List.of(new PeriodEnded("ends", List.of(new Winner("ends", player.getUUID(), 4)))),
+                List.of(new PeriodEnded("ends", List.of(new Won("ends", player.getUUID(), 4, "4")), true)),
                 "events"
             );
 
@@ -142,7 +142,7 @@ public class PeriodsGameTest {
 
             helper.assertValueEqual(
                 periodEventsFor("nobody").getLast(),
-                new PeriodEnded("nobody", List.of()),
+                new PeriodEnded("nobody", List.of(), false),
                 "last event"
             );
             helper.assertValueEqual(Leaders.previous(server, new Seat("nobody", 1)), Optional.empty(), "previous");
@@ -227,7 +227,8 @@ public class PeriodsGameTest {
 
             helper.assertValueEqual(
                 periodEventsFor("several"),
-                List.of(new PeriodEnded("several", List.of(new Winner("several", player.getUUID(), 4)))),
+                // A whole period was missed, so the winners aren't worth announcing
+                List.of(new PeriodEnded("several", List.of(new Won("several", player.getUUID(), 4, "4")), false)),
                 "events"
             );
         } finally {

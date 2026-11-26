@@ -97,14 +97,13 @@ public final class Periods {
         });
     }
 
-    // Saves the final results and fires the event, announcing the winners unless they're stale
+    // Saves the final results, fires the event, and announces the winners, unless they're stale
     private static void end(MinecraftServer server, LeadersConfig config, Period period, boolean stale) {
         final var winners = Leaders.endPeriod(server, config, period.id());
-        LeaderEvents.PERIOD_ENDED.invoker().onPeriodEnded(server, period.id(), winners);
+        final var end = new LeaderEvents.PeriodEnd(period.id(), period.displayTitle(), winners, !winners.isEmpty() && !stale);
 
-        if (!stale) {
-            LeaderAnnouncements.announcePeriod(server, config, period, winners);
-        }
+        LeaderEvents.PERIOD_ENDED.invoker().onPeriodEnded(server, end);
+        LeaderAnnouncements.announcePeriod(server, config, end);
     }
 
     // Whether the schedule also came round between `started` and `latest`, meaning a whole period

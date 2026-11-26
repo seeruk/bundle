@@ -157,15 +157,16 @@ dev.seeruk.bundle.leaders.api.LeaderEvents.CHANGED
 **Callback signature:**
 
 ```java
-void onLeaderChanged(MinecraftServer server, String category, Optional<UUID> previous, Optional<UUID> leader);
+void onLeaderChanged(MinecraftServer server, LeaderEvents.Change change);
 ```
 
-| Parameter  | Description                             |
-|------------|-----------------------------------------|
-| `server`   | The server the leader changed on.       |
-| `category` | The category's ID.                      |
-| `previous` | Who led the category before, if anyone. |
-| `leader`   | Who leads the category now, if anyone.  |
+| Field                 | Description                                                                        |
+|-----------------------|------------------------------------------------------------------------------------|
+| `change.category`     | The category's ID.                                                                 |
+| `change.title`        | The category's title, as players see it.                                           |
+| `change.previous`     | Who led the category before, if anyone.                                            |
+| `change.leader`       | Who leads the category now, if anyone.                                             |
+| `change.announceable` | Whether it's worth announcing (an overtake, in a category that announces changes). |
 
 #### LeaderEvents.PERIOD_ENDED
 
@@ -179,14 +180,15 @@ dev.seeruk.bundle.leaders.api.LeaderEvents.PERIOD_ENDED
 **Callback signature:**
 
 ```java
-void onPeriodEnded(MinecraftServer server, String period, List<Winner> winners);
+void onPeriodEnded(MinecraftServer server, LeaderEvents.PeriodEnd end);
 ```
 
-| Parameter | Description                                                                                   |
-|-----------|-----------------------------------------------------------------------------------------------|
-| `server`  | The server the period ended on.                                                               |
-| `period`  | The period's ID.                                                                              |
-| `winners` | Who won each of the period's categories (with their total), leaving out any nobody scored in. |
+| Field              | Description                                                                                         |
+|--------------------|-----------------------------------------------------------------------------------------------------|
+| `end.period`       | The period's ID.                                                                                    |
+| `end.title`        | The period's title, as players see it.                                                              |
+| `end.winners`      | Who won each of the period's categories, with the category's title, and their total (and as shown). |
+| `end.announceable` | Whether it's worth announcing (someone won something, and no whole periods were missed).            |
 
 ### Statistics
 

@@ -8,7 +8,6 @@ import dev.seeruk.bundle.leaders.LeadersConfig.Category;
 import dev.seeruk.bundle.leaders.LeadersConfig.Period;
 import dev.seeruk.bundle.leaders.LeadersConfig.PeriodAnnouncement;
 import dev.seeruk.bundle.leaders.api.LeaderEvents;
-import dev.seeruk.bundle.leaders.api.LeaderEvents.Winner;
 import dev.seeruk.bundle.text.TextTemplate;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -42,9 +41,12 @@ import static dev.seeruk.bundle.core.testing.TestPlayers.player;
  * category, from its own objective.
  */
 public final class LeadersFixtures implements ModInitializer {
-    public record Changed(String category, Optional<UUID> previous, Optional<UUID> leader) {}
+    // What tests check of each event, leaving out titles, which are checked by announcements
+    public record Changed(String category, Optional<UUID> previous, Optional<UUID> leader, boolean announceable) {}
 
-    public record PeriodEnded(String period, List<Winner> winners) {}
+    public record PeriodEnded(String period, List<Won> winners, boolean announceable) {}
+
+    public record Won(String category, UUID player, long value, String displayValue) {}
 
     // When test periods end: every day at 18:00, in UTC
     public static final Schedule DAILY = Schedule.daily(LocalTime.of(18, 0));
@@ -62,10 +64,16 @@ public final class LeadersFixtures implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LeaderEvents.CHANGED.register((server, category, previous, leader) ->
-            EVENTS.record(new Changed(category, previous, leader)));
-        LeaderEvents.PERIOD_ENDED.register((server, period, winners) ->
-            PERIOD_EVENTS.record(new PeriodEnded(period, winners)));
+        LeaderEvents.CHANGED.register((server, change) ->
+            EVENTS.record(new Changed(change.category(), change.previous(), change.leader(), change.announceable())));
+        LeaderEvents.PERIOD_ENDED.register((server, end) ->
+            PERIOD_EVENTS.record(new PeriodEnded(
+                end.period(),
+                end.winners().stream()
+                    .map(winner -> new Won(winner.category(), winner.player(), winner.value(), winner.displayValue()))
+                    .toList(),
+                end.announceable()
+            )));
     }
 
     /**

@@ -92,7 +92,7 @@ public class LeadersGameTest {
 
             helper.assertValueEqual(
                 eventsFor("new_leader"),
-                List.of(new Changed("new_leader", Optional.of(leader.getUUID()), Optional.of(overtaker.getUUID()))),
+                List.of(new Changed("new_leader", Optional.of(leader.getUUID()), Optional.of(overtaker.getUUID()), true)),
                 "events"
             );
         } finally {
@@ -165,7 +165,11 @@ public class LeadersGameTest {
             setScore(player, objective, 1);
             Leaders.refresh(server, config);
 
-            helper.assertValueEqual(eventsFor("first_leader").size(), 1, "events");
+            helper.assertValueEqual(
+                eventsFor("first_leader"),
+                List.of(new Changed("first_leader", Optional.empty(), Optional.of(player.getUUID()), false)),
+                "events"
+            );
             helper.assertValueEqual(announcementsFor(player), List.of(), "announcements");
         } finally {
             server.getScoreboard().removeObjective(objective);
@@ -189,7 +193,11 @@ public class LeadersGameTest {
             setScore(overtaker, objective, 6);
             Leaders.refresh(server, config);
 
-            helper.assertValueEqual(eventsFor("quiet").size(), 1, "events");
+            helper.assertValueEqual(
+                eventsFor("quiet"),
+                List.of(new Changed("quiet", Optional.of(leader.getUUID()), Optional.of(overtaker.getUUID()), false)),
+                "events"
+            );
             helper.assertValueEqual(announcementsFor(overtaker), List.of(), "announcements");
         } finally {
             server.getScoreboard().removeObjective(objective);
