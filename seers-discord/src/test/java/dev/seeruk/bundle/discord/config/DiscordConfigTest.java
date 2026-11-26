@@ -20,23 +20,31 @@ public class DiscordConfigTest {
     );
 
     // Every event, as it's written in config
-    private static final Map<String, Object> EVENTS = Map.of(
-        "join", EVENT,
-        "quit", EVENT,
-        "death", EVENT,
-        "advancement", Map.of(
+    private static final Map<String, Object> EVENTS = Map.ofEntries(
+        Map.entry("join", EVENT),
+        Map.entry("quit", EVENT),
+        Map.entry("death", EVENT),
+        Map.entry("advancement", Map.of(
             "enabled", true,
             "format", "${message}",
             "description_format", "${description}",
             "summary_format", "${display_name} completed ${count} advancements",
             "colour", "green",
             "challenge_colour", "dark_purple"
-        ),
-        "afk", EVENT,
-        "afk_return", EVENT,
-        "resource_zones_reset", EVENT,
-        "server_start", EVENT,
-        "server_stop", EVENT
+        )),
+        Map.entry("afk", EVENT),
+        Map.entry("afk_return", EVENT),
+        Map.entry("resource_zones_reset", EVENT),
+        Map.entry("leaders_changed", EVENT),
+        Map.entry("leaders_period_ended", Map.of(
+            "enabled", true,
+            "format", "${period}",
+            "continued_format", "${period} (cont.)",
+            "line_format", "${category}: ${display_name}",
+            "colour", "gold"
+        )),
+        Map.entry("server_start", EVENT),
+        Map.entry("server_stop", EVENT)
     );
 
     static Stream<Arguments> shouldReadChannelIds() {

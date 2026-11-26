@@ -49,6 +49,7 @@ dependencies {
 
     // Optional dependencies are compile-only
     compileOnly(project(":seers-afk"))
+    compileOnly(project(":seers-leaders"))
     compileOnly(project(":seers-resource-zones"))
 
     testImplementation(testFixtures(project(":seers-core")))

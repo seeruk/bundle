@@ -1,7 +1,6 @@
 package dev.seeruk.bundle.discord;
 
 import dev.seeruk.bundle.discord.config.EventsConfig;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -30,7 +29,7 @@ final class AdvancementBatcher {
     List<WebhookMessage> flush(EventsConfig events) {
         final var messages = new ArrayList<WebhookMessage>();
         completed.forEach((player, embeds) -> {
-            if (fitInOneMessage(embeds)) {
+            if (WebhookMessage.packed(embeds).size() == 1) {
                 messages.add(WebhookMessage.embeds(embeds));
             } else {
                 DiscordRelay.advancementSummary(player, embeds.size(), events)
@@ -41,14 +40,5 @@ final class AdvancementBatcher {
 
         completed.clear();
         return messages;
-    }
-
-    /**
-     * Whether the embeds fit in one Discord message, which can only have so many, with only so much
-     * text between them.
-     */
-    private static boolean fitInOneMessage(List<MessageEmbed> embeds) {
-        return embeds.size() <= Message.MAX_EMBED_COUNT
-            && embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
     }
 }

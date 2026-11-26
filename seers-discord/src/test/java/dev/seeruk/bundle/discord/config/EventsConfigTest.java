@@ -33,6 +33,23 @@ public class EventsConfigTest {
         assertTrue(parse("not_a_colour").isError());
     }
 
+    @Test
+    void shouldReadLeadersPeriodFormats() {
+        final var format = EventsConfig.LeadersPeriodFormat.CODEC.parse(
+            JavaOps.INSTANCE,
+            Map.of(
+                "enabled", true,
+                "format", "The ${period} leaders are in!",
+                "continued_format", "The ${period} leaders are in! (cont.)",
+                "line_format", "**${category}**: ${display_name} (${value})",
+                "colour", "gold"
+            )
+        ).getOrThrow();
+
+        assertEquals("The monthly leaders are in! (cont.)", format.continuedFormat().format(Map.of("period", "monthly")));
+        assertEquals(0xFFAA00, format.colour().getValue());
+    }
+
     private static DataResult<EventsConfig.EventFormat> parse(String colour) {
         return EventsConfig.EventFormat.CODEC.parse(
             JavaOps.INSTANCE,

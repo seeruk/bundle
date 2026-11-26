@@ -113,25 +113,28 @@ aren't shown, so messages relayed from the game don't endlessly echo.
 
 Things that happen in game are sent to the bot's channel as small embeds, as the server (with the
 name and avatar in the config's `discord.server`), rather than a player, with the player's face
-where there is one. By default, they're worded and coloured like the game shows them:
+where there is one. These events are sent:
 
-- **Joining and leaving:** e.g. "Seer joined the game", in yellow.
-- **Deaths:** the game's death message, e.g. "Seer was slain by Zombie", in red. These are only sent
-  when the game shows them in chat (i.e. with the `show_death_messages` game rule on).
-- **Advancements:** the game's announcement, e.g. "Seer has made the advancement [Stone Age]", with
-  the advancement's description below it, in green, or dark purple for challenges. Only
-  advancements the game announces in chat are sent. Advancements completed at the same time are
-  sent together, and if there are more than fit in one Discord message (e.g. from
-  `/advancement grant @s everything`), one summary is sent instead, e.g. "Seer completed 112
-  advancements".
-- **Going AFK and coming back:** e.g. "Seer is now AFK", in yellow, if [Seer's AFK][4] is installed.
-- **Resource zones being reset:** e.g. "♻️ Resource zones have been reset (120 chunks in Overworld,
-  40 chunks in The Nether)", in green, if [Seer's Resource Zones][5] is installed.
-- **The server starting and stopping:** e.g. "🟢 The server has started", in green and red.
+- **Joining and leaving.**
+- **Deaths:** with the game's death message. These are only sent when the game shows them in chat
+  (i.e. with the `show_death_messages` game rule on).
+- **Advancements:** with the game's announcement, and the advancement's description, coloured
+  differently for challenges. Only advancements the game announces in chat are sent. Advancements
+  completed at the same time are sent together, and if there are more than fit in one Discord
+  message (e.g. from `/advancement grant @s everything`), one summary is sent instead.
+- **Going AFK and coming back:** if [Seer's AFK][4] is installed.
+- **Resource zones being reset:** with how many chunks were reset in each dimension, if
+  [Seer's Resource Zones][5] is installed.
+- **New leaders:** if [Seer's Leaders][6] is installed. Only overtakes that are announced in game
+  are sent, and new leaders found together are sent together.
+- **Periods' winners:** with a line for each category's winner, if Seer's Leaders is installed.
+  Winners of a period that ended while the server was stopped are sent when it starts again, unless
+  whole periods were missed. If there are more winners than fit in one embed, they continue in more.
+- **The server starting and stopping.**
 
 Each can be turned off, reworded, or recoloured in the config's `discord.events` section, using
-Minecraft's colour names (e.g. `gold`) or hex (e.g. `#FFAA00`). See `config.dist.yml` for each
-event's placeholders.
+Minecraft's colour names (e.g. `gold`) or hex (e.g. `#FFAA00`). See `config.dist.yml` for how each
+looks by default, and its placeholders.
 
 ### Commands in Discord
 
@@ -158,3 +161,4 @@ This mod doesn't currently have any statistics.
 [3]: https://mineatar.io/
 [4]: ../seers-afk
 [5]: ../seers-resource-zones
+[6]: ../seers-leaders

@@ -24,6 +24,7 @@ public class DiscordEventsGameTest {
         .discord().events();
 
     private static final int YELLOW = 0xFFFF55;
+    private static final int GOLD = 0xFFAA00;
 
     @GameTest
     public void joiningIsSentWithThePlayersFace(GameTestHelper helper) {
@@ -209,6 +210,85 @@ public class DiscordEventsGameTest {
         helper.succeed();
     }
 
+    @GameTest
+    public void newLeadersAreSentWithTheirFace(GameTestHelper helper) {
+        final var leader = UUID.randomUUID();
+
+        final var embed = DiscordRelay.leadersChanged(leader, "Seer", "seer", "Sam", "Miner", EVENTS).orElseThrow();
+
+        helper.assertValueEqual(embed.getAuthor().getName(), "Seer is now the top Miner!", "line");
+        helper.assertValueEqual(embed.getAuthor().getIconUrl(), DiscordRelay.avatarUrl(leader), "face");
+        helper.assertValueEqual(embed.getColorRaw(), GOLD, "colour");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void newLeadersThatAreDisabledAreNotSent(GameTestHelper helper) {
+        final var changed = EVENTS.leadersChanged();
+        // A disabled event config:
+        final var events = withLeadersChanged(new EventsConfig.EventFormat(false, changed.format(), changed.colour()));
+
+        helper.assertValueEqual(
+            DiscordRelay.leadersChanged(UUID.randomUUID(), "Seer", "seer", "Sam", "Miner", events),
+            Optional.empty(),
+            "embed"
+        );
+        helper.succeed();
+    }
+
+    @GameTest
+    public void periodResultsAreOneEmbedWithALineForEachWinner(GameTestHelper helper) {
+        final var winners = List.of(
+            new DiscordRelay.LeadersWinner("Miner of the Month", "Seer", "seer", "1,234"),
+            new DiscordRelay.LeadersWinner("Slayer of the Month", "Sam", "sam", "56")
+        );
+
+        final var messages = DiscordRelay.leadersPeriodEnded("monthly", winners, EVENTS);
+        final var embed = messages.getFirst().embeds().getFirst();
+
+        helper.assertValueEqual(messages.size(), 1, "messages");
+        helper.assertValueEqual(messages.getFirst().embeds().size(), 1, "embeds");
+        helper.assertValueEqual(embed.getAuthor().getName(), "🏆  The monthly leaders are in!", "line");
+        helper.assertValueEqual(
+            embed.getDescription(),
+            "**Miner of the Month**: Seer (1,234)\n**Slayer of the Month**: Sam (56)",
+            "description"
+        );
+        helper.assertTrue(embed.getAuthor().getIconUrl() == null, "Should have no face");
+        helper.assertValueEqual(embed.getColorRaw(), GOLD, "colour");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void periodResultsThatDontFitContinueInMoreEmbedsAndMessages(GameTestHelper helper) {
+        // Each line is about 4,000 characters, so each needs its own embed, and two embeds that
+        // long have more text than one message can
+        final var winners = List.of(
+            new DiscordRelay.LeadersWinner("x".repeat(4_000), "Seer", "seer", "1"),
+            new DiscordRelay.LeadersWinner("y".repeat(4_000), "Sam", "sam", "2")
+        );
+
+        final var messages = DiscordRelay.leadersPeriodEnded("monthly", winners, EVENTS);
+
+        helper.assertValueEqual(messages.size(), 2, "messages");
+        helper.assertValueEqual(
+            messages.stream().map(message -> message.embeds().getFirst().getAuthor().getName()).toList(),
+            List.of("🏆  The monthly leaders are in!", "🏆  The monthly leaders are in! (cont.)"),
+            "lines"
+        );
+        helper.succeed();
+    }
+
+    @GameTest
+    public void periodResultLinesAreEscaped(GameTestHelper helper) {
+        final var winners = List.of(new DiscordRelay.LeadersWinner("Miner", "a_b*c", "a_b", "1"));
+
+        final var embed = DiscordRelay.leadersPeriodEnded("monthly", winners, EVENTS).getFirst().embeds().getFirst();
+
+        helper.assertValueEqual(embed.getDescription(), "**Miner**: a\\_b\\*c (1)", "description");
+        helper.succeed();
+    }
+
     /**
      * Returns a player on a team of their own, with the given death message visibility.
      */
@@ -259,6 +339,24 @@ public class DiscordEventsGameTest {
             EVENTS.afk(),
             EVENTS.afkReturn(),
             EVENTS.resourceZonesReset(),
+            EVENTS.leadersChanged(),
+            EVENTS.leadersPeriodEnded(),
+            EVENTS.serverStart(),
+            EVENTS.serverStop()
+        );
+    }
+
+    private static EventsConfig withLeadersChanged(EventsConfig.EventFormat leadersChanged) {
+        return new EventsConfig(
+            EVENTS.join(),
+            EVENTS.quit(),
+            EVENTS.death(),
+            EVENTS.advancement(),
+            EVENTS.afk(),
+            EVENTS.afkReturn(),
+            EVENTS.resourceZonesReset(),
+            leadersChanged,
+            EVENTS.leadersPeriodEnded(),
             EVENTS.serverStart(),
             EVENTS.serverStop()
         );
@@ -281,6 +379,8 @@ public class DiscordEventsGameTest {
             EVENTS.afk(),
             EVENTS.afkReturn(),
             EVENTS.resourceZonesReset(),
+            EVENTS.leadersChanged(),
+            EVENTS.leadersPeriodEnded(),
             EVENTS.serverStart(),
             EVENTS.serverStop()
         );

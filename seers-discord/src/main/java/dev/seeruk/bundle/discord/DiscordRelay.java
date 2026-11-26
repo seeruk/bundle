@@ -167,6 +167,111 @@ public final class DiscordRelay {
     }
 
     /**
+     * A category's winner in one of Seer's Leaders' periods, as it's shown in Discord.
+     *
+     * @param category    The category's title.
+     * @param displayName The winner's name, as chat shows it (e.g. their nickname).
+     * @param username    The winner's username.
+     * @param value       Their total, in the category's unit.
+     */
+    public record LeadersWinner(String category, String displayName, String username, String value) {}
+
+    /**
+     * Returns the embed for a category in Seer's Leaders getting a new leader. It's only an embed,
+     * not a whole message, as new leaders found at once are sent together.
+     *
+     * @param leader              The new leader, whose face is shown.
+     * @param displayName         Their name, as chat shows it (e.g. their nickname).
+     * @param username            Their username.
+     * @param previousDisplayName Who led the category before, as chat shows them.
+     * @param category            The category's title.
+     * @param events              Which events are sent, and how they look.
+     */
+    public static Optional<MessageEmbed> leadersChanged(
+        UUID leader,
+        String displayName,
+        String username,
+        String previousDisplayName,
+        String category,
+        EventsConfig events
+    ) {
+        final var format = events.leadersChanged();
+        if (!format.enabled()) {
+            return Optional.empty();
+        }
+
+        return embed(
+            format.format(), format.colour(), leader, Map.of(
+                "display_name", displayName,
+                "username", username,
+                "previous_display_name", previousDisplayName,
+                "category", category
+            )
+        ).map(EmbedBuilder::build);
+    }
+
+    /**
+     * Returns the messages for a period in Seer's Leaders ending: an embed with a line for each
+     * winner, continued in more embeds (and messages) if there are more than fit in one.
+     *
+     * @param period  The period's title.
+     * @param winners Who won each of the period's categories.
+     * @param events  Which events are sent, and how they look.
+     */
+    public static List<WebhookMessage> leadersPeriodEnded(String period, List<LeadersWinner> winners, EventsConfig events) {
+        final var format = events.leadersPeriodEnded();
+        if (!format.enabled()) {
+            return List.of();
+        }
+
+        // The lines can use Discord's formatting, so values in them are escaped
+        final var lines = winners.stream()
+            .map(winner -> TextComponents.truncate(
+                format.lineFormat().format(Map.of(
+                    "category", MarkdownRenderer.escape(winner.category()),
+                    "display_name", MarkdownRenderer.escape(winner.displayName()),
+                    "username", MarkdownRenderer.escape(winner.username()),
+                    "value", MarkdownRenderer.escape(winner.value())
+                )),
+                MessageEmbed.DESCRIPTION_MAX_LENGTH
+            ))
+            .filter(line -> !line.isBlank())
+            .toList();
+
+        final var embeds = new ArrayList<MessageEmbed>();
+        for (final var description : descriptions(lines)) {
+            final var line = embeds.isEmpty() ? format.format() : format.continuedFormat();
+            embed(line, format.colour(), null, Map.of("period", period))
+                .ifPresent(embed -> embeds.add(embed.setDescription(description).build()));
+        }
+
+        return WebhookMessage.packed(embeds);
+    }
+
+    /**
+     * Joins the lines into as few embed descriptions as they fit in, in order. With no lines,
+     * there's still one (empty) description, so the embed's top line is still sent.
+     */
+    static List<String> descriptions(List<String> lines) {
+        final var descriptions = new ArrayList<String>();
+        var current = new StringBuilder();
+
+        for (final var line : lines) {
+            if (!current.isEmpty() && current.length() + 1 + line.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH) {
+                descriptions.add(current.toString());
+                current = new StringBuilder();
+            }
+
+            current.append(current.isEmpty() ? "" : "\n").append(line);
+        }
+
+        if (!current.isEmpty() || descriptions.isEmpty()) {
+            descriptions.add(current.toString());
+        }
+        return descriptions;
+    }
+
+    /**
      * Returns a message for when the server starts.
      */
     public static Optional<WebhookMessage> serverStarted(EventsConfig events) {
@@ -229,7 +334,7 @@ public final class DiscordRelay {
             MessageEmbed.DESCRIPTION_MAX_LENGTH
         );
 
-        return embed(format.format(), colour, player, values)
+        return embed(format.format(), colour, player.getUUID(), withPlayerValues(player, values))
             .map(embed -> embed.setDescription(description).build());
     }
 
@@ -247,8 +352,12 @@ public final class DiscordRelay {
             return Optional.empty();
         }
 
-        return embed(format.summaryFormat(), format.colour(), player, Map.of("count", String.valueOf(count)))
-            .map(EmbedBuilder::build);
+        return embed(
+            format.summaryFormat(),
+            format.colour(),
+            player.getUUID(),
+            withPlayerValues(player, Map.of("count", String.valueOf(count)))
+        ).map(EmbedBuilder::build);
     }
 
     /**
@@ -267,27 +376,27 @@ public final class DiscordRelay {
             return Optional.empty();
         }
 
-        return embed(event.format(), event.colour(), player, values)
+        return embed(event.format(), event.colour(), player == null ? null : player.getUUID(), withPlayerValues(player, values))
             .map(embed -> WebhookMessage.embed(embed.build()));
     }
 
     /**
-     * Returns an event's embed, with the format filled in as the line at the top, next to the
+     * Returns an event's embed, with the format filled in as the line at the top, next to a
      * player's face, or nothing if that line would be empty.
+     *
+     * @param format The line at the top.
+     * @param colour The embed's colour.
+     * @param face   The player whose face is shown, or null if it's not about a player.
+     * @param values Values for the format's placeholders.
      */
     private static Optional<EmbedBuilder> embed(
         DiscordTemplate format,
         TextColor colour,
-        ServerPlayer player,
+        UUID face,
         Map<String, String> values
     ) {
-        final var all = new HashMap<>(values);
-        if (player != null) {
-            all.putAll(playerValues(player));
-        }
-
         // Discord doesn't show formatting in an embed's author line, so nothing's escaped
-        final var line = format.format(all);
+        final var line = format.format(values);
         if (line.isBlank()) {
             return Optional.empty();
         }
@@ -296,9 +405,21 @@ public final class DiscordRelay {
             .setAuthor(
                 TextComponents.truncate(line, MessageEmbed.AUTHOR_MAX_LENGTH),
                 null,
-                player == null ? null : avatarUrl(player.getUUID())
+                face == null ? null : avatarUrl(face)
             )
             .setColor(colour.getValue()));
+    }
+
+    /**
+     * Returns the values, with those for the placeholders every player event has, if there's a
+     * player.
+     */
+    private static Map<String, String> withPlayerValues(ServerPlayer player, Map<String, String> values) {
+        final var all = new HashMap<>(values);
+        if (player != null) {
+            all.putAll(playerValues(player));
+        }
+        return all;
     }
 
     /**

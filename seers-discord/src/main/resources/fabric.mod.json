@@ -28,6 +28,7 @@
     },
     "suggests": {
         "seers-afk": "*",
+        "seers-leaders": "*",
         "seers-resource-zones": "*"
     }
 }

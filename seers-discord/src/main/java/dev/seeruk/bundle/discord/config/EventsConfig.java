@@ -23,6 +23,10 @@ import net.minecraft.network.chat.TextColor;
  * @param resourceZonesReset Resource zones being reset. Its format can use {@code ${chunk_count}}
  *                           for how many chunks were reset, and {@code ${summary}} for how many in
  *                           each dimension.
+ * @param leadersChanged     A category in Seer's Leaders getting a new leader. Its format can use
+ *                           {@code ${category}} for the category's title, and
+ *                           {@code ${previous_display_name}} for who led it before.
+ * @param leadersPeriodEnded A period in Seer's Leaders ending, with its winners.
  * @param serverStart        The server starting.
  * @param serverStop         The server stopping.
  */
@@ -34,6 +38,8 @@ public record EventsConfig(
     EventFormat afk,
     EventFormat afkReturn,
     EventFormat resourceZonesReset,
+    EventFormat leadersChanged,
+    LeadersPeriodFormat leadersPeriodEnded,
     EventFormat serverStart,
     EventFormat serverStop
 ) {
@@ -45,6 +51,8 @@ public record EventsConfig(
         EventFormat.CODEC.fieldOf("afk").forGetter(EventsConfig::afk),
         EventFormat.CODEC.fieldOf("afk_return").forGetter(EventsConfig::afkReturn),
         EventFormat.CODEC.fieldOf("resource_zones_reset").forGetter(EventsConfig::resourceZonesReset),
+        EventFormat.CODEC.fieldOf("leaders_changed").forGetter(EventsConfig::leadersChanged),
+        LeadersPeriodFormat.CODEC.fieldOf("leaders_period_ended").forGetter(EventsConfig::leadersPeriodEnded),
         EventFormat.CODEC.fieldOf("server_start").forGetter(EventsConfig::serverStart),
         EventFormat.CODEC.fieldOf("server_stop").forGetter(EventsConfig::serverStop)
     ).apply(instance, EventsConfig::new));
@@ -93,5 +101,35 @@ public record EventsConfig(
             TextColor.CODEC.fieldOf("colour").forGetter(AdvancementFormat::colour),
             TextColor.CODEC.fieldOf("challenge_colour").forGetter(AdvancementFormat::challengeColour)
         ).apply(instance, AdvancementFormat::new));
+    }
+
+    /**
+     * Seer's Leaders' period results are one embed, with a line for each category's winner. Its
+     * formats can use {@code ${period}} for the period's title, and its lines {@code ${category}}
+     * for the category's title, {@code ${display_name}} and {@code ${username}} for the winner, and
+     * {@code ${value}} for their total.
+     *
+     * @param enabled         Whether period results are sent to Discord.
+     * @param format          The line at the top of the embed.
+     * @param continuedFormat The line at the top of any further embeds, when there are more winners
+     *                        than fit in one.
+     * @param lineFormat      Each winner's line in the embed's main text, which can use Discord's
+     *                        formatting.
+     * @param colour          The embed's colour.
+     */
+    public record LeadersPeriodFormat(
+        boolean enabled,
+        DiscordTemplate format,
+        DiscordTemplate continuedFormat,
+        DiscordTemplate lineFormat,
+        TextColor colour
+    ) {
+        public static final Codec<LeadersPeriodFormat> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.BOOL.fieldOf("enabled").forGetter(LeadersPeriodFormat::enabled),
+            DiscordTemplate.CODEC.fieldOf("format").forGetter(LeadersPeriodFormat::format),
+            DiscordTemplate.CODEC.fieldOf("continued_format").forGetter(LeadersPeriodFormat::continuedFormat),
+            DiscordTemplate.CODEC.fieldOf("line_format").forGetter(LeadersPeriodFormat::lineFormat),
+            TextColor.CODEC.fieldOf("colour").forGetter(LeadersPeriodFormat::colour)
+        ).apply(instance, LeadersPeriodFormat::new));
     }
 }
