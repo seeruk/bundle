@@ -13,6 +13,7 @@
     "seers-discord": { "colour": "#7c3aed", "symbol": "link" },
     "seers-disposal": { "colour": "#dc2626", "symbol": "trash" },
     "seers-item-text": { "colour": "#d97706", "symbol": "pencil" },
+    "seers-leaders": { "colour": "#e69900", "symbol": "trophy" },
     "seers-nicks": { "colour": "#db2777", "symbol": "label" },
     "seers-propswap": { "colour": "#0891b2", "symbol": "refresh" },
     "seers-resource-zones": { "colour": "#65a30d", "symbol": "grid-3x3" },
