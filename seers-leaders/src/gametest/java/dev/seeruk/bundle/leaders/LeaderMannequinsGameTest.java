@@ -4,32 +4,27 @@ import dev.seeruk.bundle.leaders.mixin.MannequinInvoker;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.scores.Objective;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
+import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
+import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
+import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.BLOCK;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.DAILY;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.addObjective;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.config;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.periodConfig;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.playerFacingBlock;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.uniqueDay;
 
 public class LeaderMannequinsGameTest {
-    private static void setScore(ServerPlayer player, Objective objective, int score) {
-        player.level().getServer().getScoreboard().getOrCreatePlayerScore(player, objective).set(score);
-    }
-
     private static Mannequin placed(GameTestHelper helper, PlaceResult result) {
         if (result instanceof PlaceResult.Placed placed) {
             return placed.mannequin();

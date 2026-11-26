@@ -13,23 +13,16 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
@@ -48,16 +41,8 @@ public final class LeadersFixtures implements ModInitializer {
 
     public record Won(String category, UUID player, long value, String displayValue) {}
 
-    // When test periods end: every day at 18:00, in UTC
-    public static final Schedule DAILY = Schedule.daily(LocalTime.of(18, 0));
-
     // The block mannequins are placed on in tests
     public static final BlockPos BLOCK = new BlockPos(2, 1, 2);
-
-    // How many unique days have been handed out. Each is far enough from the next that tests can
-    // use the days (and years) after theirs without reaching another test's.
-    private static final AtomicLong DAYS = new AtomicLong();
-    private static final long DAYS_APART = 10_000;
 
     private static final EventLog<Changed> EVENTS = new EventLog<>();
     private static final EventLog<PeriodEnded> PERIOD_EVENTS = new EventLog<>();
@@ -154,31 +139,6 @@ public final class LeadersFixtures implements ModInitializer {
             Optional.of(TextTemplate.parse("Last: ${player}")),
             Optional.of(Items.STICK),
             announceChanges
-        );
-    }
-
-    /**
-     * 19:00 on a day no other test uses, an hour after that day's {@link #DAILY} period started.
-     * Snapshots are shared by every period that starts at the same moment, so tests can't share
-     * days.
-     */
-    public static ZonedDateTime uniqueDay() {
-        final var day = LocalDate.of(2000, 1, 1).plusDays(DAYS.getAndIncrement() * DAYS_APART);
-        return ZonedDateTime.of(day, LocalTime.of(19, 0), ZoneOffset.UTC);
-    }
-
-    /**
-     * Adds a brand-new objective, removing any existing one with the same name first.
-     */
-    public static Objective addObjective(MinecraftServer server, String name) {
-        final var scoreboard = server.getScoreboard();
-        final var existing = scoreboard.getObjective(name);
-        if (existing != null) {
-            scoreboard.removeObjective(existing);
-        }
-
-        return scoreboard.addObjective(
-            name, ObjectiveCriteria.DUMMY, Component.literal(name), ObjectiveCriteria.RenderType.INTEGER, false, null
         );
     }
 

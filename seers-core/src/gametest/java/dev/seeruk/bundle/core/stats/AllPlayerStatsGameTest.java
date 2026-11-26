@@ -3,14 +3,11 @@ package dev.seeruk.bundle.core.stats;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.SharedConstants;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.NameAndId;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.ScoreHolder;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,6 +16,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.Map;
 import java.util.UUID;
 
+import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
 /**
@@ -40,18 +38,6 @@ public class AllPlayerStatsGameTest {
                 """.formatted(jumps, SharedConstants.getCurrentVersion().dataVersion().version())
         );
         Files.setLastModifiedTime(file, modified);
-    }
-
-    private static Objective addObjective(MinecraftServer server, String name) {
-        final var scoreboard = server.getScoreboard();
-        final var existing = scoreboard.getObjective(name);
-        if (existing != null) {
-            scoreboard.removeObjective(existing);
-        }
-
-        return scoreboard.addObjective(
-            name, ObjectiveCriteria.DUMMY, Component.literal(name), ObjectiveCriteria.RenderType.INTEGER, false, null
-        );
     }
 
     private static Integer value(MinecraftServer server, UUID id, String name) {

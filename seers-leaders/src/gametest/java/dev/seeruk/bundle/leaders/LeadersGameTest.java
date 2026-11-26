@@ -5,23 +5,19 @@ import dev.seeruk.bundle.leaders.LeadersFixtures.Changed;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.scores.Objective;
 
 import java.util.List;
 import java.util.Optional;
 
+import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
+import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.core.testing.TestPlayers.systemMessages;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.addObjective;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.category;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.config;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.eventsFor;
 
 public class LeadersGameTest {
-    private static void setScore(ServerPlayer player, Objective objective, int score) {
-        player.level().getServer().getScoreboard().getOrCreatePlayerScore(player, objective).set(score);
-    }
-
     private static String name(ServerPlayer player) {
         return player.getGameProfile().name();
     }

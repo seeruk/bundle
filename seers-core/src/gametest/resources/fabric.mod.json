@@ -19,6 +19,7 @@
             "dev.seeruk.bundle.core.names.PlayerNamesGameTest",
             "dev.seeruk.bundle.core.stats.AllPlayerStatsGameTest",
             "dev.seeruk.bundle.core.stats.ScoreboardStatGameTest",
+            "dev.seeruk.bundle.core.stats.StatPeriodsGameTest",
             "dev.seeruk.bundle.core.stats.StatSnapshotsGameTest",
             "dev.seeruk.bundle.core.storage.PlayerStorageGameTest",
             "dev.seeruk.bundle.core.storage.WorldStorageGameTest",
