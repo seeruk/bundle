@@ -33,7 +33,7 @@ public final class LeaderAnnouncements {
                 .filter(LeadersConfig.Category::announceChanges)
                 .map(category -> announcement.format().format(Map.of(
                     "player", PlayerNames.displayName(server, change.leader().get()),
-                    "category", category.title().format(Map.of())
+                    "category", category.displayTitle()
                 )))
                 .stream())
             .toList();
@@ -58,10 +58,10 @@ public final class LeaderAnnouncements {
         }
 
         final var lines = new ArrayList<Component>();
-        lines.add(announcement.header().format(Map.of("period", period.title().format(Map.of()))));
+        lines.add(announcement.header().format(Map.of("period", period.displayTitle())));
         for (final var winner : winners) {
             config.category(winner.category()).ifPresent(category -> lines.add(announcement.line().format(Map.of(
-                "category", category.title().format(Map.of()),
+                "category", category.displayTitle(),
                 "player", PlayerNames.displayName(server, winner.player()),
                 "value", Component.literal(category.unit().format(winner.value()))
             ))));

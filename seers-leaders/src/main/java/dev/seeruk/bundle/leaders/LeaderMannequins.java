@@ -208,7 +208,7 @@ public final class LeaderMannequins {
     ) {
         final var values = new HashMap<String, Component>();
         values.put("rank", Component.literal(String.valueOf(seat.rank())));
-        values.put("category", category.title().format(Map.of()));
+        values.put("category", category.displayTitle());
         standing.ifPresent(found -> {
             values.put("player", PlayerNames.displayName(mannequin.level().getServer(), found.player()));
             values.put("value", Component.literal(category.unit().format(found.value())));

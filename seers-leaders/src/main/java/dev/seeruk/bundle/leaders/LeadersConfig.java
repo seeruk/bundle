@@ -7,12 +7,14 @@ import dev.seeruk.bundle.core.stats.StatSelection;
 import dev.seeruk.bundle.core.time.Schedule;
 import dev.seeruk.bundle.text.TextTemplate;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 
 import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -126,6 +128,13 @@ public record LeadersConfig(
             TextTemplate.CODEC.fieldOf("title").forGetter(Period::title),
             Schedule.MAP_CODEC.forGetter(Period::schedule)
         ).apply(instance, Period::new));
+
+        /**
+         * The title as it's shown to players. A title has no placeholders of its own.
+         */
+        public Component displayTitle() {
+            return title.format(Map.of());
+        }
     }
 
     /**
@@ -175,5 +184,12 @@ public record LeadersConfig(
             BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("item").forGetter(Category::item),
             Codec.BOOL.optionalFieldOf("announce_changes", true).forGetter(Category::announceChanges)
         ).apply(instance, Category::new));
+
+        /**
+         * The title as it's shown to players. A title has no placeholders of its own.
+         */
+        public Component displayTitle() {
+            return title.format(Map.of());
+        }
     }
 }
