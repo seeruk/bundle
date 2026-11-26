@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -103,6 +104,44 @@ public final class StatPeriods {
         ending.accept(new Ended(started.get(), latest, missedWholePeriod(schedule, started.get(), latest, now)));
         start(server, id, schedule, latest);
         return Outcome.ENDED;
+    }
+
+    /**
+     * Ends the period now, whatever its schedule says, and starts the next straight away, which then
+     * ends when the schedule next comes round. Starts it instead, if it hasn't started.
+     *
+     * @param server   The server.
+     * @param id       The period's ID, within the mod.
+     * @param schedule When it normally ends.
+     * @param now      The time now, which it ends at.
+     * @param ending   Given the period, before the next one starts, as with {@link #check}.
+     */
+    public Outcome endNow(
+        MinecraftServer server,
+        String id,
+        Schedule schedule,
+        ZonedDateTime now,
+        Consumer<Ended> ending
+    ) {
+        final var started = StatSnapshots.held(server, holder(id)).map(StatSnapshots.Snapshot::at);
+        if (started.isEmpty()) {
+            start(server, id, schedule, now.toInstant());
+            return Outcome.STARTED;
+        }
+
+        ending.accept(new Ended(started.get(), now.toInstant(), false));
+        start(server, id, schedule, now.toInstant());
+        return Outcome.ENDED;
+    }
+
+    /**
+     * The players who had stats when the period started, e.g. so players new since then can be
+     * told apart. Nobody, until it has started.
+     */
+    public Set<UUID> playersAtStart(MinecraftServer server, String id) {
+        return StatSnapshots.held(server, holder(id))
+            .map(snapshot -> snapshot.values().keySet())
+            .orElse(Set.of());
     }
 
     /**

@@ -1,15 +1,14 @@
 package dev.seeruk.bundle.core.stats;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.seeruk.bundle.core.SeersCore;
 import dev.seeruk.bundle.core.storage.WorldStorage;
+import dev.seeruk.bundle.core.time.TimeCodecs;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
 
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,17 +25,6 @@ import java.util.stream.Collectors;
  * snapshot, and a snapshot nothing holds any more is deleted.
  */
 public final class StatSnapshots {
-    private static final Codec<Instant> INSTANT_CODEC = Codec.STRING.comapFlatMap(
-        instant -> {
-            try {
-                return DataResult.success(Instant.parse(instant));
-            } catch (DateTimeParseException e) {
-                return DataResult.error(() -> "Not a moment in time: " + instant);
-            }
-        },
-        Instant::toString
-    );
-
     private static final Codec<Map<UUID, Map<String, Integer>>> VALUES_CODEC = Codec.unboundedMap(
         UUIDUtil.STRING_CODEC,
         Codec.unboundedMap(Codec.STRING, Codec.INT)
@@ -48,8 +36,8 @@ public final class StatSnapshots {
      */
     private record Stored(Map<String, Instant> holders, Map<Instant, Map<UUID, Map<String, Integer>>> snapshots) {
         private static final Codec<Stored> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.unboundedMap(Codec.STRING, INSTANT_CODEC).fieldOf("holders").forGetter(Stored::holders),
-            Codec.unboundedMap(INSTANT_CODEC, VALUES_CODEC).fieldOf("snapshots").forGetter(Stored::snapshots)
+            Codec.unboundedMap(Codec.STRING, TimeCodecs.INSTANT).fieldOf("holders").forGetter(Stored::holders),
+            Codec.unboundedMap(TimeCodecs.INSTANT, VALUES_CODEC).fieldOf("snapshots").forGetter(Stored::snapshots)
         ).apply(instance, Stored::new));
     }
 

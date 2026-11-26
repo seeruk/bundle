@@ -178,6 +178,57 @@ public class StatPeriodsGameTest {
     }
 
     @GameTest
+    public void endNowEndsThePeriodAndTheNextEndsOnSchedule(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var day = uniqueDay();
+        final var endings = new ArrayList<Ended>();
+        PERIODS.check(server, "end_now", DAILY, day, endings::add);
+
+        // Ends at 20:00, before the schedule says, so the next period starts then, and ends at
+        // the next day's 18:00 as normal
+        final var ended = PERIODS.endNow(server, "end_now", DAILY, day.plusHours(1), endings::add);
+        final var early = PERIODS.check(server, "end_now", DAILY, day.plusHours(2), endings::add);
+        final var onTime = PERIODS.check(server, "end_now", DAILY, day.plusDays(1), endings::add);
+
+        helper.assertValueEqual(List.of(ended, early, onTime), List.of(Outcome.ENDED, Outcome.UNCHANGED, Outcome.ENDED), "outcomes");
+        helper.assertValueEqual(
+            endings,
+            List.of(
+                new Ended(sixPm(day), day.plusHours(1).toInstant(), false),
+                new Ended(day.plusHours(1).toInstant(), sixPm(day.plusDays(1)), false)
+            ),
+            "endings"
+        );
+        helper.succeed();
+    }
+
+    @GameTest
+    public void endNowStartsAPeriodThatHasntStarted(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var endings = new ArrayList<Ended>();
+
+        final var outcome = PERIODS.endNow(server, "end_now_first", DAILY, uniqueDay(), endings::add);
+
+        helper.assertValueEqual(outcome, Outcome.STARTED, "outcome");
+        helper.assertValueEqual(endings, List.of(), "endings");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void playersAtStartAreThoseWithStatsWhenItStarted(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var before = player(helper);
+        PERIODS.check(server, "at_start", DAILY, uniqueDay(), ended -> {});
+        final var after = player(helper);
+
+        final var atStart = PERIODS.playersAtStart(server, "at_start");
+
+        helper.assertTrue(atStart.contains(before.getUUID()), "Player from before the start should be included");
+        helper.assertTrue(!atStart.contains(after.getUUID()), "Player from after the start shouldn't be included");
+        helper.succeed();
+    }
+
+    @GameTest
     public void forgetExceptForgetsOnlyTheModsOtherPeriods(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
         // A mod of its own, so other tests' periods aren't forgotten
