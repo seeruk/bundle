@@ -6,11 +6,12 @@
     "license": "MPL-2.0",
     "environment": "*",
     "entrypoints": {
-        "fabric-gametest": [
-            "dev.seeruk.bundle.digest.SeersDigestGameTest"
+        "main": [
+            "dev.seeruk.bundle.digest.DigestFixtures"
         ],
-        "fabric-client-gametest": [
-            "dev.seeruk.bundle.digest.client.SeersDigestClientGameTest"
+        "fabric-gametest": [
+            "dev.seeruk.bundle.digest.IssueScheduleGameTest",
+            "dev.seeruk.bundle.digest.command.DigestCommandGameTest"
         ]
     },
     "depends": {

@@ -1,0 +1,77 @@
+# Seer's Digest config. To change a setting, copy it into config.yml in this folder.
+# Anything that's not in config.yml uses the default from this file.
+
+# The time zone the schedule is in, e.g. Europe/London. Defaults to the server's.
+# timezone: Europe/London
+
+# When each issue is published, covering everything since the one before. It's checked while the
+# server's running, so an issue due while it's stopped is published when it next starts.
+#   every: day, week, or month.
+#   on: For week, a day (e.g. sunday). For month, a day of the month (1 to 31), or last. A day past
+#     the end of a shorter month means its last day. Not used for day.
+#   at: The time issues are published, as HH:MM in the time zone above.
+schedule:
+  every: week
+  on: sunday
+  at: "18:00"
+
+# The stats each issue adds up for every player, named so the book can use them. Setting groups in
+# config.yml replaces this whole list, so copy any of these you want to keep.
+#
+# Each group has:
+#   id: Names it in the book's templates. Only a-z, 0-9, and _.
+#   stats: The stats added up for each player. Vanilla stats use their scoreboard criterion names
+#     (e.g. minecraft.mined:minecraft.stone), and scoreboard objectives are scoreboard:<objective>
+#     (e.g. scoreboard:seers_chat.messages_sent). A * matches anything (e.g. minecraft.mined:* is
+#     every block mined), and a pattern starting with ! leaves out whatever it matches. Each stat is
+#     only counted once, however many patterns match it.
+groups:
+  - id: played
+    stats:
+      - "minecraft.custom:minecraft.play_time"
+
+  - id: miner
+    stats:
+      - "minecraft.mined:*"
+
+  - id: explorer
+    stats:
+      - "minecraft.custom:minecraft.*_one_cm"
+      - "!minecraft.custom:minecraft.fall_one_cm"
+      - "!minecraft.custom:minecraft.climb_one_cm"
+      - "!minecraft.custom:minecraft.fly_one_cm"
+
+  - id: slayer
+    stats:
+      - "minecraft.killed:*"
+
+  - id: deaths
+    stats:
+      - "minecraft.custom:minecraft.deaths"
+
+  # Vanilla doesn't count harvests, so this counts crops broken (ripe or not) and animals bred.
+  - id: farmer
+    stats:
+      - "minecraft.custom:minecraft.animals_bred"
+      - "minecraft.mined:minecraft.wheat"
+      - "minecraft.mined:minecraft.carrots"
+      - "minecraft.mined:minecraft.potatoes"
+      - "minecraft.mined:minecraft.beetroots"
+      - "minecraft.mined:minecraft.nether_wart"
+      - "minecraft.mined:minecraft.melon"
+      - "minecraft.mined:minecraft.pumpkin"
+      - "minecraft.mined:minecraft.sugar_cane"
+      - "minecraft.mined:minecraft.cocoa"
+
+  - id: trader
+    stats:
+      - "minecraft.custom:minecraft.traded_with_villager"
+
+  - id: angler
+    stats:
+      - "minecraft.custom:minecraft.fish_caught"
+
+  # Needs Seer's Chat, which counts messages players send.
+  - id: chat
+    stats:
+      - "scoreboard:seers_chat.messages_sent"
