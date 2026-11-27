@@ -81,7 +81,7 @@ public final class StatPeriods {
      * @param ending   Given the period when it ends, while its stats can still be counted with
      *                 {@link #sinceStart}, before the next one starts.
      */
-    public Outcome check(
+    public Outcome endIfDue(
         MinecraftServer server,
         String id,
         Schedule schedule,
@@ -122,7 +122,7 @@ public final class StatPeriods {
      * @param id       The period's ID, within the mod.
      * @param schedule When it normally ends.
      * @param clock    Says what time it is, which it ends at, in the schedule's time zone.
-     * @param ending   Given the period, before the next one starts, as with {@link #check}.
+     * @param ending   Given the period, before the next one starts, as with {@link #endIfDue}.
      */
     public Outcome endNow(
         MinecraftServer server,

@@ -18,6 +18,8 @@ import static dev.seeruk.bundle.core.testing.TestPlayers.systemMessages;
 import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
 import static dev.seeruk.bundle.core.testing.TestTimes.at;
 import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.periodConfig;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.periodEventsFor;
 
 public class PeriodsGameTest {
     // Periods end every day at 18:00 (see TestTimes.DAILY), and each check is given a clock fixed
@@ -36,7 +38,7 @@ public class PeriodsGameTest {
         try {
             // The first check starts the period, snapshotting the 5 the player already has
             setScore(player, objective, 5);
-            Periods.check(server, config, at(day));
+            Periods.endIfDue(server, config, at(day));
 
             // So only the 3 gained since counts
             setScore(player, objective, 8);
@@ -64,13 +66,13 @@ public class PeriodsGameTest {
         final var player = player(helper);
 
         try {
-            Periods.check(server, config, at(day));
+            Periods.endIfDue(server, config, at(day));
             setScore(player, objective, 4);
 
             // The next day's 18:00 has passed, so the period ends. Checking again does nothing, as
             // the new period started at that 18:00.
-            Periods.check(server, config, at(day.plusDays(1)));
-            Periods.check(server, config, at(day.plusDays(1)));
+            Periods.endIfDue(server, config, at(day.plusDays(1)));
+            Periods.endIfDue(server, config, at(day.plusDays(1)));
 
             // The 4 is saved as last period's result, and the new period counts from 4, so nobody
             // has scored in it yet
@@ -116,12 +118,12 @@ public class PeriodsGameTest {
 
         try {
             // The first period has a winner
-            Periods.check(server, config, at(day));
+            Periods.endIfDue(server, config, at(day));
             setScore(player, objective, 4);
-            Periods.check(server, config, at(day.plusDays(1)));
+            Periods.endIfDue(server, config, at(day.plusDays(1)));
 
             // The second doesn't, as the score didn't change after it started
-            Periods.check(server, config, at(day.plusDays(2)));
+            Periods.endIfDue(server, config, at(day.plusDays(2)));
 
             helper.assertValueEqual(
                 periodEventsFor("nobody").getLast(),
@@ -145,10 +147,10 @@ public class PeriodsGameTest {
         final var player = player(helper);
 
         try {
-            Periods.check(server, config, at(day));
+            Periods.endIfDue(server, config, at(day));
             setScore(player, objective, 4);
 
-            Periods.check(server, config, at(day.plusDays(1)));
+            Periods.endIfDue(server, config, at(day.plusDays(1)));
 
             // Announcements go to everyone, including other tests' players, so only this test's
             // period is looked for
@@ -173,12 +175,12 @@ public class PeriodsGameTest {
         final var player = player(helper);
 
         try {
-            Periods.check(server, config, at(day));
+            Periods.endIfDue(server, config, at(day));
             setScore(player, objective, 4);
 
             // Two 18:00s have passed, so the next day's period was missed entirely. The period
             // still ends, but its winners could be from long ago, so they aren't announced.
-            Periods.check(server, config, at(day.plusDays(2)));
+            Periods.endIfDue(server, config, at(day.plusDays(2)));
 
             helper.assertValueEqual(
                 periodEventsFor("missed"),
@@ -205,13 +207,13 @@ public class PeriodsGameTest {
         final var player = player(helper);
 
         try {
-            Periods.check(server, periodConfig("changed", objective, DAILY), at(day));
+            Periods.endIfDue(server, periodConfig("changed", objective, DAILY), at(day));
             setScore(player, objective, 4);
 
             // 20:00 has passed under the new schedule, but the old period never ran on it, so it
             // starts again from now, rather than ending with winners
             final var changed = periodConfig("changed", objective, Schedule.daily(LocalTime.of(20, 0)));
-            Periods.check(server, changed, at(day.plusHours(2)));
+            Periods.endIfDue(server, changed, at(day.plusHours(2)));
 
             // Had it not started again, the old snapshot would still count the 4
             Leaders.refresh(server, changed);

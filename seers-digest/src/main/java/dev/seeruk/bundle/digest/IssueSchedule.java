@@ -35,10 +35,10 @@ public final class IssueSchedule {
 
     /**
      * Publishes the current issue if the schedule has come round since it started (see
-     * {@link StatPeriods#check}).
+     * {@link StatPeriods#endIfDue}).
      */
-    public static void check(MinecraftServer server, DigestConfig config, Clock clock) {
-        check(server, config, ISSUE, clock);
+    public static void publishIfDue(MinecraftServer server, DigestConfig config, Clock clock) {
+        publishIfDue(server, config, ISSUE, clock);
     }
 
     /**
@@ -49,8 +49,8 @@ public final class IssueSchedule {
         return publishNow(server, config, ISSUE, clock);
     }
 
-    static StatPeriods.Outcome check(MinecraftServer server, DigestConfig config, String period, Clock clock) {
-        final var outcome = PERIODS.check(
+    static StatPeriods.Outcome publishIfDue(MinecraftServer server, DigestConfig config, String period, Clock clock) {
+        final var outcome = PERIODS.endIfDue(
             server, period, config.schedule(), clock, ended ->
                 publish(server, config, period, ended)
         );

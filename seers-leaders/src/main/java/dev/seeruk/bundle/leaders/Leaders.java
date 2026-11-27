@@ -85,12 +85,10 @@ public final class Leaders {
     }
 
     /**
-     * Ranks every category once more, then saves the period's categories' boards as their final
-     * results, replacing the last period's. Returns the winner of each that anyone scored in.
+     * Saves the period's categories' boards, as of the last refresh, as their final results,
+     * replacing the last period's. Returns the winner of each that anyone scored in.
      */
-    public static List<LeaderEvents.Winner> endPeriod(MinecraftServer server, LeadersConfig config, String period) {
-        refresh(server, config);
-
+    public static List<LeaderEvents.Winner> saveFinalResults(MinecraftServer server, LeadersConfig config, String period) {
         final var results = new HashMap<>(RESULTS.get(server));
         final var winners = new ArrayList<LeaderEvents.Winner>();
         for (final var category : config.categoriesIn(period)) {

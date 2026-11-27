@@ -77,7 +77,7 @@ public class ZoneResetsGameTest {
         final var chunks = Map.of(Level.OVERWORLD, Set.of(new ChunkPos(9030, 0), new ChunkPos(9031, 0)));
         final var mark = RESETS.mark();
 
-        ZoneResets.reset(helper.getLevel().getServer(), chunks);
+        ZoneResets.recordReset(helper.getLevel().getServer(), chunks);
 
         helper.assertValueEqual(RESETS.matchingSince(mark, reset -> true), List.of(chunks), "resets");
         helper.succeed();
@@ -89,7 +89,7 @@ public class ZoneResetsGameTest {
         final var resets = ZoneResets.history(server).resets();
         final var mark = RESETS.mark();
 
-        ZoneResets.reset(server, Map.of(Level.OVERWORLD, Set.of()));
+        ZoneResets.recordReset(server, Map.of(Level.OVERWORLD, Set.of()));
 
         helper.assertValueEqual(RESETS.matchingSince(mark, reset -> true), List.of(), "resets");
         helper.assertValueEqual(ZoneResets.history(server).resets(), resets, "reset count");
@@ -101,7 +101,7 @@ public class ZoneResetsGameTest {
         final var player = player(helper);
         final var chunk = new ChunkPos(9040, 0);
         moveTo(player, chunk);
-        ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
+        ZoneResets.recordReset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
 
         ZoneResets.moveIfChunkReset(player, CONFIG);
 
@@ -121,7 +121,7 @@ public class ZoneResetsGameTest {
             false
         );
         moveTo(player, chunk);
-        ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
+        ZoneResets.recordReset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
 
         ZoneResets.moveIfChunkReset(player, CONFIG);
 
@@ -140,7 +140,7 @@ public class ZoneResetsGameTest {
             false
         );
         final var horse = ride(helper, player, chunk);
-        ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
+        ZoneResets.recordReset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
 
         ZoneResets.moveIfChunkReset(player, CONFIG);
 
@@ -151,9 +151,9 @@ public class ZoneResetsGameTest {
 
     @GameTest
     public void leavesPlayersInAChunkResetBeforeTheyLastJoined(GameTestHelper helper) {
-        // Seeing the reset happens when they join
+        // Joining marks every reset so far as seen
         final var chunk = new ChunkPos(9060, 0);
-        ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
+        ZoneResets.recordReset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
         final var player = player(helper);
         moveTo(player, chunk);
 
@@ -168,8 +168,9 @@ public class ZoneResetsGameTest {
         final var player = player(helper);
         final var chunk = new ChunkPos(9070, 0);
         moveTo(player, chunk);
-        ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
+        ZoneResets.recordReset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
         ZoneResets.moveIfChunkReset(player, CONFIG);
+        ZoneResets.markResetsSeen(player);
 
         moveTo(player, chunk);
         ZoneResets.moveIfChunkReset(player, CONFIG);

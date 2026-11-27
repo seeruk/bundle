@@ -108,7 +108,7 @@ public final class ZoneResets {
      * {@link ResourceZoneEvents#RESET} if there were any.
      */
     public static void recordFoundResets(MinecraftServer server) {
-        reset(server, Map.copyOf(FOUND));
+        recordReset(server, Map.copyOf(FOUND));
         FOUND.clear();
     }
 
@@ -116,7 +116,7 @@ public final class ZoneResets {
      * Records a reset of the given chunks, firing {@link ResourceZoneEvents#RESET}, if there are
      * any.
      */
-    public static void reset(MinecraftServer server, Map<ResourceKey<Level>, Set<ChunkPos>> chunks) {
+    public static void recordReset(MinecraftServer server, Map<ResourceKey<Level>, Set<ChunkPos>> chunks) {
         if (chunks.values().stream().allMatch(Set::isEmpty)) {
             return;
         }
@@ -128,7 +128,7 @@ public final class ZoneResets {
     /**
      * Moves the player (and anything they're riding) to their respawn point (or world spawn, if
      * they don't have one, or it's gone) if the chunk they're in was reset since they were last
-     * here, and tells them why.
+     * here (see {@link #markResetsSeen}), and tells them why.
      */
     public static void moveIfChunkReset(ServerPlayer player, ResourceZonesConfig.Reset config) {
         final var level = player.level();
@@ -145,8 +145,14 @@ public final class ZoneResets {
             final var message = toRespawnPoint ? config.movedToRespawnPoint() : config.movedToSpawn();
             player.sendSystemMessage(message.format(Map.of()));
         }
+    }
 
-        SEEN.set(player, history.resets());
+    /**
+     * Notes that the player has seen every reset so far, e.g. once they've joined, so they're only
+     * moved for resets after this.
+     */
+    public static void markResetsSeen(ServerPlayer player) {
+        SEEN.set(player, HISTORY.get(player.level().getServer()).resets());
     }
 
     /**

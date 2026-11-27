@@ -6,6 +6,7 @@ import dev.seeruk.bundle.core.time.TimeCodecs;
 import net.minecraft.core.UUIDUtil;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,24 @@ public record Issue(
             Earned.CODEC.listOf().fieldOf("advancements").forGetter(Moments::advancements),
             First.CODEC.listOf().fieldOf("firsts").forGetter(Moments::firsts)
         ).apply(instance, Moments::new));
+
+        public Moments withDeath(Death death) {
+            return new Moments(append(deaths, List.of(death)), advancements, firsts);
+        }
+
+        public Moments withAdvancement(Earned earned) {
+            return new Moments(deaths, append(advancements, List.of(earned)), firsts);
+        }
+
+        public Moments withFirsts(List<First> added) {
+            return new Moments(deaths, advancements, append(firsts, added));
+        }
+
+        private static <T> List<T> append(List<T> list, List<T> items) {
+            final var appended = new ArrayList<>(list);
+            appended.addAll(items);
+            return List.copyOf(appended);
+        }
 
         /**
          * Everyone any of the moments are about.

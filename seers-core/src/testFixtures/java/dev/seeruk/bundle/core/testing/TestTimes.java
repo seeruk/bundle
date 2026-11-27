@@ -27,7 +27,7 @@ public final class TestTimes {
 
     /**
      * A clock that always says it's the given time, in the time's zone, for code that asks a clock
-     * what time it is, e.g. {@code check(server, config, at(day.plusDays(1)))}.
+     * what time it is, e.g. {@code endIfDue(server, config, at(day.plusDays(1)))}.
      */
     public static Clock at(ZonedDateTime time) {
         return Clock.fixed(time.toInstant(), time.getZone());

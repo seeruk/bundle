@@ -167,7 +167,7 @@ public class ActionBarMessagesGameTest {
         FIRST_PLAYERS.add(player.getUUID());
 
         // Normal chat uses the same packet as action bar messages, without the overlay flag
-        ActionBarMessages.packetSent(player, new ClientboundSystemChatPacket(Component.literal("hi"), false));
+        ActionBarMessages.noteOtherMessage(player, new ClientboundSystemChatPacket(Component.literal("hi"), false));
 
         helper.assertTrue(ActionBarMessages.update(player, now), "Backed off for chat");
         helper.succeed();
@@ -180,7 +180,7 @@ public class ActionBarMessagesGameTest {
         FIRST_PLAYERS.add(player.getUUID());
         ActionBarMessages.update(player, now);
 
-        ActionBarMessages.packetSent(player, new ClientboundSystemChatPacket(Component.literal("hi"), true));
+        ActionBarMessages.noteOtherMessage(player, new ClientboundSystemChatPacket(Component.literal("hi"), true));
         helper.assertFalse(
             ActionBarMessages.update(player, now + ActionBarMessages.REFRESH_TICKS),
             "Didn't back off"
@@ -197,7 +197,7 @@ public class ActionBarMessagesGameTest {
         final var player = player(helper);
         final var now = now(helper);
         track(player, now);
-        ActionBarMessages.packetSent(player, new ClientboundSystemChatPacket(Component.literal("hi"), true));
+        ActionBarMessages.noteOtherMessage(player, new ClientboundSystemChatPacket(Component.literal("hi"), true));
 
         FIRST_PLAYERS.add(player.getUUID());
         ActionBarMessages.update(player, now);
@@ -218,7 +218,7 @@ public class ActionBarMessagesGameTest {
         track(player, now);
         FIRST_PLAYERS.add(player.getUUID());
 
-        ActionBarMessages.packetSent(player, new ClientboundSetActionBarTextPacket(Component.literal("hi")));
+        ActionBarMessages.noteOtherMessage(player, new ClientboundSetActionBarTextPacket(Component.literal("hi")));
 
         helper.assertFalse(ActionBarMessages.update(player, now), "Didn't back off");
         helper.succeed();
@@ -231,7 +231,7 @@ public class ActionBarMessagesGameTest {
         track(player, now);
         FIRST_PLAYERS.add(player.getUUID());
 
-        ActionBarMessages.packetSent(
+        ActionBarMessages.noteOtherMessage(
             player, new ClientboundBundlePacket(List.of(
                 new ClientboundSetActionBarTextPacket(Component.literal("hi"))
             ))
@@ -249,7 +249,7 @@ public class ActionBarMessagesGameTest {
         ActionBarMessages.forget(player);
 
         // e.g. a message sent after they've left, which mustn't bring them back
-        ActionBarMessages.packetSent(player, new ClientboundSystemChatPacket(Component.literal("hi"), true));
+        ActionBarMessages.noteOtherMessage(player, new ClientboundSystemChatPacket(Component.literal("hi"), true));
         FIRST_PLAYERS.add(player.getUUID());
 
         helper.assertTrue(ActionBarMessages.update(player, now), "Remembered a forgotten player's back-off");
@@ -265,7 +265,7 @@ public class ActionBarMessagesGameTest {
         // Sent for real, so it passes through the packet mixin
         ActionBarMessages.update(player, now);
         // Other mods might rebuild overlay messages before they're sent
-        ActionBarMessages.packetSent(player, new ClientboundSystemChatPacket(message("First"), true));
+        ActionBarMessages.noteOtherMessage(player, new ClientboundSystemChatPacket(message("First"), true));
 
         helper.assertTrue(
             ActionBarMessages.update(player, now + ActionBarMessages.REFRESH_TICKS),

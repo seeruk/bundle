@@ -46,22 +46,19 @@ public class SeersDigest implements ModInitializer {
             // from ticks, rather than on start-up, so an issue due while the server was stopped is
             // only published once every mod has started, and can listen for it.
             if (server.getTickCount() % SharedConstants.TICKS_PER_SECOND == 0) {
-                IssueSchedule.check(server, config, clock);
+                IssueSchedule.publishIfDue(server, config, clock);
                 DigestStats.recordNightSecond(server, config.nightHours(), clock);
             }
         });
 
-        // Handle events Digest tracks on it's own
-        PlayerEvents.ADVANCEMENT_MESSAGE.register((player, advancement, message) -> Moments.earned(
-            player,
-            advancement,
-            clock
-        ));
+        // Handle events Digest tracks on its own
+        PlayerEvents.ADVANCEMENT_MESSAGE.register((player, advancement, message) ->
+            Moments.recordAdvancement(player, advancement, clock));
         ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) ->
             DigestStats.recordDimensionChange(player, destination.dimension()));
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (entity instanceof ServerPlayer player) {
-                Moments.died(player, source, clock);
+                Moments.recordDeath(player, source, clock);
             }
         });
 

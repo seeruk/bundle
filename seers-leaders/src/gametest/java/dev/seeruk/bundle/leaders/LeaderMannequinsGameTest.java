@@ -283,13 +283,13 @@ public class LeaderMannequinsGameTest {
 
         try {
             final var day = uniqueDay();
-            Periods.check(server, config, at(day));
+            Periods.endIfDue(server, config, at(day));
             setScore(player, objective, 5);
             final var mannequin = placed(helper, LeaderMannequins.place(player, config, new Seat("previous", 1)));
 
             // Ending the period empties the seat, so the mannequin shows who held it instead (from
             // the config's previous_description), but not their skin, as they don't hold it now
-            Periods.check(server, config, at(day.plusDays(1)));
+            Periods.endIfDue(server, config, at(day.plusDays(1)));
 
             helper.assertValueEqual(description(mannequin), "Last: " + player.getGameProfile().name(), "description");
             helper.assertValueEqual(profileId(mannequin), Optional.empty(), "profile");

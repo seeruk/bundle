@@ -50,7 +50,7 @@ public class SeersLeaders implements ModInitializer {
             // They're checked from ticks, rather than on start-up, so a period that ended while the
             // server was stopped only ends once every mod has started, and can listen for it.
             if (server.getTickCount() % SharedConstants.TICKS_PER_SECOND == 0) {
-                Periods.check(server, config, clock);
+                Periods.endIfDue(server, config, clock);
             }
             // Boards are refreshed less often, as reading every player's stats costs more
             if (server.getTickCount() % (config.refreshSeconds() * SharedConstants.TICKS_PER_SECOND) == 0) {

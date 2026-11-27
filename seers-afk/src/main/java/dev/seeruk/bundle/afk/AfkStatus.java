@@ -80,7 +80,7 @@ public final class AfkStatus {
      * resets their last action time, even when it's automatic (e.g. with the
      * {@code doImmediateRespawn} game rule).
      */
-    public static void respawned(ServerPlayer player) {
+    public static void keepActivityAfterRespawn(ServerPlayer player) {
         ACTIVITY.computeIfPresent(
             player.getUUID(), (id, activity) ->
                 new Activity(player.getLastActionTime(), activity.since(), activity.afk())

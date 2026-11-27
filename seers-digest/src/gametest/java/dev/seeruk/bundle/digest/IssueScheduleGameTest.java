@@ -53,11 +53,11 @@ public class IssueScheduleGameTest {
         final var player = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "scheduled", at(day));
+            IssueSchedule.publishIfDue(server, config, "scheduled", at(day));
             setScore(player, objective, 5);
 
             // The next day's 18:00 has passed, so the issue is published
-            IssueSchedule.check(server, config, "scheduled", at(day.plusDays(1)));
+            IssueSchedule.publishIfDue(server, config, "scheduled", at(day.plusDays(1)));
 
             final var issue = Archive.latest(server).orElseThrow();
             // The first issue started counting when the schedule was first checked
@@ -81,7 +81,7 @@ public class IssueScheduleGameTest {
         final var player = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "publish_now", at(day));
+            IssueSchedule.publishIfDue(server, config, "publish_now", at(day));
             setScore(player, objective, 3);
 
             final var issue = IssueSchedule.publishNow(
@@ -111,7 +111,7 @@ public class IssueScheduleGameTest {
         try {
             // Starting the issue forgets any moments still pending from elsewhere, and nothing can
             // change between these, as they're in the same tick
-            IssueSchedule.check(server, config, "empty", at(day));
+            IssueSchedule.publishIfDue(server, config, "empty", at(day));
             final var next = Archive.nextIssueNumber(server);
             final var issue = IssueSchedule.publishNow(server, config, "empty", at(day.plusHours(1)));
 
@@ -133,7 +133,7 @@ public class IssueScheduleGameTest {
         final var player = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "numbers", at(day));
+            IssueSchedule.publishIfDue(server, config, "numbers", at(day));
             setScore(player, objective, 1);
             final var first = IssueSchedule.publishNow(server, config, "numbers", at(day.plusHours(1))).orElseThrow();
             setScore(player, objective, 2);
@@ -156,7 +156,7 @@ public class IssueScheduleGameTest {
         final var existing = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "new", at(day));
+            IssueSchedule.publishIfDue(server, config, "new", at(day));
             final var joined = player(helper);
             setScore(existing, objective, 1);
             setScore(joined, objective, 1);
@@ -183,10 +183,10 @@ public class IssueScheduleGameTest {
         final var after = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "moments", at(day));
-            Moments.died(before, helper.getLevel().damageSources().fall(), at(day.plusMinutes(30)));
+            IssueSchedule.publishIfDue(server, config, "moments", at(day));
+            Moments.recordDeath(before, helper.getLevel().damageSources().fall(), at(day.plusMinutes(30)));
             final var first = IssueSchedule.publishNow(server, config, "moments", at(day.plusHours(1))).orElseThrow();
-            Moments.died(after, helper.getLevel().damageSources().fall(), at(day.plusMinutes(90)));
+            Moments.recordDeath(after, helper.getLevel().damageSources().fall(), at(day.plusMinutes(90)));
             final var second = IssueSchedule.publishNow(server, config, "moments", at(day.plusHours(2))).orElseThrow();
 
             helper.assertValueEqual(diedIn(first), List.of(before.getUUID()), "died in the first issue");
@@ -209,9 +209,9 @@ public class IssueScheduleGameTest {
 
         try {
             // Died before the issue started, e.g. before the schedule was changed
-            Moments.died(before, helper.getLevel().damageSources().fall(), at(day.minusMinutes(30)));
-            IssueSchedule.check(server, config, "forget", at(day));
-            Moments.died(after, helper.getLevel().damageSources().fall(), at(day.plusMinutes(30)));
+            Moments.recordDeath(before, helper.getLevel().damageSources().fall(), at(day.minusMinutes(30)));
+            IssueSchedule.publishIfDue(server, config, "forget", at(day));
+            Moments.recordDeath(after, helper.getLevel().damageSources().fall(), at(day.plusMinutes(30)));
 
             final var issue = IssueSchedule.publishNow(server, config, "forget", at(day.plusHours(1))).orElseThrow();
 

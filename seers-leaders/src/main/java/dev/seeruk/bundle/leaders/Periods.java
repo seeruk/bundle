@@ -34,12 +34,12 @@ public final class Periods {
 
     /**
      * Ends any period whose schedule has come round since it started, with its results, and starts
-     * the next (see {@link StatPeriods#check}).
+     * the next (see {@link StatPeriods#endIfDue}).
      */
-    public static void check(MinecraftServer server, LeadersConfig config, Clock clock) {
+    public static void endIfDue(MinecraftServer server, LeadersConfig config, Clock clock) {
         var changed = false;
         for (final var period : config.periods()) {
-            final var outcome = PERIODS.check(
+            final var outcome = PERIODS.endIfDue(
                 server, period.id(), period.schedule(), clock, ended ->
                     end(server, config, period, ended.missedWholePeriod())
             );
@@ -60,9 +60,11 @@ public final class Periods {
             LOGGER.warn("Period '{}' isn't in the config. Any existing snapshots will be released", id));
     }
 
-    // Saves the final results, fires the event, and announces the winners, unless they're stale
+    // Ranks every category once more, saves the final results, fires the event, and announces the
+    // winners, unless they're stale
     private static void end(MinecraftServer server, LeadersConfig config, Period period, boolean stale) {
-        final var winners = Leaders.endPeriod(server, config, period.id());
+        Leaders.refresh(server, config);
+        final var winners = Leaders.saveFinalResults(server, config, period.id());
         final var end = new LeaderEvents.PeriodEnd(
             period.id(),
             period.displayTitle(),

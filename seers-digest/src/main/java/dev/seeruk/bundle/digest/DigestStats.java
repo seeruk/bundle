@@ -44,8 +44,8 @@ public final class DigestStats {
     }
 
     /**
-     * Adds a second's worth of ticks to every player playing during the night. Called once a
-     * second, rather than every tick, as the time of night only needs checking that often.
+     * Adds a second's worth of ticks to every player playing during the night, so it should be
+     * called once a second.
      */
     public static void recordNightSecond(MinecraftServer server, NightHours night, Clock clock) {
         if (!night.contains(LocalTime.now(clock))) {

@@ -117,10 +117,10 @@ public final class ActionBarMessages {
      * Notes any action bar message sent to the player that isn't one of these, so they back off.
      * Only players these have seen are noted, so a player who's left isn't remembered again.
      */
-    public static void packetSent(ServerPlayer player, Packet<?> packet) {
+    public static void noteOtherMessage(ServerPlayer player, Packet<?> packet) {
         final var message = switch (packet) {
             case ClientboundBundlePacket bundle -> {
-                bundle.subPackets().forEach(inside -> packetSent(player, inside));
+                bundle.subPackets().forEach(inside -> noteOtherMessage(player, inside));
                 yield null;
             }
             case ClientboundSetActionBarTextPacket actionBar -> actionBar.text();
@@ -173,7 +173,7 @@ public final class ActionBarMessages {
     }
 
     private static void send(ServerPlayer player, State state, Identifier id, Component message, int shownAt) {
-        // Set first, as sending passes the message straight back through packetSent
+        // Set first, as sending passes the message straight back through noteOtherMessage
         state.lastSent = message;
         state.showing = id;
         state.shownAt = shownAt;

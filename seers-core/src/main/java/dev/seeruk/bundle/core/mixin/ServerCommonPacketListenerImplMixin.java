@@ -41,7 +41,7 @@ abstract class ServerCommonPacketListenerImplMixin {
     )
     private void core$notePacket(Packet<?> packet, ChannelFutureListener listener, CallbackInfo ci) {
         if ((Object) this instanceof ServerGamePacketListenerImpl game) {
-            ActionBarMessages.packetSent(game.player, packet);
+            ActionBarMessages.noteOtherMessage(game.player, packet);
         }
     }
 }

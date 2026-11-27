@@ -30,7 +30,8 @@ public class SeersAfk implements ModInitializer {
             AfkCommand.register(dispatcher));
 
         ServerTickEvents.END_SERVER_TICK.register(server -> AfkStatus.updateAll(server, config.timeoutTicks()));
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> AfkStatus.respawned(newPlayer));
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> AfkStatus.keepActivityAfterRespawn(
+            newPlayer));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> AfkStatus.forget(handler.player));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> AfkStatus.clear());
 

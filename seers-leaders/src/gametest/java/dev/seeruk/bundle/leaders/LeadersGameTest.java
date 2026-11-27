@@ -13,6 +13,9 @@ import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.core.testing.TestPlayers.systemMessages;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.category;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.config;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.eventsFor;
 
 public class LeadersGameTest {
     private static String name(ServerPlayer player) {

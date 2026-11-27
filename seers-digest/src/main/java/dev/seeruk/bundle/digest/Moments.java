@@ -74,7 +74,7 @@ public final class Moments {
      * Records a player's death, and any firsts it makes: the first death of its cause, and the
      * first death to its kind of killer.
      */
-    public static void died(ServerPlayer player, DamageSource source, Clock clock) {
+    public static void recordDeath(ServerPlayer player, DamageSource source, Clock clock) {
         final var at = clock.instant();
         final var cause = source.typeHolder().unwrapKey().map(key -> key.identifier().toString()).orElse("unknown");
         // Whoever Vanilla credits, as in its killed_by stats and death messages, so a player
@@ -87,30 +87,18 @@ public final class Moments {
         keys.add("death:" + cause);
         killer.ifPresent(found -> keys.add("killer:" + found));
 
-        record(
-            player, at, keys, moments -> new Issue.Moments(
-                append(moments.deaths(), List.of(death)),
-                moments.advancements(),
-                moments.firsts()
-            )
-        );
+        record(player, at, keys, moments -> moments.withDeath(death));
     }
 
     /**
      * Records a player earning an advancement, and whether they're the first on the server to.
      */
-    public static void earned(ServerPlayer player, AdvancementHolder advancement, Clock clock) {
+    public static void recordAdvancement(ServerPlayer player, AdvancementHolder advancement, Clock clock) {
         final var at = clock.instant();
         final var id = advancement.id().toString();
         final var earned = new Issue.Earned(player.getUUID(), id, at);
 
-        record(
-            player, at, List.of("advancement:" + id), moments -> new Issue.Moments(
-                moments.deaths(),
-                append(moments.advancements(), List.of(earned)),
-                moments.firsts()
-            )
-        );
+        record(player, at, List.of("advancement:" + id), moments -> moments.withAdvancement(earned));
     }
 
     /**
@@ -167,12 +155,7 @@ public final class Moments {
         if (!firsts.isEmpty()) {
             SEEN.update(server, existing -> existing.with(firsts.stream().map(Issue.First::what).toList()));
         }
-        PENDING.update(
-            server, moments -> {
-                final var added = add.apply(moments);
-                return new Issue.Moments(added.deaths(), added.advancements(), append(added.firsts(), firsts));
-            }
-        );
+        PENDING.update(server, moments -> add.apply(moments).withFirsts(firsts));
     }
 
     // The kind of entity a killed-by stat is for, e.g. "minecraft.killed_by:minecraft.spider" is
@@ -223,11 +206,5 @@ public final class Moments {
         final var parsed = Identifier.tryParse(id);
         final var advancement = parsed == null ? null : server.getAdvancements().get(parsed);
         return advancement != null && advancement.value().display().map(DisplayInfo::announceToChat).orElse(false);
-    }
-
-    private static <T> List<T> append(List<T> list, List<T> items) {
-        final var appended = new ArrayList<>(list);
-        appended.addAll(items);
-        return List.copyOf(appended);
     }
 }
