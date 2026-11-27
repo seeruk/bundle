@@ -3,6 +3,7 @@ package dev.seeruk.bundle.digest.book;
 import dev.seeruk.bundle.core.names.PlayerNames;
 import dev.seeruk.bundle.digest.DigestConfig;
 import dev.seeruk.bundle.digest.api.Issue;
+import dev.seeruk.bundle.text.ReadableColours;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -22,7 +23,8 @@ public final class DigestBooks {
     private DigestBooks() {}
 
     /**
-     * A written book of the issue, with players shown by the names they have now.
+     * A written book of the issue, with players shown by the names they have now, and colours too
+     * light for the page darkened.
      */
     public static ItemStack create(MinecraftServer server, DigestConfig config, Issue issue) {
         final var sections = PlainSections.of(issue, config, id -> PlayerNames.displayName(server, id));
@@ -36,7 +38,10 @@ public final class DigestBooks {
             Filterable.passThrough(config.book().title()),
             config.book().author(),
             0,
-            book.pages().stream().map(Filterable::passThrough).toList(),
+            book.pages().stream()
+                .map(page -> ReadableColours.onLight(ReadableColours.BOOK_PAGE, page))
+                .map(Filterable::passThrough)
+                .toList(),
             true
         ));
         return stack;

@@ -1,15 +1,20 @@
 package dev.seeruk.bundle.digest.book;
 
+import dev.seeruk.bundle.core.testing.TextChunks;
 import dev.seeruk.bundle.digest.Archive;
 import dev.seeruk.bundle.digest.api.Issue;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.TeamColor;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -93,6 +98,48 @@ public class DigestBooksGameTest {
                 "New player wasn't welcomed by name: " + pages
             );
         } finally {
+            server.getScoreboard().removeObjective(objective);
+        }
+
+        helper.succeed();
+    }
+
+    @GameTest
+    public void bookDarkensColoursTooLightForThePage(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var objective = addObjective(server, "digest_books_colours");
+        final var team = server.getScoreboard().addPlayerTeam("digest_books_yellow");
+        final var player = player(helper);
+        team.setColor(Optional.of(TeamColor.YELLOW));
+        server.getScoreboard().addPlayerToTeam(player.getGameProfile().name(), team);
+
+        try {
+            final var base = issue(helper, player);
+            final var issue = new Issue(
+                base.number(),
+                base.started(),
+                base.ended(),
+                base.groups(),
+                base.activePlayers(),
+                List.of(player.getUUID()),
+                base.moments()
+            );
+            final var colours = DigestBooks.create(server, config(objective), issue)
+                .get(DataComponents.WRITTEN_BOOK_CONTENT)
+                .pages().stream()
+                .flatMap(page -> TextChunks.chunks(page.raw()).stream())
+                .filter(chunk -> chunk.text().contains(player.getGameProfile().name()))
+                .map(chunk -> chunk.style().getColor())
+                .toList();
+
+            helper.assertTrue(!colours.isEmpty(), "Player's name wasn't in the book");
+            helper.assertTrue(colours.stream().allMatch(Objects::nonNull), "Player's name lost its team colour");
+            helper.assertTrue(
+                colours.stream().noneMatch(TextColor.fromLegacyFormat(ChatFormatting.YELLOW)::equals),
+                "Player's name was still yellow"
+            );
+        } finally {
+            server.getScoreboard().removePlayerTeam(team);
             server.getScoreboard().removeObjective(objective);
         }
 
