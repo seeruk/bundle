@@ -31,7 +31,11 @@ public class NicksPlayerNamesGameTest {
         final var player = offline("Offline");
         server.services().nameToIdCache().add(player);
 
-        helper.assertValueEqual(PlayerNames.displayName(server, player.id()).getString(), player.name(), "display name");
+        helper.assertValueEqual(
+            PlayerNames.displayName(server, player.id()).getString(),
+            player.name(),
+            "display name"
+        );
         helper.succeed();
     }
 }

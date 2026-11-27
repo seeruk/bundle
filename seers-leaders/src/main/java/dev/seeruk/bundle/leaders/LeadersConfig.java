@@ -54,8 +54,12 @@ public record LeadersConfig(
         ZONE_CODEC.optionalFieldOf("timezone", ZoneId.systemDefault()).forGetter(LeadersConfig::timezone),
         Announcement.CODEC.fieldOf("announcement").forGetter(LeadersConfig::announcement),
         PeriodAnnouncement.CODEC.fieldOf("period_announcement").forGetter(LeadersConfig::periodAnnouncement),
-        Period.CODEC.listOf().validate(periods -> uniqueIds(periods, Period::id)).fieldOf("periods").forGetter(LeadersConfig::periods),
-        Category.CODEC.listOf().validate(categories -> uniqueIds(categories, Category::id)).fieldOf("categories").forGetter(LeadersConfig::categories)
+        Period.CODEC.listOf().validate(periods -> uniqueIds(periods, Period::id)).fieldOf("periods").forGetter(
+            LeadersConfig::periods),
+        Category.CODEC.listOf().validate(categories -> uniqueIds(
+            categories,
+            Category::id
+        )).fieldOf("categories").forGetter(LeadersConfig::categories)
     ).apply(instance, LeadersConfig::new)).validate(LeadersConfig::knownPeriods);
 
     public Optional<Category> category(String id) {

@@ -8,13 +8,9 @@ import dev.seeruk.bundle.digest.api.Issue.PlayerTotal;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IssuesTest {
     private static final Instant STARTED = Instant.parse("2026-11-15T18:00:00Z");
@@ -122,7 +118,11 @@ public class IssuesTest {
     @Test
     void makesAnIssueFromAMomentAlone() {
         // Nobody's stats went up, but Second earned an advancement, so they were active
-        final var moments = new Issue.Moments(List.of(), List.of(new Issue.Earned(SECOND, "minecraft:story/root", ENDED)), List.of());
+        final var moments = new Issue.Moments(
+            List.of(),
+            List.of(new Issue.Earned(SECOND, "minecraft:story/root", ENDED)),
+            List.of()
+        );
 
         final var issue = build(Map.of(FIRST, Map.of()), Set.of(FIRST, SECOND), moments).orElseThrow();
 

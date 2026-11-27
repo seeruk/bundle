@@ -19,13 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -76,11 +70,13 @@ public final class Moments {
         final var killer = Optional.ofNullable(player.getKillCredit())
             .map(entity -> BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
 
-        update(server, moments -> new Issue.Moments(
-            append(moments.deaths(), new Issue.Death(player.getUUID(), cause, killer, at)),
-            moments.advancements(),
-            moments.firsts()
-        ));
+        update(
+            server, moments -> new Issue.Moments(
+                append(moments.deaths(), new Issue.Death(player.getUUID(), cause, killer, at)),
+                moments.advancements(),
+                moments.firsts()
+            )
+        );
 
         first(server, player.getUUID(), "death:" + cause, at);
         killer.ifPresent(found -> first(server, player.getUUID(), "killer:" + found, at));
@@ -94,11 +90,13 @@ public final class Moments {
         final var at = Instant.now();
         final var id = advancement.id().toString();
 
-        update(server, moments -> new Issue.Moments(
-            moments.deaths(),
-            append(moments.advancements(), new Issue.Earned(player.getUUID(), id, at)),
-            moments.firsts()
-        ));
+        update(
+            server, moments -> new Issue.Moments(
+                moments.deaths(),
+                append(moments.advancements(), new Issue.Earned(player.getUUID(), id, at)),
+                moments.firsts()
+            )
+        );
 
         first(server, player.getUUID(), "advancement:" + id, at);
     }
@@ -155,16 +153,20 @@ public final class Moments {
             return;
         }
 
-        SEEN.update(server, seen -> {
-            final var updated = new HashSet<>(seen.keys());
-            updated.add(what);
-            return new Seen(seen.seeded(), Set.copyOf(updated));
-        });
-        update(server, moments -> new Issue.Moments(
-            moments.deaths(),
-            moments.advancements(),
-            append(moments.firsts(), new Issue.First(player, what, at))
-        ));
+        SEEN.update(
+            server, seen -> {
+                final var updated = new HashSet<>(seen.keys());
+                updated.add(what);
+                return new Seen(seen.seeded(), Set.copyOf(updated));
+            }
+        );
+        update(
+            server, moments -> new Issue.Moments(
+                moments.deaths(),
+                moments.advancements(),
+                append(moments.firsts(), new Issue.First(player, what, at))
+            )
+        );
     }
 
     // The kind of entity a killed-by stat is for, e.g. "minecraft.killed_by:minecraft.spider" is

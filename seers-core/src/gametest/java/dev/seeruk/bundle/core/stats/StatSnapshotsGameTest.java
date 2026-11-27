@@ -65,7 +65,10 @@ public class StatSnapshotsGameTest {
         StatSnapshots.hold(server, "test:shares_second", at);
 
         helper.assertValueEqual(
-            StatSnapshots.held(server, "test:shares_second").map(found -> found.values().get(player.getUUID()).get(JUMP)),
+            StatSnapshots.held(
+                server,
+                "test:shares_second"
+            ).map(found -> found.values().get(player.getUUID()).get(JUMP)),
             Optional.of(3),
             "jumps"
         );

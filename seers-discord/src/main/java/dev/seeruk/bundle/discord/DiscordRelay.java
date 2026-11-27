@@ -376,7 +376,12 @@ public final class DiscordRelay {
             return Optional.empty();
         }
 
-        return embed(event.format(), event.colour(), player == null ? null : player.getUUID(), withPlayerValues(player, values))
+        return embed(
+            event.format(),
+            event.colour(),
+            player == null ? null : player.getUUID(),
+            withPlayerValues(player, values)
+        )
             .map(embed -> WebhookMessage.embed(embed.build()));
     }
 

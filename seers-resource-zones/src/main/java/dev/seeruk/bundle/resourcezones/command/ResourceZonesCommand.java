@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
-import static dev.seeruk.bundle.core.command.CommandReplies.fail;
-import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
-import static dev.seeruk.bundle.core.command.CommandReplies.succeedAndBroadcast;
+import static dev.seeruk.bundle.core.command.CommandReplies.*;
 
 /**
  * {@code /resourcezones}: all resource-zone related commands. For admins, managing resource zones
@@ -124,9 +122,11 @@ public final class ResourceZonesCommand {
 
     private static int add(CommandSourceStack source, ChunkPos pos) {
         if (!ResourceZones.add(source.getServer(), source.getLevel().dimension(), pos)) {
-            return fail(source, TextParsers.parseAsTrusted(
-                "<yellow>Chunk %s is already in a resource zone</yellow>".formatted(describe(pos))
-            ));
+            return fail(
+                source, TextParsers.parseAsTrusted(
+                    "<yellow>Chunk %s is already in a resource zone</yellow>".formatted(describe(pos))
+                )
+            );
         }
 
         final var message = TextParsers.parseAsTrusted(
@@ -137,9 +137,11 @@ public final class ResourceZonesCommand {
 
     private static int remove(CommandSourceStack source, ChunkPos pos) {
         if (!ResourceZones.remove(source.getServer(), source.getLevel().dimension(), pos)) {
-            return fail(source, TextParsers.parseAsTrusted(
-                "<yellow>Chunk %s isn't in a resource zone</yellow>".formatted(describe(pos))
-            ));
+            return fail(
+                source, TextParsers.parseAsTrusted(
+                    "<yellow>Chunk %s isn't in a resource zone</yellow>".formatted(describe(pos))
+                )
+            );
         }
 
         final var message = TextParsers.parseAsTrusted(

@@ -7,11 +7,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.StringRepresentable;
 
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
 import java.util.Optional;
@@ -128,11 +124,13 @@ public record Schedule(Every every, int day, LocalTime at) {
     }
 
     private Written written() {
-        return new Written(every, switch (every) {
+        return new Written(
+            every, switch (every) {
             case DAY -> Optional.empty();
             case WEEK -> Optional.of(Either.right(DayOfWeek.of(day).name().toLowerCase(Locale.ROOT)));
             case MONTH -> Optional.of(day == LAST_DAY ? Either.right("last") : Either.left(day));
-        }, at);
+        }, at
+        );
     }
 
     private static Optional<DayOfWeek> dayOfWeek(String on) {

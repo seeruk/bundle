@@ -39,8 +39,10 @@ public final class Periods {
     public static void check(MinecraftServer server, LeadersConfig config, Clock clock) {
         var changed = false;
         for (final var period : config.periods()) {
-            final var outcome = PERIODS.check(server, period.id(), period.schedule(), clock, ended ->
-                end(server, config, period, ended.missedWholePeriod()));
+            final var outcome = PERIODS.check(
+                server, period.id(), period.schedule(), clock, ended ->
+                    end(server, config, period, ended.missedWholePeriod())
+            );
             changed |= outcome != StatPeriods.Outcome.UNCHANGED;
         }
 
@@ -61,7 +63,12 @@ public final class Periods {
     // Saves the final results, fires the event, and announces the winners, unless they're stale
     private static void end(MinecraftServer server, LeadersConfig config, Period period, boolean stale) {
         final var winners = Leaders.endPeriod(server, config, period.id());
-        final var end = new LeaderEvents.PeriodEnd(period.id(), period.displayTitle(), winners, !winners.isEmpty() && !stale);
+        final var end = new LeaderEvents.PeriodEnd(
+            period.id(),
+            period.displayTitle(),
+            winners,
+            !winners.isEmpty() && !stale
+        );
 
         LeaderEvents.PERIOD_ENDED.invoker().onPeriodEnded(server, end);
         LeaderAnnouncements.announcePeriod(server, config, end);

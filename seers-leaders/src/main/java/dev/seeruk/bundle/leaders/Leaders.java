@@ -12,12 +12,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
 
 import java.time.Clock;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.seeruk.bundle.leaders.SeersLeaders.LOGGER;
@@ -50,7 +45,11 @@ public final class Leaders {
 
     public static void started(MinecraftServer server, LeadersConfig config) {
         config.categories().forEach(category -> AllPlayerStats.unknownNames(server, category.stats()).forEach(name ->
-            LOGGER.warn("Category '{}' uses '{}', which isn't a stat (yet), so it's counted as 0", category.id(), name)));
+            LOGGER.warn(
+                "Category '{}' uses '{}', which isn't a stat (yet), so it's counted as 0",
+                category.id(),
+                name
+            )));
         forgetRemovedResults(server, config);
         Periods.forgetRemoved(server, config);
         // Periods are checked from the first tick, rather than here, so a period that ended while
@@ -161,17 +160,25 @@ public final class Leaders {
             return Optional.empty();
         }
 
-        LEADERS.update(server, leaders -> {
-            final var updated = new HashMap<>(leaders);
-            updated.put(category.id(), new Leader(leader));
-            return Map.copyOf(updated);
-        });
+        LEADERS.update(
+            server, leaders -> {
+                final var updated = new HashMap<>(leaders);
+                updated.put(category.id(), new Leader(leader));
+                return Map.copyOf(updated);
+            }
+        );
 
         return recorded.map(previous -> {
             // Only someone taking the lead from someone else is news. Being first in an empty
             // category isn't, and nor is a period starting again with nobody in the lead.
             final var announceable = previous.isPresent() && leader.isPresent() && category.announceChanges();
-            final var change = new LeaderEvents.Change(category.id(), category.displayTitle(), previous, leader, announceable);
+            final var change = new LeaderEvents.Change(
+                category.id(),
+                category.displayTitle(),
+                previous,
+                leader,
+                announceable
+            );
             LeaderEvents.CHANGED.invoker().onLeaderChanged(server, change);
             return change;
         });

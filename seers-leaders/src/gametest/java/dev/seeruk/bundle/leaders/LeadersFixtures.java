@@ -119,7 +119,11 @@ public final class LeadersFixtures implements ModInitializer {
             300,
             ZoneOffset.UTC,
             new Announcement(true, TextTemplate.parse("${player} leads ${category}")),
-            new PeriodAnnouncement(true, TextTemplate.parse("${period} ended"), TextTemplate.parse("${category}: ${player}")),
+            new PeriodAnnouncement(
+                true,
+                TextTemplate.parse("${period} ended"),
+                TextTemplate.parse("${category}: ${player}")
+            ),
             periods,
             categories
         );

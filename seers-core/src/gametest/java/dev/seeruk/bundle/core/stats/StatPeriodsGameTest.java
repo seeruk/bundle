@@ -17,9 +17,7 @@ import java.util.Optional;
 import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
-import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
-import static dev.seeruk.bundle.core.testing.TestTimes.at;
-import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
+import static dev.seeruk.bundle.core.testing.TestTimes.*;
 
 public class StatPeriodsGameTest {
     // Periods end every day at 18:00 (see TestTimes.DAILY), and each check is given a clock fixed
@@ -61,7 +59,10 @@ public class StatPeriodsGameTest {
             final var since = PERIODS.sinceStart(server, "since", AllPlayerStats.read(server));
 
             helper.assertValueEqual(
-                Optional.ofNullable(since.getOrDefault(player.getUUID(), Map.of()).get("scoreboard:stat_periods_since")),
+                Optional.ofNullable(since.getOrDefault(
+                    player.getUUID(),
+                    Map.of()
+                ).get("scoreboard:stat_periods_since")),
                 Optional.of(3),
                 "since start"
             );
@@ -76,7 +77,11 @@ public class StatPeriodsGameTest {
     public void sinceStartIsEmptyBeforeAPeriodStarts(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
 
-        helper.assertValueEqual(PERIODS.sinceStart(server, "never_started", AllPlayerStats.read(server)), Map.of(), "since start");
+        helper.assertValueEqual(
+            PERIODS.sinceStart(server, "never_started", AllPlayerStats.read(server)),
+            Map.of(),
+            "since start"
+        );
         helper.succeed();
     }
 
@@ -193,7 +198,11 @@ public class StatPeriodsGameTest {
         final var early = PERIODS.check(server, "end_now", DAILY, at(day.plusHours(2)), endings::add);
         final var onTime = PERIODS.check(server, "end_now", DAILY, at(day.plusDays(1)), endings::add);
 
-        helper.assertValueEqual(List.of(ended, early, onTime), List.of(Outcome.ENDED, Outcome.UNCHANGED, Outcome.ENDED), "outcomes");
+        helper.assertValueEqual(
+            List.of(ended, early, onTime),
+            List.of(Outcome.ENDED, Outcome.UNCHANGED, Outcome.ENDED),
+            "outcomes"
+        );
         helper.assertValueEqual(
             endings,
             List.of(
@@ -246,9 +255,17 @@ public class StatPeriodsGameTest {
 
         helper.assertValueEqual(forgotten, List.of("removed"), "forgotten");
         // A forgotten period starts again, but the other mod's period of the same name doesn't
-        helper.assertValueEqual(periods.check(server, "removed", DAILY, at(day), ended -> {}), Outcome.STARTED, "removed");
+        helper.assertValueEqual(
+            periods.check(server, "removed", DAILY, at(day), ended -> {}),
+            Outcome.STARTED,
+            "removed"
+        );
         helper.assertValueEqual(periods.check(server, "kept", DAILY, at(day), ended -> {}), Outcome.UNCHANGED, "kept");
-        helper.assertValueEqual(other.check(server, "removed", DAILY, at(day), ended -> {}), Outcome.UNCHANGED, "other mod's");
+        helper.assertValueEqual(
+            other.check(server, "removed", DAILY, at(day), ended -> {}),
+            Outcome.UNCHANGED,
+            "other mod's"
+        );
         helper.succeed();
     }
 }

@@ -6,16 +6,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ScheduleTest {
     private static final ZoneId LONDON = ZoneId.of("Europe/London");
@@ -26,8 +22,18 @@ public class ScheduleTest {
         // 2026-11-25 is a Wednesday, in GMT
         static Stream<Arguments> shouldFindTheLatestMoment() {
             return Stream.of(
-                Arguments.of("Daily, later that day", Schedule.daily(SIX_PM), "2026-11-25T19:00", "2026-11-25T18:00:00Z"),
-                Arguments.of("Daily, earlier that day", Schedule.daily(SIX_PM), "2026-11-25T17:00", "2026-11-24T18:00:00Z"),
+                Arguments.of(
+                    "Daily, later that day",
+                    Schedule.daily(SIX_PM),
+                    "2026-11-25T19:00",
+                    "2026-11-25T18:00:00Z"
+                ),
+                Arguments.of(
+                    "Daily, earlier that day",
+                    Schedule.daily(SIX_PM),
+                    "2026-11-25T17:00",
+                    "2026-11-24T18:00:00Z"
+                ),
                 Arguments.of("Daily, exactly then", Schedule.daily(SIX_PM), "2026-11-25T18:00", "2026-11-25T18:00:00Z"),
                 Arguments.of(
                     "Weekly, later in the week",
@@ -47,7 +53,12 @@ public class ScheduleTest {
                     "2026-12-01T12:00",
                     "2026-11-25T18:00:00Z"
                 ),
-                Arguments.of("Monthly, later in the month", Schedule.monthly(1, LocalTime.MIDNIGHT), "2026-11-25T12:00", "2026-11-01T00:00:00Z"),
+                Arguments.of(
+                    "Monthly, later in the month",
+                    Schedule.monthly(1, LocalTime.MIDNIGHT),
+                    "2026-11-25T12:00",
+                    "2026-11-01T00:00:00Z"
+                ),
                 // October is in summer time, so 18:00 in London is 17:00 UTC
                 Arguments.of(
                     "Monthly, before this month's day, is last month's",
@@ -61,7 +72,12 @@ public class ScheduleTest {
                     "2026-03-01T12:00",
                     "2026-02-28T18:00:00Z"
                 ),
-                Arguments.of("Monthly, on a shorter month's last day", Schedule.monthly(31, SIX_PM), "2026-02-28T19:00", "2026-02-28T18:00:00Z"),
+                Arguments.of(
+                    "Monthly, on a shorter month's last day",
+                    Schedule.monthly(31, SIX_PM),
+                    "2026-02-28T19:00",
+                    "2026-02-28T18:00:00Z"
+                ),
                 Arguments.of(
                     "In summer time, in local time",
                     Schedule.weekly(DayOfWeek.SUNDAY, SIX_PM),
@@ -90,9 +106,21 @@ public class ScheduleTest {
         static Stream<Arguments> shouldRead() {
             return Stream.of(
                 Arguments.of("Daily", Map.of("every", "day", "at", "18:00"), Schedule.daily(SIX_PM)),
-                Arguments.of("Weekly", Map.of("every", "week", "on", "sunday", "at", "18:00"), Schedule.weekly(DayOfWeek.SUNDAY, SIX_PM)),
-                Arguments.of("Monthly, on a day", Map.of("every", "month", "on", 1, "at", "18:00"), Schedule.monthly(1, SIX_PM)),
-                Arguments.of("Monthly, on the last day", Map.of("every", "month", "on", "last", "at", "18:00"), Schedule.monthly(31, SIX_PM))
+                Arguments.of(
+                    "Weekly",
+                    Map.of("every", "week", "on", "sunday", "at", "18:00"),
+                    Schedule.weekly(DayOfWeek.SUNDAY, SIX_PM)
+                ),
+                Arguments.of(
+                    "Monthly, on a day",
+                    Map.of("every", "month", "on", 1, "at", "18:00"),
+                    Schedule.monthly(1, SIX_PM)
+                ),
+                Arguments.of(
+                    "Monthly, on the last day",
+                    Map.of("every", "month", "on", "last", "at", "18:00"),
+                    Schedule.monthly(31, SIX_PM)
+                )
             );
         }
 
@@ -111,7 +139,10 @@ public class ScheduleTest {
                 Arguments.of("A daily schedule with a day", Map.of("every", "day", "on", "sunday", "at", "18:00")),
                 Arguments.of("A weekly schedule without a day", Map.of("every", "week", "at", "18:00")),
                 Arguments.of("A weekly schedule on a number", Map.of("every", "week", "on", 1, "at", "18:00")),
-                Arguments.of("A monthly schedule on a day name", Map.of("every", "month", "on", "sunday", "at", "18:00")),
+                Arguments.of(
+                    "A monthly schedule on a day name",
+                    Map.of("every", "month", "on", "sunday", "at", "18:00")
+                ),
                 Arguments.of("A monthly schedule past the 31st", Map.of("every", "month", "on", 32, "at", "18:00")),
                 Arguments.of("A monthly schedule before the 1st", Map.of("every", "month", "on", 0, "at", "18:00")),
                 Arguments.of("A time that isn't HH:MM", Map.of("every", "day", "at", "6pm"))

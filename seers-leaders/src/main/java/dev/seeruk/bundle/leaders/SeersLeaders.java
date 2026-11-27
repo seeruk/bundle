@@ -33,7 +33,6 @@ public class SeersLeaders implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(server -> Leaders.tick(server, config, clock));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> Leaders.clear());
 
-
         LeaderMannequins.init();
         ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> LeaderMannequins.loaded(entity, config));
         ServerEntityEvents.ENTITY_UNLOAD.register((entity, level) -> LeaderMannequins.unloaded(entity));

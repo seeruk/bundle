@@ -49,7 +49,10 @@ public class SeersDigest implements ModInitializer {
         });
 
         // Handle events Digest tracks on it's own
-        PlayerEvents.ADVANCEMENT_MESSAGE.register((player, advancement, message) -> Moments.earned(player, advancement));
+        PlayerEvents.ADVANCEMENT_MESSAGE.register((player, advancement, message) -> Moments.earned(
+            player,
+            advancement
+        ));
         ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) ->
             DigestStats.recordDimensionChange(player, destination.dimension()));
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {

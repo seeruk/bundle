@@ -40,7 +40,11 @@ public class PlayerNamesGameTest {
         final var player = offline();
         server.services().nameToIdCache().add(player);
 
-        helper.assertValueEqual(PlayerNames.displayName(server, player.id()).getString(), player.name(), "display name");
+        helper.assertValueEqual(
+            PlayerNames.displayName(server, player.id()).getString(),
+            player.name(),
+            "display name"
+        );
         helper.succeed();
     }
 
@@ -48,7 +52,11 @@ public class PlayerNamesGameTest {
     public void displayNameIsUuidForUnknownPlayers(GameTestHelper helper) {
         final var id = UUID.randomUUID();
 
-        helper.assertValueEqual(PlayerNames.displayName(helper.getLevel().getServer(), id).getString(), id.toString(), "display name");
+        helper.assertValueEqual(
+            PlayerNames.displayName(helper.getLevel().getServer(), id).getString(),
+            id.toString(),
+            "display name"
+        );
         helper.succeed();
     }
 
@@ -76,7 +84,11 @@ public class PlayerNamesGameTest {
             team.setPlayerPrefix(Component.literal("[T] "));
             scoreboard.addPlayerToTeam(player.name(), team);
 
-            helper.assertValueEqual(PlayerNames.displayName(server, player.id()).getString(), "[T] Renamed", "display name");
+            helper.assertValueEqual(
+                PlayerNames.displayName(server, player.id()).getString(),
+                "[T] Renamed",
+                "display name"
+            );
         } finally {
             scoreboard.removePlayerTeam(team);
         }

@@ -40,17 +40,17 @@ period_announcement:
 #   at: The time it ends, as HH:MM in the time zone above. Pick a time players are usually around,
 #     so they see the announcement.
 periods:
-  - id: weekly
-    title: weekly
-    every: week
-    on: sunday
-    at: "18:00"
+- id: weekly
+  title: weekly
+  every: week
+  on: sunday
+  at: "18:00"
 
-  - id: monthly
-    title: monthly
-    every: month
-    on: last
-    at: "18:00"
+- id: monthly
+  title: monthly
+  every: month
+  on: last
+  at: "18:00"
 
 # Categories are what players are ranked by. Setting categories in config.yml replaces this whole
 # list, so copy any of these you want to keep into your config.yml.
@@ -80,150 +80,150 @@ periods:
 #     announced when it ends anyway.
 #   item: What mannequins hold (optional).
 categories:
-  - id: miner
-    title: Miner
-    stats:
-      - "minecraft.mined:*"
-    unit: count
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} blocks mined</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    item: minecraft:diamond_pickaxe
+- id: miner
+  title: Miner
+  stats:
+  - "minecraft.mined:*"
+  unit: count
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} blocks mined</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  item: minecraft:diamond_pickaxe
 
-  - id: explorer
-    title: Explorer
-    stats:
-      - "minecraft.custom:minecraft.*_one_cm"
-      - "!minecraft.custom:minecraft.fall_one_cm"
-      - "!minecraft.custom:minecraft.climb_one_cm"
-      - "!minecraft.custom:minecraft.fly_one_cm"
-    unit: distance
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} blocks travelled</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    item: minecraft:compass
+- id: explorer
+  title: Explorer
+  stats:
+  - "minecraft.custom:minecraft.*_one_cm"
+  - "!minecraft.custom:minecraft.fall_one_cm"
+  - "!minecraft.custom:minecraft.climb_one_cm"
+  - "!minecraft.custom:minecraft.fly_one_cm"
+  unit: distance
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} blocks travelled</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  item: minecraft:compass
 
-  - id: slayer
-    title: Slayer
-    stats:
-      - "minecraft.killed:*"
-    unit: count
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} mobs slain</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    item: minecraft:diamond_sword
+- id: slayer
+  title: Slayer
+  stats:
+  - "minecraft.killed:*"
+  unit: count
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} mobs slain</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  item: minecraft:diamond_sword
 
-  # Vanilla doesn't count harvests, so this counts crops broken (ripe or not) and animals bred.
-  - id: farmer
-    title: Farmer
-    stats:
-      - "minecraft.custom:minecraft.animals_bred"
-      - "minecraft.mined:minecraft.wheat"
-      - "minecraft.mined:minecraft.carrots"
-      - "minecraft.mined:minecraft.potatoes"
-      - "minecraft.mined:minecraft.beetroots"
-      - "minecraft.mined:minecraft.nether_wart"
-      - "minecraft.mined:minecraft.melon"
-      - "minecraft.mined:minecraft.pumpkin"
-      - "minecraft.mined:minecraft.sugar_cane"
-      - "minecraft.mined:minecraft.cocoa"
-    unit: count
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} crops and animals</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    item: minecraft:diamond_hoe
+# Vanilla doesn't count harvests, so this counts crops broken (ripe or not) and animals bred.
+- id: farmer
+  title: Farmer
+  stats:
+  - "minecraft.custom:minecraft.animals_bred"
+  - "minecraft.mined:minecraft.wheat"
+  - "minecraft.mined:minecraft.carrots"
+  - "minecraft.mined:minecraft.potatoes"
+  - "minecraft.mined:minecraft.beetroots"
+  - "minecraft.mined:minecraft.nether_wart"
+  - "minecraft.mined:minecraft.melon"
+  - "minecraft.mined:minecraft.pumpkin"
+  - "minecraft.mined:minecraft.sugar_cane"
+  - "minecraft.mined:minecraft.cocoa"
+  unit: count
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} crops and animals</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  item: minecraft:diamond_hoe
 
-  - id: trader
-    title: Trader
-    stats:
-      - "minecraft.custom:minecraft.traded_with_villager"
-    unit: count
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} trades</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    item: minecraft:emerald
+- id: trader
+  title: Trader
+  stats:
+  - "minecraft.custom:minecraft.traded_with_villager"
+  unit: count
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} trades</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  item: minecraft:emerald
 
-  - id: angler
-    title: Angler
-    stats:
-      - "minecraft.custom:minecraft.fish_caught"
-    unit: count
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} fish caught</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    item: minecraft:fishing_rod
+- id: angler
+  title: Angler
+  stats:
+  - "minecraft.custom:minecraft.fish_caught"
+  unit: count
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} fish caught</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  item: minecraft:fishing_rod
 
-  - id: veteran
-    title: Veteran
-    stats:
-      - "minecraft.custom:minecraft.play_time"
-    unit: time
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} hours played</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    item: minecraft:clock
+- id: veteran
+  title: Veteran
+  stats:
+  - "minecraft.custom:minecraft.play_time"
+  unit: time
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} hours played</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  item: minecraft:clock
 
-  # Needs Seer's Chat, which counts messages players send.
-  - id: socialite
-    title: Socialite
-    stats:
-      - "scoreboard:seers_chat.messages_sent"
-    unit: count
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} messages sent</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    item: minecraft:writable_book
+# Needs Seer's Chat, which counts messages players send.
+- id: socialite
+  title: Socialite
+  stats:
+  - "scoreboard:seers_chat.messages_sent"
+  unit: count
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} messages sent</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  item: minecraft:writable_book
 
-  # The same as some of the above, but only counting this month, so newer players can top them too.
-  - id: monthly_miner
-    title: Miner of the Month
-    period: monthly
-    stats:
-      - "minecraft.mined:*"
-    unit: count
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} blocks mined</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    previous_description: "<gray>Last month:</gray> ${player}"
-    announce_changes: false
-    item: minecraft:iron_pickaxe
+# The same as some of the above, but only counting this month, so newer players can top them too.
+- id: monthly_miner
+  title: Miner of the Month
+  period: monthly
+  stats:
+  - "minecraft.mined:*"
+  unit: count
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} blocks mined</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  previous_description: "<gray>Last month:</gray> ${player}"
+  announce_changes: false
+  item: minecraft:iron_pickaxe
 
-  - id: monthly_explorer
-    title: Explorer of the Month
-    period: monthly
-    stats:
-      - "minecraft.custom:minecraft.*_one_cm"
-      - "!minecraft.custom:minecraft.fall_one_cm"
-      - "!minecraft.custom:minecraft.climb_one_cm"
-      - "!minecraft.custom:minecraft.fly_one_cm"
-    unit: distance
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} blocks travelled</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    previous_description: "<gray>Last month:</gray> ${player}"
-    announce_changes: false
-    item: minecraft:map
+- id: monthly_explorer
+  title: Explorer of the Month
+  period: monthly
+  stats:
+  - "minecraft.custom:minecraft.*_one_cm"
+  - "!minecraft.custom:minecraft.fall_one_cm"
+  - "!minecraft.custom:minecraft.climb_one_cm"
+  - "!minecraft.custom:minecraft.fly_one_cm"
+  unit: distance
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} blocks travelled</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  previous_description: "<gray>Last month:</gray> ${player}"
+  announce_changes: false
+  item: minecraft:map
 
-  - id: monthly_slayer
-    title: Slayer of the Month
-    period: monthly
-    stats:
-      - "minecraft.killed:*"
-    unit: count
-    name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    description: "${player} <gray>- ${value} mobs slain</gray>"
-    empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
-    empty_description: "<gray>Nobody yet</gray>"
-    previous_description: "<gray>Last month:</gray> ${player}"
-    announce_changes: false
-    item: minecraft:iron_sword
+- id: monthly_slayer
+  title: Slayer of the Month
+  period: monthly
+  stats:
+  - "minecraft.killed:*"
+  unit: count
+  name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  description: "${player} <gray>- ${value} mobs slain</gray>"
+  empty_name: "<gold>${category}</gold> <gray>#${rank}</gray>"
+  empty_description: "<gray>Nobody yet</gray>"
+  previous_description: "<gray>Last month:</gray> ${player}"
+  announce_changes: false
+  item: minecraft:iron_sword

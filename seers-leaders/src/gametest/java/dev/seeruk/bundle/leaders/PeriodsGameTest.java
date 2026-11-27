@@ -15,9 +15,7 @@ import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.core.testing.TestPlayers.systemMessages;
-import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
-import static dev.seeruk.bundle.core.testing.TestTimes.at;
-import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
+import static dev.seeruk.bundle.core.testing.TestTimes.*;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.periodConfig;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.periodEventsFor;
 
@@ -44,7 +42,11 @@ public class PeriodsGameTest {
             setScore(player, objective, 8);
             Leaders.refresh(server, config);
 
-            helper.assertValueEqual(Leaders.standing(new Seat("counts", 1)), Optional.of(new Standing(player.getUUID(), 3)), "standing");
+            helper.assertValueEqual(
+                Leaders.standing(new Seat("counts", 1)),
+                Optional.of(new Standing(player.getUUID(), 3)),
+                "standing"
+            );
             helper.assertValueEqual(periodEventsFor("counts"), List.of(), "events");
         } finally {
             server.getScoreboard().removeObjective(objective);
@@ -82,13 +84,21 @@ public class PeriodsGameTest {
             );
 
             // And then we check the previous and current standings
-            helper.assertValueEqual(Leaders.previous(server, new Seat("ends", 1)), Optional.of(new Standing(player.getUUID(), 4)), "previous");
+            helper.assertValueEqual(
+                Leaders.previous(server, new Seat("ends", 1)),
+                Optional.of(new Standing(player.getUUID(), 4)),
+                "previous"
+            );
             helper.assertValueEqual(Leaders.standing(new Seat("ends", 1)), Optional.empty(), "standing once ended");
 
             // The new period counts what's gained after it started
             setScore(player, objective, 6);
             Leaders.refresh(server, config);
-            helper.assertValueEqual(Leaders.standing(new Seat("ends", 1)), Optional.of(new Standing(player.getUUID(), 2)), "standing in the new period");
+            helper.assertValueEqual(
+                Leaders.standing(new Seat("ends", 1)),
+                Optional.of(new Standing(player.getUUID(), 2)),
+                "standing in the new period"
+            );
         } finally {
             server.getScoreboard().removeObjective(objective);
         }

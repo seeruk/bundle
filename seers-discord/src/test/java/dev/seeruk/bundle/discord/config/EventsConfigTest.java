@@ -46,7 +46,10 @@ public class EventsConfigTest {
             )
         ).getOrThrow();
 
-        assertEquals("The monthly leaders are in! (cont.)", format.continuedFormat().format(Map.of("period", "monthly")));
+        assertEquals(
+            "The monthly leaders are in! (cont.)",
+            format.continuedFormat().format(Map.of("period", "monthly"))
+        );
         assertEquals(0xFFAA00, format.colour().getValue());
     }
 

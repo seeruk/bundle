@@ -24,9 +24,19 @@ public class LeaderboardTest {
             Arguments.of("Leaves out players on zero", Map.of(A, 0L, B, 3L), List.of(), List.of(B)),
             Arguments.of("Is empty when nobody has a total", Map.of(A, 0L), List.of(), List.of()),
             Arguments.of("Keeps the previous order for a tie", Map.of(A, 5L, B, 5L), List.of(B, A), List.of(B, A)),
-            Arguments.of("Puts previously ranked players ahead in a tie", Map.of(A, 5L, B, 5L), List.of(B), List.of(B, A)),
+            Arguments.of(
+                "Puts previously ranked players ahead in a tie",
+                Map.of(A, 5L, B, 5L),
+                List.of(B),
+                List.of(B, A)
+            ),
             Arguments.of("Orders anyone else tied by UUID", Map.of(B, 5L, A, 5L), List.of(), List.of(A, B)),
-            Arguments.of("Ranks a higher total above the previous order", Map.of(A, 6L, B, 5L), List.of(B, A), List.of(A, B))
+            Arguments.of(
+                "Ranks a higher total above the previous order",
+                Map.of(A, 6L, B, 5L),
+                List.of(B, A),
+                List.of(A, B)
+            )
         );
     }
 
@@ -38,6 +48,9 @@ public class LeaderboardTest {
 
     @Test
     void keepsEachPlayersTotal() {
-        assertEquals(List.of(new Standing(B, 3L), new Standing(A, 1L)), Leaderboard.rank(Map.of(A, 1L, B, 3L), List.of()));
+        assertEquals(
+            List.of(new Standing(B, 3L), new Standing(A, 1L)),
+            Leaderboard.rank(Map.of(A, 1L, B, 3L), List.of())
+        );
     }
 }

@@ -84,7 +84,12 @@ public class IssueScheduleGameTest {
             IssueSchedule.check(server, config, "publish_now", at(day));
             setScore(player, objective, 3);
 
-            final var issue = IssueSchedule.publishNow(server, config, "publish_now", at(day.plusHours(1))).orElseThrow();
+            final var issue = IssueSchedule.publishNow(
+                server,
+                config,
+                "publish_now",
+                at(day.plusHours(1))
+            ).orElseThrow();
 
             helper.assertValueEqual(issue.ended(), day.plusHours(1).toInstant(), "ended");
             helper.assertValueEqual(total(issue, player), Optional.of(3L), "total");

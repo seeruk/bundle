@@ -49,20 +49,26 @@ public final class DigestCommand {
     private static int publish(CommandContext<CommandSourceStack> context, DigestConfig config, Clock clock) {
         final var source = context.getSource();
         return IssueSchedule.publishNow(source.getServer(), config, clock)
-            .map(issue -> succeedAndBroadcast(source, TextParsers.parseAsTrusted(
-                "<green>Published issue #%d</green>".formatted(issue.number())
-            )))
-            .orElseGet(() -> succeedAndBroadcast(source, TextParsers.parseAsTrusted(
-                "<yellow>Nobody's been active since the last issue, so there's nothing to publish</yellow>"
-            )));
+            .map(issue -> succeedAndBroadcast(
+                source, TextParsers.parseAsTrusted(
+                    "<green>Published issue #%d</green>".formatted(issue.number())
+                )
+            ))
+            .orElseGet(() -> succeedAndBroadcast(
+                source, TextParsers.parseAsTrusted(
+                    "<yellow>Nobody's been active since the last issue, so there's nothing to publish</yellow>"
+                )
+            ));
     }
 
     private static int list(CommandContext<CommandSourceStack> context, Clock clock) {
         final var issues = Archive.all(context.getSource().getServer());
         if (issues.isEmpty()) {
-            return succeed(context.getSource(), TextParsers.parseAsTrusted(
-                "<yellow>No issues have been published yet</yellow>"
-            ));
+            return succeed(
+                context.getSource(), TextParsers.parseAsTrusted(
+                    "<yellow>No issues have been published yet</yellow>"
+                )
+            );
         }
 
         final var lines = issues.reversed().stream()

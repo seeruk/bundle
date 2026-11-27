@@ -1,7 +1,7 @@
 package dev.seeruk.bundle.leaders;
 
 import dev.seeruk.bundle.leaders.Leaderboard.Standing;
-import dev.seeruk.bundle.leaders.LeadersFixtures.Changed;
+import dev.seeruk.bundle.leaders.LeadersFixtures.*;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,9 +13,6 @@ import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.core.testing.TestPlayers.systemMessages;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.category;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.config;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.eventsFor;
 
 public class LeadersGameTest {
     private static String name(ServerPlayer player) {
@@ -41,8 +38,16 @@ public class LeadersGameTest {
             setScore(first, objective, 5);
             Leaders.refresh(server, config);
 
-            helper.assertValueEqual(Leaders.standing(new Seat("ranks", 1)), Optional.of(new Standing(first.getUUID(), 5)), "first");
-            helper.assertValueEqual(Leaders.standing(new Seat("ranks", 2)), Optional.of(new Standing(second.getUUID(), 3)), "second");
+            helper.assertValueEqual(
+                Leaders.standing(new Seat("ranks", 1)),
+                Optional.of(new Standing(first.getUUID(), 5)),
+                "first"
+            );
+            helper.assertValueEqual(
+                Leaders.standing(new Seat("ranks", 2)),
+                Optional.of(new Standing(second.getUUID(), 3)),
+                "second"
+            );
             helper.assertValueEqual(Leaders.standing(new Seat("ranks", 3)), Optional.empty(), "third");
         } finally {
             server.getScoreboard().removeObjective(objective);
@@ -88,7 +93,12 @@ public class LeadersGameTest {
 
             helper.assertValueEqual(
                 eventsFor("new_leader"),
-                List.of(new Changed("new_leader", Optional.of(leader.getUUID()), Optional.of(overtaker.getUUID()), true)),
+                List.of(new Changed(
+                    "new_leader",
+                    Optional.of(leader.getUUID()),
+                    Optional.of(overtaker.getUUID()),
+                    true
+                )),
                 "events"
             );
         } finally {
@@ -114,7 +124,11 @@ public class LeadersGameTest {
             setScore(challenger, objective, 5);
             Leaders.refresh(server, config);
 
-            helper.assertValueEqual(Leaders.standing(new Seat("tie", 1)).map(Standing::player), Optional.of(leader.getUUID()), "leader");
+            helper.assertValueEqual(
+                Leaders.standing(new Seat("tie", 1)).map(Standing::player),
+                Optional.of(leader.getUUID()),
+                "leader"
+            );
             helper.assertValueEqual(eventsFor("tie"), List.of(), "events");
         } finally {
             server.getScoreboard().removeObjective(objective);
@@ -138,7 +152,11 @@ public class LeadersGameTest {
             setScore(overtaker, objective, 6);
             Leaders.refresh(server, config);
 
-            helper.assertValueEqual(announcementsFor(overtaker), List.of(name(overtaker) + " leads Test"), "announcements");
+            helper.assertValueEqual(
+                announcementsFor(overtaker),
+                List.of(name(overtaker) + " leads Test"),
+                "announcements"
+            );
         } finally {
             server.getScoreboard().removeObjective(objective);
         }

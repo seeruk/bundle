@@ -45,10 +45,12 @@ public final class Archive {
     }
 
     public static void add(MinecraftServer server, Issue issue) {
-        ISSUES.update(server, issues -> {
-            final var updated = new ArrayList<>(issues);
-            updated.add(issue);
-            return List.copyOf(updated);
-        });
+        ISSUES.update(
+            server, issues -> {
+                final var updated = new ArrayList<>(issues);
+                updated.add(issue);
+                return List.copyOf(updated);
+            }
+        );
     }
 }

@@ -33,65 +33,65 @@ night_hours:
 #     every block mined), and a pattern starting with ! leaves out whatever it matches. Each stat is
 #     only counted once, however many patterns match it.
 groups:
-  - id: played
-    stats:
-      - "minecraft.custom:minecraft.play_time"
+- id: played
+  stats:
+  - "minecraft.custom:minecraft.play_time"
 
-  - id: miner
-    stats:
-      - "minecraft.mined:*"
+- id: miner
+  stats:
+  - "minecraft.mined:*"
 
-  - id: explorer
-    stats:
-      - "minecraft.custom:minecraft.*_one_cm"
-      - "!minecraft.custom:minecraft.fall_one_cm"
-      - "!minecraft.custom:minecraft.climb_one_cm"
-      - "!minecraft.custom:minecraft.fly_one_cm"
+- id: explorer
+  stats:
+  - "minecraft.custom:minecraft.*_one_cm"
+  - "!minecraft.custom:minecraft.fall_one_cm"
+  - "!minecraft.custom:minecraft.climb_one_cm"
+  - "!minecraft.custom:minecraft.fly_one_cm"
 
-  - id: slayer
-    stats:
-      - "minecraft.killed:*"
+- id: slayer
+  stats:
+  - "minecraft.killed:*"
 
-  - id: deaths
-    stats:
-      - "minecraft.custom:minecraft.deaths"
+- id: deaths
+  stats:
+  - "minecraft.custom:minecraft.deaths"
 
-  # Vanilla doesn't count harvests, so this counts crops broken (ripe or not) and animals bred.
-  - id: farmer
-    stats:
-      - "minecraft.custom:minecraft.animals_bred"
-      - "minecraft.mined:minecraft.wheat"
-      - "minecraft.mined:minecraft.carrots"
-      - "minecraft.mined:minecraft.potatoes"
-      - "minecraft.mined:minecraft.beetroots"
-      - "minecraft.mined:minecraft.nether_wart"
-      - "minecraft.mined:minecraft.melon"
-      - "minecraft.mined:minecraft.pumpkin"
-      - "minecraft.mined:minecraft.sugar_cane"
-      - "minecraft.mined:minecraft.cocoa"
+# Vanilla doesn't count harvests, so this counts crops broken (ripe or not) and animals bred.
+- id: farmer
+  stats:
+  - "minecraft.custom:minecraft.animals_bred"
+  - "minecraft.mined:minecraft.wheat"
+  - "minecraft.mined:minecraft.carrots"
+  - "minecraft.mined:minecraft.potatoes"
+  - "minecraft.mined:minecraft.beetroots"
+  - "minecraft.mined:minecraft.nether_wart"
+  - "minecraft.mined:minecraft.melon"
+  - "minecraft.mined:minecraft.pumpkin"
+  - "minecraft.mined:minecraft.sugar_cane"
+  - "minecraft.mined:minecraft.cocoa"
 
-  - id: trader
-    stats:
-      - "minecraft.custom:minecraft.traded_with_villager"
+- id: trader
+  stats:
+  - "minecraft.custom:minecraft.traded_with_villager"
 
-  - id: angler
-    stats:
-      - "minecraft.custom:minecraft.fish_caught"
+- id: angler
+  stats:
+  - "minecraft.custom:minecraft.fish_caught"
 
-  # These are counted by Digest itself, in scoreboard objectives.
-  - id: night_owl
-    stats:
-      - "scoreboard:seers_digest.night_ticks"
+# These are counted by Digest itself, in scoreboard objectives.
+- id: night_owl
+  stats:
+  - "scoreboard:seers_digest.night_ticks"
 
-  - id: nether_visits
-    stats:
-      - "scoreboard:seers_digest.nether_visits"
+- id: nether_visits
+  stats:
+  - "scoreboard:seers_digest.nether_visits"
 
-  - id: end_visits
-    stats:
-      - "scoreboard:seers_digest.end_visits"
+- id: end_visits
+  stats:
+  - "scoreboard:seers_digest.end_visits"
 
-  # Needs Seer's Chat, which counts messages players send.
-  - id: chat
-    stats:
-      - "scoreboard:seers_chat.messages_sent"
+# Needs Seer's Chat, which counts messages players send.
+- id: chat
+  stats:
+  - "scoreboard:seers_chat.messages_sent"

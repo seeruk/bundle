@@ -11,7 +11,8 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DigestConfigTest {
     private static final Map<String, Object> SCHEDULE = Map.of("every", "week", "on", "sunday", "at", "18:00");
@@ -49,18 +50,48 @@ public class DigestConfigTest {
 
     @Test
     void refusesGroupIdsUsedMoreThanOnce() {
-        assertTrue(parse(Map.of("schedule", SCHEDULE, "night_hours", NIGHT, "groups", List.of(group("miner"), group("miner")))).isError());
+        assertTrue(parse(Map.of(
+            "schedule",
+            SCHEDULE,
+            "night_hours",
+            NIGHT,
+            "groups",
+            List.of(group("miner"), group("miner"))
+        )).isError());
     }
 
     @Test
     void refusesGroupIdsTemplatesCantUse() {
-        assertTrue(parse(Map.of("schedule", SCHEDULE, "night_hours", NIGHT, "groups", List.of(group("miner.stone")))).isError());
-        assertTrue(parse(Map.of("schedule", SCHEDULE, "night_hours", NIGHT, "groups", List.of(group("miner-stone")))).isError());
+        assertTrue(parse(Map.of(
+            "schedule",
+            SCHEDULE,
+            "night_hours",
+            NIGHT,
+            "groups",
+            List.of(group("miner.stone"))
+        )).isError());
+        assertTrue(parse(Map.of(
+            "schedule",
+            SCHEDULE,
+            "night_hours",
+            NIGHT,
+            "groups",
+            List.of(group("miner-stone"))
+        )).isError());
     }
 
     @Test
     void refusesTimeZonesThatAreNotTimeZones() {
-        assertTrue(parse(Map.of("timezone", "Nowhere/Special", "schedule", SCHEDULE, "night_hours", NIGHT, "groups", List.of())).isError());
+        assertTrue(parse(Map.of(
+            "timezone",
+            "Nowhere/Special",
+            "schedule",
+            SCHEDULE,
+            "night_hours",
+            NIGHT,
+            "groups",
+            List.of()
+        )).isError());
     }
 
     @Test

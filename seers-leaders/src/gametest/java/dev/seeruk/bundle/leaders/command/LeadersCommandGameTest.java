@@ -30,7 +30,10 @@ public class LeadersCommandGameTest {
     public void registersNameAndNamespacedName(GameTestHelper helper) {
         final var root = helper.getLevel().getServer().getCommands().getDispatcher().getRoot();
 
-        helper.assertTrue(root.getChild(LeadersCommand.NAME) != null, "Command not registered as " + LeadersCommand.NAME);
+        helper.assertTrue(
+            root.getChild(LeadersCommand.NAME) != null,
+            "Command not registered as " + LeadersCommand.NAME
+        );
         helper.assertTrue(
             root.getChild(SeersLeaders.MOD_ID + ":" + LeadersCommand.NAME) != null,
             "Command not registered as " + SeersLeaders.MOD_ID + ":" + LeadersCommand.NAME

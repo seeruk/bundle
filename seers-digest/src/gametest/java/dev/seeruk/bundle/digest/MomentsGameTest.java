@@ -2,8 +2,8 @@ package dev.seeruk.bundle.digest;
 
 import dev.seeruk.bundle.digest.api.Issue;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
-import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.SharedConstants;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +36,10 @@ public class MomentsGameTest {
             helper.getLevel().getServer().getAdvancements().get(Identifier.withDefaultNamespace(path)),
             path
         );
-        advancement.value().criteria().keySet().forEach(criterion -> player.getAdvancements().award(advancement, criterion));
+        advancement.value().criteria().keySet().forEach(criterion -> player.getAdvancements().award(
+            advancement,
+            criterion
+        ));
     }
 
     private static List<Issue.Death> deathsOf(Issue.Moments moments, ServerPlayer player) {
@@ -119,7 +122,11 @@ public class MomentsGameTest {
             List.of("minecraft:story/mine_stone"),
             "second's advancements"
         );
-        helper.assertValueEqual(firstsOf(moments, first), List.of("advancement:minecraft:story/mine_stone"), "first's firsts");
+        helper.assertValueEqual(
+            firstsOf(moments, first),
+            List.of("advancement:minecraft:story/mine_stone"),
+            "first's firsts"
+        );
         helper.assertValueEqual(firstsOf(moments, second), List.of(), "second's firsts");
         helper.succeed();
     }
@@ -146,23 +153,33 @@ public class MomentsGameTest {
 
         try {
             Files.createDirectories(advancements.getParent());
-            Files.writeString(advancements, """
-                {
-                    "minecraft:nether/find_fortress": {"criteria": {"fortress": "2026-01-01 00:00:00 +0000"}, "done": true},
-                    "minecraft:nether/explore_nether": {"criteria": {}, "done": false},
-                    "minecraft:recipes/decorations/crafting_table": {"criteria": {}, "done": true},
-                    "DataVersion": 1
-                }
-                """);
+            Files.writeString(
+                advancements, """
+                    {
+                        "minecraft:nether/find_fortress": {"criteria": {"fortress": "2026-01-01 00:00:00 +0000"}, "done": true},
+                        "minecraft:nether/explore_nether": {"criteria": {}, "done": false},
+                        "minecraft:recipes/decorations/crafting_table": {"criteria": {}, "done": true},
+                        "DataVersion": 1
+                    }
+                    """
+            );
             Files.createDirectories(stats.getParent());
-            Files.writeString(stats, """
-                {"stats": {"minecraft:killed_by": {"minecraft:enderman": 1}}, "DataVersion": %d}
-                """.formatted(SharedConstants.getCurrentVersion().dataVersion().version()));
+            Files.writeString(
+                stats, """
+                    {"stats": {"minecraft:killed_by": {"minecraft:enderman": 1}}, "DataVersion": %d}
+                    """.formatted(SharedConstants.getCurrentVersion().dataVersion().version())
+            );
 
             final var existing = Moments.existing(server);
 
-            helper.assertTrue(existing.contains("advancement:minecraft:nether/find_fortress"), "Earned advancement should have happened");
-            helper.assertTrue(!existing.contains("advancement:minecraft:nether/explore_nether"), "Unfinished advancement shouldn't have happened");
+            helper.assertTrue(
+                existing.contains("advancement:minecraft:nether/find_fortress"),
+                "Earned advancement should have happened"
+            );
+            helper.assertTrue(
+                !existing.contains("advancement:minecraft:nether/explore_nether"),
+                "Unfinished advancement shouldn't have happened"
+            );
             // Recipes are advancements the game doesn't announce, so they're never firsts
             helper.assertTrue(
                 !existing.contains("advancement:minecraft:recipes/decorations/crafting_table"),

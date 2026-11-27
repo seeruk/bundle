@@ -17,13 +17,8 @@ import java.util.UUID;
 import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
-import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
-import static dev.seeruk.bundle.core.testing.TestTimes.at;
-import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.BLOCK;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.config;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.periodConfig;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.playerFacingBlock;
+import static dev.seeruk.bundle.core.testing.TestTimes.*;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.*;
 
 public class LeaderMannequinsGameTest {
     private static Mannequin placed(GameTestHelper helper, PlaceResult result) {
@@ -51,9 +46,16 @@ public class LeaderMannequinsGameTest {
         final var player = playerFacingBlock(helper);
 
         try {
-            final var mannequin = placed(helper, LeaderMannequins.place(player, config("place", objective), new Seat("place", 1)));
+            final var mannequin = placed(
+                helper,
+                LeaderMannequins.place(player, config("place", objective), new Seat("place", 1))
+            );
 
-            helper.assertValueEqual(mannequin.position(), Vec3.atBottomCenterOf(helper.absolutePos(BLOCK.above())), "position");
+            helper.assertValueEqual(
+                mannequin.position(),
+                Vec3.atBottomCenterOf(helper.absolutePos(BLOCK.above())),
+                "position"
+            );
             helper.assertValueEqual(mannequin.getYRot(), 0f, "facing");
             helper.assertTrue(mannequin.isPermanentlyInvulnerable(), "Mannequin isn't invulnerable");
             helper.assertValueEqual(LeaderMannequins.seat(mannequin), Optional.of(new Seat("place", 1)), "seat");
@@ -80,7 +82,10 @@ public class LeaderMannequinsGameTest {
             helper.assertValueEqual(mannequin.getCustomName().getString(), "Test #1", "name");
             helper.assertValueEqual(description(mannequin), player.getGameProfile().name() + " - 5", "description");
             helper.assertValueEqual(profileId(mannequin), Optional.of(player.getUUID()), "profile");
-            helper.assertTrue(mannequin.getMainHandItem().is(Items.STICK), "Mannequin isn't holding the category's item");
+            helper.assertTrue(
+                mannequin.getMainHandItem().is(Items.STICK),
+                "Mannequin isn't holding the category's item"
+            );
         } finally {
             server.getScoreboard().removeObjective(objective);
         }
@@ -152,7 +157,11 @@ public class LeaderMannequinsGameTest {
         helper.setBlock(BLOCK.above(), Blocks.STONE);
 
         try {
-            final var result = LeaderMannequins.place(player, config("obstructed", objective), new Seat("obstructed", 1));
+            final var result = LeaderMannequins.place(
+                player,
+                config("obstructed", objective),
+                new Seat("obstructed", 1)
+            );
             helper.assertValueEqual(result, new PlaceResult.Obstructed(), "result");
         } finally {
             server.getScoreboard().removeObjective(objective);
@@ -168,10 +177,17 @@ public class LeaderMannequinsGameTest {
         final var player = playerFacingBlock(helper);
 
         try {
-            final var mannequin = placed(helper, LeaderMannequins.place(player, config("remove", objective), new Seat("remove", 3)));
+            final var mannequin = placed(
+                helper,
+                LeaderMannequins.place(player, config("remove", objective), new Seat("remove", 3))
+            );
             player.lookAt(EntityAnchorArgument.Anchor.EYES, mannequin.getBoundingBox().getCenter());
 
-            helper.assertValueEqual(LeaderMannequins.remove(player), new RemoveResult.Removed(new Seat("remove", 3)), "result");
+            helper.assertValueEqual(
+                LeaderMannequins.remove(player),
+                new RemoveResult.Removed(new Seat("remove", 3)),
+                "result"
+            );
             helper.assertTrue(mannequin.isRemoved(), "Mannequin wasn't removed");
         } finally {
             server.getScoreboard().removeObjective(objective);
@@ -189,7 +205,11 @@ public class LeaderMannequinsGameTest {
         helper.getLevel().addFreshEntity(mannequin);
         player.lookAt(EntityAnchorArgument.Anchor.EYES, mannequin.getBoundingBox().getCenter());
 
-        helper.assertValueEqual(LeaderMannequins.remove(player), new RemoveResult.NotLookingAtLeaderMannequin(), "result");
+        helper.assertValueEqual(
+            LeaderMannequins.remove(player),
+            new RemoveResult.NotLookingAtLeaderMannequin(),
+            "result"
+        );
         helper.assertTrue(!mannequin.isRemoved(), "Mannequin was removed");
         helper.succeed();
     }
@@ -236,7 +256,11 @@ public class LeaderMannequinsGameTest {
             helper.assertValueEqual(description(mannequin), "Nobody yet", "description while unloaded");
 
             LeaderMannequins.loaded(mannequin, config);
-            helper.assertValueEqual(description(mannequin), player.getGameProfile().name() + " - 5", "description once loaded");
+            helper.assertValueEqual(
+                description(mannequin),
+                player.getGameProfile().name() + " - 5",
+                "description once loaded"
+            );
             helper.assertValueEqual(profileId(mannequin), Optional.of(player.getUUID()), "profile once loaded");
         } finally {
             server.getScoreboard().removeObjective(objective);
@@ -278,8 +302,15 @@ public class LeaderMannequinsGameTest {
         final var player = playerFacingBlock(helper);
 
         try {
-            final var mannequin = placed(helper, LeaderMannequins.place(player, config("hurt", objective), new Seat("hurt", 1)));
-            final var hurt = mannequin.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(player), 100);
+            final var mannequin = placed(
+                helper,
+                LeaderMannequins.place(player, config("hurt", objective), new Seat("hurt", 1))
+            );
+            final var hurt = mannequin.hurtServer(
+                helper.getLevel(),
+                helper.getLevel().damageSources().playerAttack(player),
+                100
+            );
 
             helper.assertTrue(!hurt, "Mannequin was hurt");
             helper.assertTrue(mannequin.isAlive(), "Mannequin died");

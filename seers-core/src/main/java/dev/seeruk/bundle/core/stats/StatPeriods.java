@@ -10,12 +10,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -183,11 +178,13 @@ public final class StatPeriods {
         }
 
         forgotten.forEach(id -> StatSnapshots.release(server, holder(id)));
-        SCHEDULES.update(server, schedules -> {
-            final var kept = new HashMap<>(schedules);
-            forgotten.forEach(id -> kept.remove(holder(id)));
-            return Map.copyOf(kept);
-        });
+        SCHEDULES.update(
+            server, schedules -> {
+                final var kept = new HashMap<>(schedules);
+                forgotten.forEach(id -> kept.remove(holder(id)));
+                return Map.copyOf(kept);
+            }
+        );
         return forgotten;
     }
 
@@ -206,11 +203,13 @@ public final class StatPeriods {
 
     private void start(MinecraftServer server, String id, Schedule schedule, Instant at) {
         StatSnapshots.hold(server, holder(id), at);
-        SCHEDULES.update(server, schedules -> {
-            final var updated = new HashMap<>(schedules);
-            updated.put(holder(id), schedule);
-            return Map.copyOf(updated);
-        });
+        SCHEDULES.update(
+            server, schedules -> {
+                final var updated = new HashMap<>(schedules);
+                updated.put(holder(id), schedule);
+                return Map.copyOf(updated);
+            }
+        );
     }
 
     // The period's full ID, which is also what holds its snapshot

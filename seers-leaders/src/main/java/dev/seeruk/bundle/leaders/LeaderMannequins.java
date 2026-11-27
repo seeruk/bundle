@@ -24,11 +24,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.seeruk.bundle.leaders.SeersLeaders.LOGGER;
@@ -150,7 +146,10 @@ public final class LeaderMannequins {
         final var category = config.category(seat.category());
         if (category.isEmpty()) {
             if (UNKNOWN.add(seat.category())) {
-                LOGGER.warn("A leader mannequin shows category '{}', which isn't in the config, so it's left as it is", seat.category());
+                LOGGER.warn(
+                    "A leader mannequin shows category '{}', which isn't in the config, so it's left as it is",
+                    seat.category()
+                );
             }
             return;
         }
