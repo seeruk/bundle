@@ -24,7 +24,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.seeruk.bundle.leaders.SeersLeaders.LOGGER;
@@ -119,14 +123,21 @@ public final class LeaderMannequins {
         return Optional.ofNullable(entity.getAttached(SEAT));
     }
 
-    public static void loaded(Entity entity, LeadersConfig config) {
+    /**
+     * Keeps the entity up to date with who's in its seat, showing them now, if it's a leader
+     * mannequin.
+     */
+    public static void track(Entity entity, LeadersConfig config) {
         if (entity instanceof Mannequin mannequin && mannequin.hasAttached(SEAT)) {
             LOADED.put(mannequin.getUUID(), mannequin);
             show(mannequin, mannequin.getAttached(SEAT), config);
         }
     }
 
-    public static void unloaded(Entity entity) {
+    /**
+     * Stops keeping the entity up to date, e.g. as it's unloaded.
+     */
+    public static void untrack(Entity entity) {
         LOADED.remove(entity.getUUID());
     }
 

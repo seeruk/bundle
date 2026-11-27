@@ -11,7 +11,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
-import static dev.seeruk.bundle.nicks.NicksFixtures.*;
+import static dev.seeruk.bundle.nicks.NicksFixtures.nameAndId;
+import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
+import static dev.seeruk.bundle.nicks.NicksFixtures.offline;
 
 public class NicknamesGameTest {
     private static final EventLog<Changed> EVENTS = new EventLog<>();

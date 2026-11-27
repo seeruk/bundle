@@ -23,7 +23,7 @@ public class SeersCore implements ModInitializer {
     public void onInitialize() {
         TickStats.register();
 
-        ServerTickEvents.END_SERVER_TICK.register(ActionBarMessages::tick);
+        ServerTickEvents.END_SERVER_TICK.register(ActionBarMessages::updateAll);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ActionBarMessages.forget(handler.player));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> ActionBarMessages.clear());
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> AllPlayerStats.clear());

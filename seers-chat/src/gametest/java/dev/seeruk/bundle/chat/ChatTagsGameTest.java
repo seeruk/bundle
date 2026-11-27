@@ -5,7 +5,11 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -19,7 +23,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static dev.seeruk.bundle.chat.ChatFixtures.*;
+import static dev.seeruk.bundle.chat.ChatFixtures.chat;
+import static dev.seeruk.bundle.chat.ChatFixtures.onlySentBy;
+import static dev.seeruk.bundle.chat.ChatFixtures.styles;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
 public class ChatTagsGameTest {

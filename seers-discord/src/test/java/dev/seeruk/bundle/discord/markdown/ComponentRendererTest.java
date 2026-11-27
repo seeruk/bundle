@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static dev.seeruk.bundle.core.testing.TextChunks.chunk;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ComponentRendererTest {

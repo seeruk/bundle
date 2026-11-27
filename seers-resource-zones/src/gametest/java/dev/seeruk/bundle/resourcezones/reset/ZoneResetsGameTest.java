@@ -103,7 +103,7 @@ public class ZoneResetsGameTest {
         moveTo(player, chunk);
         ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
 
-        ZoneResets.rejoined(player, CONFIG);
+        ZoneResets.moveIfChunkReset(player, CONFIG);
 
         // Spawning can put players anywhere within the spawn radius
         final var spawn = helper.getLevel().getServer().getRespawnData().pos();
@@ -123,7 +123,7 @@ public class ZoneResetsGameTest {
         moveTo(player, chunk);
         ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
 
-        ZoneResets.rejoined(player, CONFIG);
+        ZoneResets.moveIfChunkReset(player, CONFIG);
 
         helper.assertValueEqual(player.chunkPosition(), ChunkPos.containing(respawnPoint), "player's chunk");
         helper.succeed();
@@ -142,7 +142,7 @@ public class ZoneResetsGameTest {
         final var horse = ride(helper, player, chunk);
         ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
 
-        ZoneResets.rejoined(player, CONFIG);
+        ZoneResets.moveIfChunkReset(player, CONFIG);
 
         helper.assertTrue(player.getVehicle() == horse, "Player wasn't still riding");
         helper.assertValueEqual(horse.chunkPosition(), ChunkPos.containing(respawnPoint), "mount's chunk");
@@ -157,7 +157,7 @@ public class ZoneResetsGameTest {
         final var player = player(helper);
         moveTo(player, chunk);
 
-        ZoneResets.rejoined(player, CONFIG);
+        ZoneResets.moveIfChunkReset(player, CONFIG);
 
         helper.assertValueEqual(player.chunkPosition(), chunk, "player's chunk");
         helper.succeed();
@@ -169,10 +169,10 @@ public class ZoneResetsGameTest {
         final var chunk = new ChunkPos(9070, 0);
         moveTo(player, chunk);
         ZoneResets.reset(helper.getLevel().getServer(), Map.of(Level.OVERWORLD, Set.of(chunk)));
-        ZoneResets.rejoined(player, CONFIG);
+        ZoneResets.moveIfChunkReset(player, CONFIG);
 
         moveTo(player, chunk);
-        ZoneResets.rejoined(player, CONFIG);
+        ZoneResets.moveIfChunkReset(player, CONFIG);
 
         helper.assertValueEqual(player.chunkPosition(), chunk, "player's chunk");
         helper.succeed();

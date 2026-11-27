@@ -9,7 +9,9 @@ import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BarrelBlockEntity;
 
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.*;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.POS;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.player;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.use;
 
 public class BarrelSwapGameTest {
     @GameTest

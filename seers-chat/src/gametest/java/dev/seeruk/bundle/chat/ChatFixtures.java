@@ -4,13 +4,21 @@ import dev.seeruk.bundle.core.testing.EventLog;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.LastSeenMessages;
+import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Shared helpers for Chat's GameTests. Starts recording sent messages when the game starts, so

@@ -8,7 +8,11 @@ import dev.seeruk.bundle.digest.api.Issue.PlayerTotal;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

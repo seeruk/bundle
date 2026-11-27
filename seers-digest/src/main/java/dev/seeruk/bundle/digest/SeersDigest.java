@@ -37,13 +37,16 @@ public class SeersDigest implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             config.groups().forEach(group -> AllPlayerStats.unknownNames(server, group.stats()).forEach(name ->
                 LOGGER.warn("Group '{}' uses '{}', which isn't a stat (yet), so it's counted as 0", group.id(), name)));
-            IssueSchedule.started(server);
+            IssueSchedule.forgetOldPeriods(server);
             DigestStats.ensureObjectives(server);
             Moments.seed(server);
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            IssueSchedule.tick(server, config, clock);
+            // Once a second, so issues are published within a second of the schedule. It's checked
+            // from ticks, rather than on start-up, so an issue due while the server was stopped is
+            // only published once every mod has started, and can listen for it.
             if (server.getTickCount() % SharedConstants.TICKS_PER_SECOND == 0) {
+                IssueSchedule.check(server, config, clock);
                 DigestStats.recordNightSecond(server, config.nightHours(), clock);
             }
         });
@@ -51,13 +54,14 @@ public class SeersDigest implements ModInitializer {
         // Handle events Digest tracks on it's own
         PlayerEvents.ADVANCEMENT_MESSAGE.register((player, advancement, message) -> Moments.earned(
             player,
-            advancement
+            advancement,
+            clock
         ));
         ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) ->
             DigestStats.recordDimensionChange(player, destination.dimension()));
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (entity instanceof ServerPlayer player) {
-                Moments.died(player, source);
+                Moments.died(player, source, clock);
             }
         });
 

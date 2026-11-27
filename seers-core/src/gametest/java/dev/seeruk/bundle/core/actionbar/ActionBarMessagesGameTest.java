@@ -10,7 +10,11 @@ import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;

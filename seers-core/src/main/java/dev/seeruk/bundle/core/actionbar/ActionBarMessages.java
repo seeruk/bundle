@@ -9,7 +9,12 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -51,7 +56,10 @@ public final class ActionBarMessages {
         MESSAGES.put(id, message);
     }
 
-    public static void tick(MinecraftServer server) {
+    /**
+     * Shows each online player whichever message is due, if any.
+     */
+    public static void updateAll(MinecraftServer server) {
         if (MESSAGES.isEmpty()) {
             return;
         }

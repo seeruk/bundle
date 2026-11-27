@@ -6,7 +6,12 @@ import dev.seeruk.bundle.core.time.TimeCodecs;
 import net.minecraft.core.UUIDUtil;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * One issue of the digest, as numbers rather than text, so it can be shown however it's wanted,

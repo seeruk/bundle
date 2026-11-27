@@ -23,9 +23,9 @@ import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
 public class MomentsGameTest {
     // Moments and firsts are shared by every test on the server, so each test only checks its own
-    // players, takes its moments in the same tick it records them (so no other test can take them
-    // first), and uses a cause of death or advancement no other test uses, as firsts are only ever
-    // firsts once.
+    // players, reads its moments in the same tick it records them (so no issue another test starts
+    // can forget them first), and uses a cause of death or advancement no other test uses, as
+    // firsts are only ever firsts once.
 
     private static void kill(GameTestHelper helper, ServerPlayer player, DamageSource source) {
         player.hurtServer(helper.getLevel(), source, Float.MAX_VALUE);
@@ -56,7 +56,7 @@ public class MomentsGameTest {
         final var zombie = EntityTypes.ZOMBIE.create(helper.getLevel(), EntitySpawnReason.COMMAND);
 
         kill(helper, player, helper.getLevel().damageSources().mobAttack(zombie));
-        final var moments = Moments.take(helper.getLevel().getServer());
+        final var moments = Moments.pending(helper.getLevel().getServer());
 
         helper.assertValueEqual(
             deathsOf(moments, player).stream().map(death -> List.of(death.cause(), death.killer())).toList(),
@@ -80,7 +80,7 @@ public class MomentsGameTest {
         // Knocked off a cliff by a skeleton, rather than killed by its arrow
         player.hurtServer(helper.getLevel(), helper.getLevel().damageSources().mobAttack(skeleton), 1);
         kill(helper, player, helper.getLevel().damageSources().fall());
-        final var moments = Moments.take(helper.getLevel().getServer());
+        final var moments = Moments.pending(helper.getLevel().getServer());
 
         helper.assertValueEqual(
             deathsOf(moments, player).stream().map(Issue.Death::killer).toList(),
@@ -97,7 +97,7 @@ public class MomentsGameTest {
 
         kill(helper, first, helper.getLevel().damageSources().lava());
         kill(helper, second, helper.getLevel().damageSources().lava());
-        final var moments = Moments.take(helper.getLevel().getServer());
+        final var moments = Moments.pending(helper.getLevel().getServer());
 
         helper.assertValueEqual(deathsOf(moments, second).size(), 1, "second's deaths");
         helper.assertValueEqual(firstsOf(moments, first), List.of("death:minecraft:lava"), "first's firsts");
@@ -112,7 +112,7 @@ public class MomentsGameTest {
 
         award(helper, first, "story/mine_stone");
         award(helper, second, "story/mine_stone");
-        final var moments = Moments.take(helper.getLevel().getServer());
+        final var moments = Moments.pending(helper.getLevel().getServer());
 
         helper.assertValueEqual(
             moments.advancements().stream()
@@ -132,14 +132,15 @@ public class MomentsGameTest {
     }
 
     @GameTest
-    public void takingMomentsForgetsThem(GameTestHelper helper) {
+    public void forgettingMomentsClearsThem(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
         final var player = player(helper);
 
         kill(helper, player, helper.getLevel().damageSources().drown());
+        helper.assertValueEqual(deathsOf(Moments.pending(server), player).size(), 1, "deaths before forgetting");
 
-        helper.assertValueEqual(deathsOf(Moments.take(server), player).size(), 1, "deaths taken");
-        helper.assertValueEqual(deathsOf(Moments.take(server), player), List.of(), "deaths taken again");
+        Moments.forget(server);
+        helper.assertValueEqual(deathsOf(Moments.pending(server), player), List.of(), "deaths after forgetting");
         helper.succeed();
     }
 

@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
-import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.*;
+import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.addZoneChunk;
+import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.moveTo;
+import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.respawn;
 
 // Zones are shared by the whole test server, so each test uses its own chunks
 public class ZonePresenceGameTest {

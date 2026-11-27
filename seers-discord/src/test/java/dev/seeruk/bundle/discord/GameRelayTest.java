@@ -9,7 +9,11 @@ import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextTemplate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static dev.seeruk.bundle.core.testing.TextChunks.chunk;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameRelayTest {
     // Templates are parsed when they're made, which needs the game set up first, so this runs

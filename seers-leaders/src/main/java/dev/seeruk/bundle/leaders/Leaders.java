@@ -7,15 +7,17 @@ import dev.seeruk.bundle.core.storage.WorldStorage;
 import dev.seeruk.bundle.leaders.Leaderboard.Standing;
 import dev.seeruk.bundle.leaders.LeadersConfig.Category;
 import dev.seeruk.bundle.leaders.api.LeaderEvents;
-import net.minecraft.SharedConstants;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
 
-import java.time.Clock;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static dev.seeruk.bundle.leaders.SeersLeaders.LOGGER;
 import static dev.seeruk.bundle.leaders.SeersLeaders.MOD_ID;
 
 /**
@@ -42,32 +44,6 @@ public final class Leaders {
     }
 
     private Leaders() {}
-
-    public static void started(MinecraftServer server, LeadersConfig config) {
-        config.categories().forEach(category -> AllPlayerStats.unknownNames(server, category.stats()).forEach(name ->
-            LOGGER.warn(
-                "Category '{}' uses '{}', which isn't a stat (yet), so it's counted as 0",
-                category.id(),
-                name
-            )));
-        forgetRemovedResults(server, config);
-        Periods.forgetRemoved(server, config);
-        // Periods are checked from the first tick, rather than here, so a period that ended while
-        // the server was stopped only ends once every mod has started, and can listen for it
-        refresh(server, config);
-    }
-
-    public static void tick(MinecraftServer server, LeadersConfig config, Clock clock) {
-        // Periods are checked every second, so they end within a second of their schedule. Boards
-        // are refreshed less often, as reading every player's stats costs more.
-        if (server.getTickCount() % SharedConstants.TICKS_PER_SECOND == 0) {
-            Periods.check(server, config, clock);
-        }
-
-        if (server.getTickCount() % (config.refreshSeconds() * SharedConstants.TICKS_PER_SECOND) == 0) {
-            refresh(server, config);
-        }
-    }
 
     /**
      * Ranks every category again from players' current stats, firing
@@ -184,8 +160,11 @@ public final class Leaders {
         });
     }
 
-    // Results are only removed on start-up, as that's the only time the config can change
-    private static void forgetRemovedResults(MinecraftServer server, LeadersConfig config) {
+    /**
+     * Forgets the final results of categories that aren't in the config, e.g. on start-up, as
+     * that's the only time the config can change.
+     */
+    public static void forgetRemovedResults(MinecraftServer server, LeadersConfig config) {
         final var ids = config.categories().stream().map(Category::id).toList();
         final var results = RESULTS.get(server);
         if (!ids.containsAll(results.keySet())) {

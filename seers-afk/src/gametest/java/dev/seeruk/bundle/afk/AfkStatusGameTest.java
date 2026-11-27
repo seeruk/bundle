@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Input;
 
 import java.util.List;
 
-import static dev.seeruk.bundle.afk.AfkFixtures.eventsFor;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 
 public class AfkStatusGameTest {

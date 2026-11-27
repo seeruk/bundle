@@ -12,7 +12,9 @@ import net.minecraft.world.level.block.state.properties.StairsShape;
 
 import java.util.List;
 
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.*;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.POS;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.player;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.use;
 
 public class LockedBlocksGameTest {
     @GameTest

@@ -6,14 +6,22 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CrossCollisionBlock;
+import net.minecraft.world.level.block.PipeBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.StairsShape;
 import net.minecraft.world.level.block.state.properties.WallSide;
 
 import java.util.function.UnaryOperator;
 
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.*;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.POS;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.player;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.use;
 
 /**
  * Only checks each swap works in a real level with its default tool, the swaps' own tests cover

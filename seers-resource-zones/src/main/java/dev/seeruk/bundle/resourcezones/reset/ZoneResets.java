@@ -54,7 +54,7 @@ public final class ZoneResets {
     /**
      * Remembers the chunk as generated, if it's in a zone.
      */
-    public static void chunkLoaded(ServerLevel level, LevelChunk chunk) {
+    public static void rememberGenerated(ServerLevel level, LevelChunk chunk) {
         final var server = level.getServer();
         final var dimension = level.dimension();
         final var pos = chunk.getPos();
@@ -86,7 +86,7 @@ public final class ZoneResets {
     /**
      * Finds the level's reset chunks, holding them until the server's started.
      */
-    public static void levelLoaded(MinecraftServer server, ServerLevel level) {
+    public static void findResets(MinecraftServer server, ServerLevel level) {
         final var dimension = level.dimension();
         final var history = HISTORY.get(server);
         final var generated = history.generated().in(dimension);
@@ -104,16 +104,12 @@ public final class ZoneResets {
     }
 
     /**
-     * Records the reset chunks found as levels loaded, firing {@link ResourceZoneEvents#RESET} if
-     * there were any, then brings every dimension's generated chunks up to date.
+     * Records the reset chunks found as levels loaded (see {@link #findResets}), firing
+     * {@link ResourceZoneEvents#RESET} if there were any.
      */
-    public static void started(MinecraftServer server) {
+    public static void recordFoundResets(MinecraftServer server) {
         reset(server, Map.copyOf(FOUND));
         FOUND.clear();
-
-        for (final var dimension : server.levelKeys()) {
-            refreshGenerated(server, dimension);
-        }
     }
 
     /**
@@ -134,7 +130,7 @@ public final class ZoneResets {
      * they don't have one, or it's gone) if the chunk they're in was reset since they were last
      * here, and tells them why.
      */
-    public static void rejoined(ServerPlayer player, ResourceZonesConfig.Reset config) {
+    public static void moveIfChunkReset(ServerPlayer player, ResourceZonesConfig.Reset config) {
         final var level = player.level();
         final var history = HISTORY.get(level.getServer());
         if (history.wasResetSince(level.dimension(), player.chunkPosition(), SEEN.get(player))) {

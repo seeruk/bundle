@@ -1,6 +1,11 @@
 package dev.seeruk.bundle.itemtext.dialog;
 
-import dev.seeruk.bundle.itemtext.*;
+import dev.seeruk.bundle.itemtext.EditableItem;
+import dev.seeruk.bundle.itemtext.LoreEditMessages;
+import dev.seeruk.bundle.itemtext.LoreEditResult;
+import dev.seeruk.bundle.itemtext.LoreEditor;
+import dev.seeruk.bundle.itemtext.LoreInput;
+import dev.seeruk.bundle.itemtext.SeersItemText;
 import dev.seeruk.bundle.text.TextComponents;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.ChatFormatting;
@@ -9,7 +14,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.dialog.*;
+import net.minecraft.server.dialog.ActionButton;
+import net.minecraft.server.dialog.CommonButtonData;
+import net.minecraft.server.dialog.CommonDialogData;
+import net.minecraft.server.dialog.ConfirmationDialog;
+import net.minecraft.server.dialog.Dialog;
+import net.minecraft.server.dialog.DialogAction;
+import net.minecraft.server.dialog.Input;
 import net.minecraft.server.dialog.action.CustomAll;
 import net.minecraft.server.dialog.body.DialogBody;
 import net.minecraft.server.dialog.body.PlainMessage;

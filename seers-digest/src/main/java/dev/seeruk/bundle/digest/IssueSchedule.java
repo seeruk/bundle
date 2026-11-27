@@ -4,7 +4,6 @@ import dev.seeruk.bundle.core.stats.AllPlayerStats;
 import dev.seeruk.bundle.core.stats.StatPeriods;
 import dev.seeruk.bundle.digest.api.DigestEvents;
 import dev.seeruk.bundle.digest.api.Issue;
-import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 
 import java.time.Clock;
@@ -26,19 +25,20 @@ public final class IssueSchedule {
 
     private IssueSchedule() {}
 
-    public static void started(MinecraftServer server) {
+    /**
+     * Forgets periods other than the current issue's, e.g. ones tests used, so their snapshots can
+     * be deleted.
+     */
+    public static void forgetOldPeriods(MinecraftServer server) {
         PERIODS.forgetExcept(server, List.of(ISSUE));
     }
 
     /**
-     * Checks the schedule every second, so issues are published within a second of it. It's only
-     * checked from ticks, so an issue due while the server was stopped is only published once every
-     * mod has started, and can listen for it.
+     * Publishes the current issue if the schedule has come round since it started (see
+     * {@link StatPeriods#check}).
      */
-    public static void tick(MinecraftServer server, DigestConfig config, Clock clock) {
-        if (server.getTickCount() % SharedConstants.TICKS_PER_SECOND == 0) {
-            check(server, config, ISSUE, clock);
-        }
+    public static void check(MinecraftServer server, DigestConfig config, Clock clock) {
+        check(server, config, ISSUE, clock);
     }
 
     /**
@@ -49,37 +49,33 @@ public final class IssueSchedule {
         return publishNow(server, config, ISSUE, clock);
     }
 
-    /**
-     * Publishes the current issue if the schedule has come round since it started (see
-     * {@link StatPeriods#check}).
-     */
     static StatPeriods.Outcome check(MinecraftServer server, DigestConfig config, String period, Clock clock) {
-        return startedQuietly(
-            server, PERIODS.check(
-                server, period, config.schedule(), clock, ended ->
-                    publish(server, config, period, ended)
-            )
+        final var outcome = PERIODS.check(
+            server, period, config.schedule(), clock, ended ->
+                publish(server, config, period, ended)
         );
+        forgetMomentsIfStarted(server, outcome);
+        return outcome;
     }
 
     static Optional<Issue> publishNow(MinecraftServer server, DigestConfig config, String period, Clock clock) {
+        // The issue is made while the period ends, before the next starts, as that's when its stats
+        // can still be counted (see StatPeriods#endNow). It's kept here to be returned afterwards.
         final var published = new AtomicReference<Issue>();
-        startedQuietly(
-            server, PERIODS.endNow(
-                server, period, config.schedule(), clock, ended ->
-                    publish(server, config, period, ended).ifPresent(published::set)
-            )
+        final var outcome = PERIODS.endNow(
+            server, period, config.schedule(), clock, ended ->
+                publish(server, config, period, ended).ifPresent(published::set)
         );
+        forgetMomentsIfStarted(server, outcome);
         return Optional.ofNullable(published.get());
     }
 
-    // An issue that starts without one being published only counts stats from now, so it only has
-    // moments from now too
-    private static StatPeriods.Outcome startedQuietly(MinecraftServer server, StatPeriods.Outcome outcome) {
-        if (outcome == StatPeriods.Outcome.STARTED) {
+    // A new issue has started if the last ended, or if it started without one before it. Either
+    // way, it only counts stats from now, so it only has moments from now too.
+    private static void forgetMomentsIfStarted(MinecraftServer server, StatPeriods.Outcome outcome) {
+        if (outcome != StatPeriods.Outcome.UNCHANGED) {
             Moments.forget(server);
         }
-        return outcome;
     }
 
     // Makes the issue, then archives it and fires the event, unless nobody was active
@@ -96,7 +92,7 @@ public final class IssueSchedule {
             config.groups(),
             PERIODS.sinceStart(server, period, AllPlayerStats.read(server)),
             PERIODS.playersAtStart(server, period),
-            Moments.take(server)
+            Moments.pending(server)
         );
 
         issue.ifPresent(found -> {

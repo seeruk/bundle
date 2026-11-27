@@ -60,7 +60,7 @@ public final class ZonePresence {
      * Notes whether each player we know of in the dimension is in a zone, without firing anything,
      * as the zones changed around them rather than them moving.
      */
-    public static void zonesChanged(MinecraftServer server, ResourceKey<Level> dimension) {
+    public static void recheckQuietly(MinecraftServer server, ResourceKey<Level> dimension) {
         for (final var player : server.getPlayerList().getPlayers()) {
             if (player.level().dimension() == dimension) {
                 IN_ZONE.computeIfPresent(player.getUUID(), (uuid, wasInZone) -> check(player));

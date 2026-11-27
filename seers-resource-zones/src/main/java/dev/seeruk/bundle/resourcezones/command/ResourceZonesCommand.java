@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
-import static dev.seeruk.bundle.core.command.CommandReplies.*;
+import static dev.seeruk.bundle.core.command.CommandReplies.fail;
+import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
+import static dev.seeruk.bundle.core.command.CommandReplies.succeedAndBroadcast;
 
 /**
  * {@code /resourcezones}: all resource-zone related commands. For admins, managing resource zones

@@ -184,9 +184,9 @@ public class IssueScheduleGameTest {
 
         try {
             IssueSchedule.check(server, config, "moments", at(day));
-            Moments.died(before, helper.getLevel().damageSources().fall());
+            Moments.died(before, helper.getLevel().damageSources().fall(), at(day.plusMinutes(30)));
             final var first = IssueSchedule.publishNow(server, config, "moments", at(day.plusHours(1))).orElseThrow();
-            Moments.died(after, helper.getLevel().damageSources().fall());
+            Moments.died(after, helper.getLevel().damageSources().fall(), at(day.plusMinutes(90)));
             final var second = IssueSchedule.publishNow(server, config, "moments", at(day.plusHours(2))).orElseThrow();
 
             helper.assertValueEqual(diedIn(first), List.of(before.getUUID()), "died in the first issue");
@@ -209,9 +209,9 @@ public class IssueScheduleGameTest {
 
         try {
             // Died before the issue started, e.g. before the schedule was changed
-            Moments.died(before, helper.getLevel().damageSources().fall());
+            Moments.died(before, helper.getLevel().damageSources().fall(), at(day.minusMinutes(30)));
             IssueSchedule.check(server, config, "forget", at(day));
-            Moments.died(after, helper.getLevel().damageSources().fall());
+            Moments.died(after, helper.getLevel().damageSources().fall(), at(day.plusMinutes(30)));
 
             final var issue = IssueSchedule.publishNow(server, config, "forget", at(day.plusHours(1))).orElseThrow();
 

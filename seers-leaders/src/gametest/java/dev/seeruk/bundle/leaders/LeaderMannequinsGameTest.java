@@ -17,8 +17,13 @@ import java.util.UUID;
 import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
-import static dev.seeruk.bundle.core.testing.TestTimes.*;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.*;
+import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
+import static dev.seeruk.bundle.core.testing.TestTimes.at;
+import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.BLOCK;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.config;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.periodConfig;
+import static dev.seeruk.bundle.leaders.LeadersFixtures.playerFacingBlock;
 
 public class LeaderMannequinsGameTest {
     private static Mannequin placed(GameTestHelper helper, PlaceResult result) {
@@ -249,13 +254,13 @@ public class LeaderMannequinsGameTest {
         try {
             // Unloading stops refreshes updating it, as it's no longer tracked
             final var mannequin = placed(helper, LeaderMannequins.place(player, config, new Seat("loaded", 1)));
-            LeaderMannequins.unloaded(mannequin);
+            LeaderMannequins.untrack(mannequin);
 
             setScore(player, objective, 5);
             Leaders.refresh(server, config);
             helper.assertValueEqual(description(mannequin), "Nobody yet", "description while unloaded");
 
-            LeaderMannequins.loaded(mannequin, config);
+            LeaderMannequins.track(mannequin, config);
             helper.assertValueEqual(
                 description(mannequin),
                 player.getGameProfile().name() + " - 5",

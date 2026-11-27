@@ -16,7 +16,9 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-import static dev.seeruk.bundle.core.testing.TestCommands.*;
+import static dev.seeruk.bundle.core.testing.TestCommands.adminSource;
+import static dev.seeruk.bundle.core.testing.TestCommands.execute;
+import static dev.seeruk.bundle.core.testing.TestCommands.executeAsAdmin;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.resourcezones.ResourceZonesFixtures.moveTo;
 

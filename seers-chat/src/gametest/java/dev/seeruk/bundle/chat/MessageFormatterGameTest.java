@@ -17,7 +17,9 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 import java.util.Optional;
 
-import static dev.seeruk.bundle.chat.ChatFixtures.*;
+import static dev.seeruk.bundle.chat.ChatFixtures.chat;
+import static dev.seeruk.bundle.chat.ChatFixtures.onlySentBy;
+import static dev.seeruk.bundle.chat.ChatFixtures.styles;
 import static dev.seeruk.bundle.core.testing.TestCommands.execute;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 

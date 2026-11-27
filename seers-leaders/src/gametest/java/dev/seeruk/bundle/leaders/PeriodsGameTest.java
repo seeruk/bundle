@@ -15,9 +15,9 @@ import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.core.testing.TestPlayers.systemMessages;
-import static dev.seeruk.bundle.core.testing.TestTimes.*;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.periodConfig;
-import static dev.seeruk.bundle.leaders.LeadersFixtures.periodEventsFor;
+import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
+import static dev.seeruk.bundle.core.testing.TestTimes.at;
+import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
 
 public class PeriodsGameTest {
     // Periods end every day at 18:00 (see TestTimes.DAILY), and each check is given a clock fixed

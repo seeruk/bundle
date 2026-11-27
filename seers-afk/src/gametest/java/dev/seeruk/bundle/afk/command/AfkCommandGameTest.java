@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static dev.seeruk.bundle.afk.AfkFixtures.eventsFor;
 import static dev.seeruk.bundle.afk.SeersAfk.MOD_ID;
 import static dev.seeruk.bundle.core.testing.TestCommands.execute;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;

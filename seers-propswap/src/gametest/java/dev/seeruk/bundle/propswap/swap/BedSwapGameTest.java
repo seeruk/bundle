@@ -17,7 +17,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BedPart;
 
-import static dev.seeruk.bundle.propswap.PropSwapFixtures.*;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.POS;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.player;
+import static dev.seeruk.bundle.propswap.PropSwapFixtures.use;
 
 /**
  * Most of these are about making sure beds can't be duplicated (or lost) by splitting them. The

@@ -59,19 +59,22 @@ public class SeersResourceZones implements ModInitializer {
 
         // Zone resets, found as levels load, before chunks are, and recorded on server started
         final var reset = config.reset();
-        ServerLevelEvents.LOAD.register(ZoneResets::levelLoaded);
-        ServerLifecycleEvents.SERVER_STARTED.register(ZoneResets::started);
+        ServerLevelEvents.LOAD.register(ZoneResets::findResets);
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            ZoneResets.recordFoundResets(server);
+            server.levelKeys().forEach(dimension -> ZoneResets.refreshGenerated(server, dimension));
+        });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> ZoneResets.clear());
-        ServerChunkEvents.CHUNK_LOAD.register((level, chunk, generated) -> ZoneResets.chunkLoaded(level, chunk));
+        ServerChunkEvents.CHUNK_LOAD.register((level, chunk, generated) -> ZoneResets.rememberGenerated(level, chunk));
         ResourceZoneEvents.CHANGED.register(ZoneResets::refreshGenerated);
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ZoneResets.rejoined(
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ZoneResets.moveIfChunkReset(
             handler.player,
             reset
         ));
 
         // Who's in a zone, before stats count their time there
         ServerTickEvents.END_SERVER_TICK.register(ZonePresence::updateAll);
-        ResourceZoneEvents.CHANGED.register(ZonePresence::zonesChanged);
+        ResourceZoneEvents.CHANGED.register(ZonePresence::recheckQuietly);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ZonePresence.forget(handler.player));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> ZonePresence.clear());
 

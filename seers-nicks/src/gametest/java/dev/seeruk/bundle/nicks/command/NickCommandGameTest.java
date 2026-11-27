@@ -11,7 +11,9 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Optional;
 
-import static dev.seeruk.bundle.core.testing.TestCommands.*;
+import static dev.seeruk.bundle.core.testing.TestCommands.adminSource;
+import static dev.seeruk.bundle.core.testing.TestCommands.execute;
+import static dev.seeruk.bundle.core.testing.TestCommands.executeAsAdmin;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.nicks.NicksFixtures.nickname;
 
