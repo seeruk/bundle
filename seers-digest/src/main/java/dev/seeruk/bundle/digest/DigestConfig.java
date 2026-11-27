@@ -12,11 +12,12 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * @param timezone The time zone the schedule is in.
- * @param schedule When each issue is published, covering everything since the one before.
- * @param groups   The stats each issue adds up, for every player.
+ * @param timezone   The time zone the schedule and night hours are in.
+ * @param schedule   When each issue is published, covering everything since the one before.
+ * @param nightHours When players playing count as night owls.
+ * @param groups     The stats each issue adds up, for every player.
  */
-public record DigestConfig(ZoneId timezone, Schedule schedule, List<StatGroup> groups) {
+public record DigestConfig(ZoneId timezone, Schedule schedule, NightHours nightHours, List<StatGroup> groups) {
     private static final Codec<ZoneId> ZONE_CODEC = Codec.STRING.comapFlatMap(
         zone -> {
             try {
@@ -31,6 +32,7 @@ public record DigestConfig(ZoneId timezone, Schedule schedule, List<StatGroup> g
     public static final Codec<DigestConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         ZONE_CODEC.optionalFieldOf("timezone", ZoneId.systemDefault()).forGetter(DigestConfig::timezone),
         Schedule.CODEC.fieldOf("schedule").forGetter(DigestConfig::schedule),
+        NightHours.CODEC.fieldOf("night_hours").forGetter(DigestConfig::nightHours),
         StatGroup.CODEC.listOf().validate(DigestConfig::uniqueIds).fieldOf("groups").forGetter(DigestConfig::groups)
     ).apply(instance, DigestConfig::new));
 

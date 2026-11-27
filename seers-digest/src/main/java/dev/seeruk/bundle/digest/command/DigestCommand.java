@@ -13,6 +13,7 @@ import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
+import java.time.Clock;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -34,20 +35,20 @@ public final class DigestCommand {
 
     private DigestCommand() {}
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, DigestConfig config) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, DigestConfig config, Clock clock) {
         NamespacedCommands.register(
             dispatcher, SeersDigest.MOD_ID, NAME, name -> Commands.literal(name)
                 .requires(ADMIN)
                 .then(Commands.literal("publish")
-                    .executes(CommandExecutors.logged(context -> publish(context, config))))
+                    .executes(CommandExecutors.logged(context -> publish(context, config, clock))))
                 .then(Commands.literal("list")
-                    .executes(CommandExecutors.logged(context -> list(context, config))))
+                    .executes(CommandExecutors.logged(context -> list(context, clock))))
         );
     }
 
-    private static int publish(CommandContext<CommandSourceStack> context, DigestConfig config) {
+    private static int publish(CommandContext<CommandSourceStack> context, DigestConfig config, Clock clock) {
         final var source = context.getSource();
-        return IssueSchedule.publishNow(source.getServer(), config)
+        return IssueSchedule.publishNow(source.getServer(), config, clock)
             .map(issue -> succeedAndBroadcast(source, TextParsers.parseAsTrusted(
                 "<green>Published issue #%d</green>".formatted(issue.number())
             )))
@@ -56,7 +57,7 @@ public final class DigestCommand {
             )));
     }
 
-    private static int list(CommandContext<CommandSourceStack> context, DigestConfig config) {
+    private static int list(CommandContext<CommandSourceStack> context, Clock clock) {
         final var issues = Archive.all(context.getSource().getServer());
         if (issues.isEmpty()) {
             return succeed(context.getSource(), TextParsers.parseAsTrusted(
@@ -65,7 +66,7 @@ public final class DigestCommand {
         }
 
         final var lines = issues.reversed().stream()
-            .map(issue -> describe(issue, config.timezone()))
+            .map(issue -> describe(issue, clock.getZone()))
             .collect(Collectors.joining("\n"));
         return succeed(context.getSource(), TextParsers.parseAsTrusted(lines));
     }

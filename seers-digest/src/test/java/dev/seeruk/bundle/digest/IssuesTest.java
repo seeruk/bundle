@@ -31,7 +31,15 @@ public class IssuesTest {
     );
 
     private static Optional<Issue> build(Map<UUID, Map<String, Integer>> changes, Set<UUID> playersAtStart) {
-        return Issues.build(7, STARTED, ENDED, GROUPS, changes, playersAtStart);
+        return build(changes, playersAtStart, Issue.Moments.EMPTY);
+    }
+
+    private static Optional<Issue> build(
+        Map<UUID, Map<String, Integer>> changes,
+        Set<UUID> playersAtStart,
+        Issue.Moments moments
+    ) {
+        return Issues.build(7, STARTED, ENDED, GROUPS, changes, playersAtStart, moments);
     }
 
     @Test
@@ -98,5 +106,26 @@ public class IssuesTest {
     @Test
     void makesNoIssueWhenNobodyWasActive() {
         assertEquals(Optional.empty(), build(Map.of(FIRST, Map.of()), Set.of(FIRST)));
+    }
+
+    @Test
+    void keepsTheMoments() {
+        final var moments = new Issue.Moments(
+            List.of(new Issue.Death(FIRST, "minecraft:fall", Optional.empty(), ENDED)),
+            List.of(),
+            List.of(new Issue.First(FIRST, "death:minecraft:fall", ENDED))
+        );
+
+        assertEquals(moments, build(Map.of(FIRST, Map.of("jumps", 1)), Set.of(FIRST), moments).orElseThrow().moments());
+    }
+
+    @Test
+    void makesAnIssueFromAMomentAlone() {
+        // Nobody's stats went up, but Second earned an advancement, so they were active
+        final var moments = new Issue.Moments(List.of(), List.of(new Issue.Earned(SECOND, "minecraft:story/root", ENDED)), List.of());
+
+        final var issue = build(Map.of(FIRST, Map.of()), Set.of(FIRST, SECOND), moments).orElseThrow();
+
+        assertEquals(List.of(SECOND), issue.activePlayers());
     }
 }

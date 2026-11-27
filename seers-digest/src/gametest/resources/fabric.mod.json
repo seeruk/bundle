@@ -10,7 +10,9 @@
             "dev.seeruk.bundle.digest.DigestFixtures"
         ],
         "fabric-gametest": [
+            "dev.seeruk.bundle.digest.DigestStatsGameTest",
             "dev.seeruk.bundle.digest.IssueScheduleGameTest",
+            "dev.seeruk.bundle.digest.MomentsGameTest",
             "dev.seeruk.bundle.digest.command.DigestCommandGameTest"
         ]
     },

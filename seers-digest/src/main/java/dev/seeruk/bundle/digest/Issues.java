@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Utilities for making issues from what players have done since the last one.
@@ -35,6 +36,7 @@ public final class Issues {
      * @param changes        How much each player's stats went up in that time (see
      *                       {@link dev.seeruk.bundle.core.stats.StatChanges}).
      * @param playersAtStart Who had stats when that time started.
+     * @param moments        What happened in that time that isn't a stat.
      */
     public static Optional<Issue> build(
         int number,
@@ -42,13 +44,17 @@ public final class Issues {
         Instant ended,
         List<StatGroup> groups,
         Map<UUID, Map<String, Integer>> changes,
-        Set<UUID> playersAtStart
+        Set<UUID> playersAtStart,
+        Issue.Moments moments
     ) {
-        // Anyone with any stat that went up was active. Changes only include stats that went up, so
-        // an empty map means they did nothing. Sorted, so the list is the same every time.
-        final var active = changes.entrySet().stream()
-            .filter(entry -> !entry.getValue().isEmpty())
-            .map(Map.Entry::getKey)
+        // During the period for this issue, anyone with any stat that went up, or that recorded any
+        // moment, was active. Changes only include stats that went up, so an empty map means they
+        // did nothing. The result is sorted so the list is the same every time.
+        final var active = Stream.concat(
+                changes.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).map(Map.Entry::getKey),
+                moments.players().stream()
+            )
+            .distinct()
             .sorted()
             .toList();
         if (active.isEmpty()) {
@@ -68,6 +74,6 @@ public final class Issues {
 
         // New players were active, but had no stats at all when the issue's time started
         final var newPlayers = active.stream().filter(player -> !playersAtStart.contains(player)).toList();
-        return Optional.of(new Issue(number, started, ended, Map.copyOf(results), active, newPlayers));
+        return Optional.of(new Issue(number, started, ended, Map.copyOf(results), active, newPlayers, moments));
     }
 }

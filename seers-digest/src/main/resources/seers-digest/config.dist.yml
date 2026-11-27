@@ -1,7 +1,7 @@
 # Seer's Digest config. To change a setting, copy it into config.yml in this folder.
 # Anything that's not in config.yml uses the default from this file.
 
-# The time zone the schedule is in, e.g. Europe/London. Defaults to the server's.
+# The time zone the schedule and night hours are in, e.g. Europe/London. Defaults to the server's.
 # timezone: Europe/London
 
 # When each issue is published, covering everything since the one before. It's checked while the
@@ -14,6 +14,13 @@ schedule:
   every: week
   on: sunday
   at: "18:00"
+
+# When players playing count as night owls, as HH:MM in the time zone above. Time played between
+# these hours is counted in the seers_digest.night_ticks scoreboard objective. They can go past
+# midnight, e.g. from "22:00" to "04:00".
+night_hours:
+  from: "00:00"
+  to: "06:00"
 
 # The stats each issue adds up for every player, named so the book can use them. Setting groups in
 # config.yml replaces this whole list, so copy any of these you want to keep.
@@ -70,6 +77,19 @@ groups:
   - id: angler
     stats:
       - "minecraft.custom:minecraft.fish_caught"
+
+  # These are counted by Digest itself, in scoreboard objectives.
+  - id: night_owl
+    stats:
+      - "scoreboard:seers_digest.night_ticks"
+
+  - id: nether_visits
+    stats:
+      - "scoreboard:seers_digest.nether_visits"
+
+  - id: end_visits
+    stats:
+      - "scoreboard:seers_digest.end_visits"
 
   # Needs Seer's Chat, which counts messages players send.
   - id: chat

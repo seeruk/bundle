@@ -14,16 +14,18 @@ import java.util.Optional;
 import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
+import static dev.seeruk.bundle.core.testing.TestTimes.at;
 import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
 import static dev.seeruk.bundle.digest.DigestFixtures.config;
 import static dev.seeruk.bundle.digest.DigestFixtures.publishedAs;
 
 public class IssueScheduleGameTest {
-    // Issues are published every day at 18:00 (see TestTimes.DAILY), and each check says what the
-    // time is, so these don't depend on the real clock. Each test uses its own period and day. The
-    // rules for when periods start and end are tested in core's StatPeriodsGameTest.
+    // Issues are published every day at 18:00 (see TestTimes.DAILY), and each check is given a
+    // clock fixed at a time (see TestTimes.at), so these don't depend on the real clock. Each test
+    // uses its own period and day. The rules for when periods start and end are tested in core's
+    // StatPeriodsGameTest.
 
-    // The moment that day's issue was published, and the next started
+    // That day's 18:00, when an issue is published
     private static Instant sixPm(ZonedDateTime day) {
         return day.withHour(18).toInstant();
     }
@@ -45,14 +47,15 @@ public class IssueScheduleGameTest {
         final var player = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "scheduled", day);
+            IssueSchedule.check(server, config, "scheduled", at(day));
             setScore(player, objective, 5);
 
             // The next day's 18:00 has passed, so the issue is published
-            IssueSchedule.check(server, config, "scheduled", day.plusDays(1));
+            IssueSchedule.check(server, config, "scheduled", at(day.plusDays(1)));
 
             final var issue = Archive.latest(server).orElseThrow();
-            helper.assertValueEqual(issue.started(), sixPm(day), "started");
+            // The first issue started counting when the schedule was first checked
+            helper.assertValueEqual(issue.started(), day.toInstant(), "started");
             helper.assertValueEqual(issue.ended(), sixPm(day.plusDays(1)), "ended");
             helper.assertValueEqual(total(issue, player), Optional.of(5L), "total");
             helper.assertValueEqual(publishedAs(issue.number()), List.of(issue), "published");
@@ -72,10 +75,10 @@ public class IssueScheduleGameTest {
         final var player = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "publish_now", day);
+            IssueSchedule.check(server, config, "publish_now", at(day));
             setScore(player, objective, 3);
 
-            final var issue = IssueSchedule.publishNow(server, config, "publish_now", day.plusHours(1)).orElseThrow();
+            final var issue = IssueSchedule.publishNow(server, config, "publish_now", at(day.plusHours(1))).orElseThrow();
 
             helper.assertValueEqual(issue.ended(), day.plusHours(1).toInstant(), "ended");
             helper.assertValueEqual(total(issue, player), Optional.of(3L), "total");
@@ -96,9 +99,9 @@ public class IssueScheduleGameTest {
 
         try {
             // Nothing can change between these, as they're in the same tick
-            IssueSchedule.check(server, config, "empty", day);
+            IssueSchedule.check(server, config, "empty", at(day));
             final var next = Archive.nextIssueNumber(server);
-            final var issue = IssueSchedule.publishNow(server, config, "empty", day.plusHours(1));
+            final var issue = IssueSchedule.publishNow(server, config, "empty", at(day.plusHours(1)));
 
             helper.assertValueEqual(issue, Optional.empty(), "issue");
             helper.assertValueEqual(Archive.nextIssueNumber(server), next, "next number");
@@ -118,11 +121,11 @@ public class IssueScheduleGameTest {
         final var player = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "numbers", day);
+            IssueSchedule.check(server, config, "numbers", at(day));
             setScore(player, objective, 1);
-            final var first = IssueSchedule.publishNow(server, config, "numbers", day.plusHours(1)).orElseThrow();
+            final var first = IssueSchedule.publishNow(server, config, "numbers", at(day.plusHours(1))).orElseThrow();
             setScore(player, objective, 2);
-            final var second = IssueSchedule.publishNow(server, config, "numbers", day.plusHours(2)).orElseThrow();
+            final var second = IssueSchedule.publishNow(server, config, "numbers", at(day.plusHours(2))).orElseThrow();
 
             helper.assertValueEqual(second.number(), first.number() + 1, "second number");
         } finally {
@@ -141,16 +144,41 @@ public class IssueScheduleGameTest {
         final var existing = player(helper);
 
         try {
-            IssueSchedule.check(server, config, "new", day);
+            IssueSchedule.check(server, config, "new", at(day));
             final var joined = player(helper);
             setScore(existing, objective, 1);
             setScore(joined, objective, 1);
 
-            final var issue = IssueSchedule.publishNow(server, config, "new", day.plusHours(1)).orElseThrow();
+            final var issue = IssueSchedule.publishNow(server, config, "new", at(day.plusHours(1))).orElseThrow();
 
             helper.assertTrue(issue.activePlayers().contains(existing.getUUID()), "Existing player should be active");
             helper.assertTrue(issue.newPlayers().contains(joined.getUUID()), "Player who joined should be new");
             helper.assertTrue(!issue.newPlayers().contains(existing.getUUID()), "Existing player shouldn't be new");
+        } finally {
+            server.getScoreboard().removeObjective(objective);
+        }
+
+        helper.succeed();
+    }
+
+    @GameTest
+    public void publishedIssuesHaveTheMomentsSinceTheLast(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var day = uniqueDay();
+        final var objective = addObjective(server, "issue_schedule_moments");
+        final var config = config(objective);
+        final var player = player(helper);
+
+        try {
+            IssueSchedule.check(server, config, "moments", at(day));
+            Moments.died(player, helper.getLevel().damageSources().fall());
+
+            final var issue = IssueSchedule.publishNow(server, config, "moments", at(day.plusHours(1))).orElseThrow();
+
+            helper.assertTrue(
+                issue.moments().deaths().stream().anyMatch(death -> death.player().equals(player.getUUID())),
+                "Issue should have the player's death"
+            );
         } finally {
             server.getScoreboard().removeObjective(objective);
         }

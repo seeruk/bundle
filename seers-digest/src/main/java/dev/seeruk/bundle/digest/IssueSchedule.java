@@ -7,7 +7,7 @@ import dev.seeruk.bundle.digest.api.Issue;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 
-import java.time.ZonedDateTime;
+import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,9 +35,9 @@ public final class IssueSchedule {
      * checked from ticks, so an issue due while the server was stopped is only published once every
      * mod has started, and can listen for it.
      */
-    public static void tick(MinecraftServer server, DigestConfig config) {
+    public static void tick(MinecraftServer server, DigestConfig config, Clock clock) {
         if (server.getTickCount() % SharedConstants.TICKS_PER_SECOND == 0) {
-            check(server, config, ISSUE, ZonedDateTime.now(config.timezone()));
+            check(server, config, ISSUE, clock);
         }
     }
 
@@ -45,21 +45,21 @@ public final class IssueSchedule {
      * Publishes the current issue now, rather than when the schedule says, if anyone's been active
      * since the last one. The next issue then covers from now.
      */
-    public static Optional<Issue> publishNow(MinecraftServer server, DigestConfig config) {
-        return publishNow(server, config, ISSUE, ZonedDateTime.now(config.timezone()));
+    public static Optional<Issue> publishNow(MinecraftServer server, DigestConfig config, Clock clock) {
+        return publishNow(server, config, ISSUE, clock);
     }
 
     /**
      * Publishes the current issue if the schedule has come round since it started (see
      * {@link StatPeriods#check}).
      */
-    static StatPeriods.Outcome check(MinecraftServer server, DigestConfig config, String period, ZonedDateTime now) {
-        return PERIODS.check(server, period, config.schedule(), now, ended -> publish(server, config, period, ended));
+    static StatPeriods.Outcome check(MinecraftServer server, DigestConfig config, String period, Clock clock) {
+        return PERIODS.check(server, period, config.schedule(), clock, ended -> publish(server, config, period, ended));
     }
 
-    static Optional<Issue> publishNow(MinecraftServer server, DigestConfig config, String period, ZonedDateTime now) {
+    static Optional<Issue> publishNow(MinecraftServer server, DigestConfig config, String period, Clock clock) {
         final var published = new AtomicReference<Issue>();
-        PERIODS.endNow(server, period, config.schedule(), now, ended ->
+        PERIODS.endNow(server, period, config.schedule(), clock, ended ->
             publish(server, config, period, ended).ifPresent(published::set));
         return Optional.ofNullable(published.get());
     }
@@ -77,7 +77,8 @@ public final class IssueSchedule {
             ended.ended(),
             config.groups(),
             PERIODS.sinceStart(server, period, AllPlayerStats.read(server)),
-            PERIODS.playersAtStart(server, period)
+            PERIODS.playersAtStart(server, period),
+            Moments.take(server)
         );
 
         issue.ifPresent(found -> {

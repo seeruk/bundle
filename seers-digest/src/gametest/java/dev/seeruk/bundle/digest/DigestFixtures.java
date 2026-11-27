@@ -8,6 +8,7 @@ import dev.seeruk.bundle.digest.api.Issue;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.world.scores.Objective;
 
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public final class DigestFixtures implements ModInitializer {
         return new DigestConfig(
             ZoneOffset.UTC,
             DAILY,
+            new NightHours(LocalTime.MIDNIGHT, LocalTime.of(6, 0)),
             List.of(new StatGroup("test", StatSelection.of(List.of("scoreboard:" + objective.getName()))))
         );
     }
