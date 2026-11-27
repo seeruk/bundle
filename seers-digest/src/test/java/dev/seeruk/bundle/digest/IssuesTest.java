@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.digest;
 
 import dev.seeruk.bundle.core.stats.StatSelection;
+import dev.seeruk.bundle.core.stats.StatUnit;
 import dev.seeruk.bundle.digest.DigestConfig.StatGroup;
 import dev.seeruk.bundle.digest.api.Issue;
 import dev.seeruk.bundle.digest.api.Issue.GroupResult;
@@ -26,8 +27,8 @@ public class IssuesTest {
     private static final UUID THIRD = UUID.fromString("00000000-0000-0000-0000-000000000003");
 
     private static final List<StatGroup> GROUPS = List.of(
-        new StatGroup("miner", StatSelection.of(List.of("mined:*"))),
-        new StatGroup("angler", StatSelection.of(List.of("fish")))
+        new StatGroup("miner", StatSelection.of(List.of("mined:*")), StatUnit.COUNT),
+        new StatGroup("angler", StatSelection.of(List.of("fish")), StatUnit.COUNT)
     );
 
     private static Optional<Issue> build(Map<UUID, Map<String, Integer>> changes, Set<UUID> playersAtStart) {

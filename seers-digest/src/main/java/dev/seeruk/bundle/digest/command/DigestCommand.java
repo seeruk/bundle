@@ -1,7 +1,9 @@
 package dev.seeruk.bundle.digest.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.seeruk.bundle.core.command.CommandExecutors;
 import dev.seeruk.bundle.core.command.NamespacedCommands;
 import dev.seeruk.bundle.digest.Archive;
@@ -9,17 +11,21 @@ import dev.seeruk.bundle.digest.DigestConfig;
 import dev.seeruk.bundle.digest.IssueSchedule;
 import dev.seeruk.bundle.digest.SeersDigest;
 import dev.seeruk.bundle.digest.api.Issue;
+import dev.seeruk.bundle.digest.book.DigestBooks;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.util.Prediction;
 
 import java.time.Clock;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static dev.seeruk.bundle.core.command.CommandReplies.fail;
 import static dev.seeruk.bundle.core.command.CommandReplies.succeed;
 import static dev.seeruk.bundle.core.command.CommandReplies.succeedAndBroadcast;
 
@@ -43,6 +49,14 @@ public final class DigestCommand {
                     .executes(CommandExecutors.logged(context -> publish(context, config, clock))))
                 .then(Commands.literal("list")
                     .executes(CommandExecutors.logged(context -> list(context, clock))))
+                .then(Commands.literal("book")
+                    .executes(CommandExecutors.logged(context -> giveBook(context, config, Optional.empty())))
+                    .then(Commands.argument("number", IntegerArgumentType.integer(1))
+                        .executes(CommandExecutors.logged(context -> giveBook(
+                            context,
+                            config,
+                            Optional.of(IntegerArgumentType.getInteger(context, "number"))
+                        )))))
         );
     }
 
@@ -59,6 +73,33 @@ public final class DigestCommand {
                     "<yellow>Nobody's been active since the last issue, so there's nothing to publish</yellow>"
                 )
             ));
+    }
+
+    // Gives the player running it the numbered issue's book, or the latest issue's
+    private static int giveBook(CommandContext<CommandSourceStack> context, DigestConfig config, Optional<Integer> number)
+        throws CommandSyntaxException {
+        final var source = context.getSource();
+        final var player = source.getPlayerOrException();
+        final var issue = number.isPresent()
+            ? Archive.get(source.getServer(), number.get())
+            : Archive.latest(source.getServer());
+
+        if (issue.isEmpty()) {
+            return fail(
+                source, TextParsers.parseAsTrusted(number
+                    .map("<red>There's no issue #%d</red>"::formatted)
+                    .orElse("<red>No issues have been published yet</red>"))
+            );
+        }
+
+        // Dropped at their feet if their inventory is full
+        player.getInventory().placeItemBackInInventory(
+            DigestBooks.create(source.getServer(), config, issue.get()),
+            Prediction.SERVER_ONLY
+        );
+        return succeed(
+            source, TextParsers.parseAsTrusted("<green>Gave you issue #%d</green>".formatted(issue.get().number()))
+        );
     }
 
     private static int list(CommandContext<CommandSourceStack> context, Clock clock) {

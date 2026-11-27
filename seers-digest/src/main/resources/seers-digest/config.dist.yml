@@ -22,11 +22,31 @@ night_hours:
   from: "00:00"
   to: "06:00"
 
+# How each issue's book looks.
+book:
+  # The book's name, shown on the item. At most 32 characters.
+  title: "Seer's Digest"
+  # Who the book is by, shown in its tooltip.
+  author: "The Editors"
+  # How dates are shown on the cover, as a Java date pattern, e.g. "d MMM yyyy" for 23 Nov 2026.
+  date_format: "d MMM yyyy"
+  # The cover page, with formatting. ${title} is the book's name, ${number} is the issue's number,
+  # ${from} and ${to} are the dates it covers, and ${period} is Daily, Weekly, or Monthly, from the
+  # schedule.
+  cover: |-
+    <bold>${title}</bold>
+
+    ${period} issue #${number}
+
+    ${from} to ${to}
+
 # The stats each issue adds up for every player, named so the book can use them. Setting groups in
 # config.yml replaces this whole list, so copy any of these you want to keep.
 #
 # Each group has:
 #   id: Names it in the book's templates. Only a-z, 0-9, and _.
+#   unit: How its totals are shown: count (as they are, the default), distance (centimetres, shown
+#     in blocks), or time (ticks, shown in hours).
 #   stats: The stats added up for each player. Vanilla stats use their scoreboard criterion names
 #     (e.g. minecraft.mined:minecraft.stone), and scoreboard objectives are scoreboard:<objective>
 #     (e.g. scoreboard:seers_chat.messages_sent). A * matches anything (e.g. minecraft.mined:* is
@@ -34,6 +54,7 @@ night_hours:
 #     only counted once, however many patterns match it.
 groups:
 - id: played
+  unit: time
   stats:
   - "minecraft.custom:minecraft.play_time"
 
@@ -42,6 +63,7 @@ groups:
   - "minecraft.mined:*"
 
 - id: explorer
+  unit: distance
   stats:
   - "minecraft.custom:minecraft.*_one_cm"
   - "!minecraft.custom:minecraft.fall_one_cm"
@@ -80,6 +102,7 @@ groups:
 
 # These are counted by Digest itself, in scoreboard objectives.
 - id: night_owl
+  unit: time
   stats:
   - "scoreboard:seers_digest.night_ticks"
 

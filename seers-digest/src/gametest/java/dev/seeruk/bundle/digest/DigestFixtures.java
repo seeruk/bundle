@@ -1,10 +1,12 @@
 package dev.seeruk.bundle.digest;
 
 import dev.seeruk.bundle.core.stats.StatSelection;
+import dev.seeruk.bundle.core.stats.StatUnit;
 import dev.seeruk.bundle.core.testing.EventLog;
 import dev.seeruk.bundle.digest.DigestConfig.StatGroup;
 import dev.seeruk.bundle.digest.api.DigestEvents;
 import dev.seeruk.bundle.digest.api.Issue;
+import dev.seeruk.bundle.text.TextTemplate;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.world.scores.Objective;
 
@@ -38,14 +40,21 @@ public final class DigestFixtures implements ModInitializer {
 
     /**
      * A config whose issues are published every day at 18:00 (see {@code TestTimes.DAILY}), with
-     * one group, called {@code test}, adding up the given objective's scores.
+     * one group, called {@code test}, adding up the given objective's scores, and a book whose
+     * cover is every cover variable on one line.
      */
     public static DigestConfig config(Objective objective) {
         return new DigestConfig(
             ZoneOffset.UTC,
             DAILY,
             new NightHours(LocalTime.MIDNIGHT, LocalTime.of(6, 0)),
-            List.of(new StatGroup("test", StatSelection.of(List.of("scoreboard:" + objective.getName()))))
+            List.of(new StatGroup("test", StatSelection.of(List.of("scoreboard:" + objective.getName())), StatUnit.COUNT)),
+            new DigestConfig.Book(
+                "Test Digest",
+                "Tests",
+                "d MMM yyyy",
+                TextTemplate.parse("${title} ${period} #${number}: ${from} to ${to}")
+            )
         );
     }
 }
