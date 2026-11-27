@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.seeruk.bundle.core.stats.StatSelection;
+import dev.seeruk.bundle.core.stats.StatUnit;
 import dev.seeruk.bundle.core.time.Schedule;
 import dev.seeruk.bundle.text.TextTemplate;
 import net.minecraft.core.registries.BuiltInRegistries;

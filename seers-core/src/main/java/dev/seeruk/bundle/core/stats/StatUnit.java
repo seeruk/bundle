@@ -1,4 +1,4 @@
-package dev.seeruk.bundle.leaders;
+package dev.seeruk.bundle.core.stats;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.SharedConstants;
@@ -7,7 +7,7 @@ import net.minecraft.util.StringRepresentable;
 import java.util.Locale;
 
 /**
- * How a category's total is shown, as a number with thousands separators.
+ * How a stat's total is shown, as a number with thousands separators.
  */
 public enum StatUnit implements StringRepresentable {
     /** Shown as it is. */
