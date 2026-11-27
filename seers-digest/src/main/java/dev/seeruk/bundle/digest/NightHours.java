@@ -1,6 +1,7 @@
 package dev.seeruk.bundle.digest;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.seeruk.bundle.core.time.TimeCodecs;
 
@@ -14,10 +15,13 @@ import java.time.LocalTime;
  * @param to   When it ends, which isn't part of it.
  */
 public record NightHours(LocalTime from, LocalTime to) {
-    public static final Codec<NightHours> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    // Hours from and to the same time would never contain anything
+    public static final Codec<NightHours> CODEC = RecordCodecBuilder.<NightHours>create(instance -> instance.group(
         TimeCodecs.LOCAL_TIME.fieldOf("from").forGetter(NightHours::from),
         TimeCodecs.LOCAL_TIME.fieldOf("to").forGetter(NightHours::to)
-    ).apply(instance, NightHours::new));
+    ).apply(instance, NightHours::new)).validate(hours -> hours.from().equals(hours.to())
+        ? DataResult.error(() -> "Night hours can't start and end at the same time: " + hours.from())
+        : DataResult.success(hours));
 
     /**
      * Whether the time is during the night.

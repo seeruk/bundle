@@ -64,14 +64,16 @@ public final class Moments {
     private Moments() {}
 
     /**
-     * Records a player's death, and any firsts it makes: the first death of its cause, and the first
-     * death to its kind of killer.
+     * Records a player's death, and any firsts it makes: the first death of its cause, and the
+     * first death to its kind of killer.
      */
     public static void died(ServerPlayer player, DamageSource source) {
         final var server = player.level().getServer();
         final var at = Instant.now();
         final var cause = source.typeHolder().unwrapKey().map(key -> key.identifier().toString()).orElse("unknown");
-        final var killer = Optional.ofNullable(source.getEntity())
+        // Whoever Vanilla credits, as in its killed_by stats and death messages, so a player
+        // knocked off a cliff by a skeleton was killed by the skeleton
+        final var killer = Optional.ofNullable(player.getKillCredit())
             .map(entity -> BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
 
         update(server, moments -> new Issue.Moments(
@@ -135,8 +137,16 @@ public final class Moments {
      */
     public static Issue.Moments take(MinecraftServer server) {
         final var pending = PENDING.get(server);
-        PENDING.set(server, Issue.Moments.EMPTY);
+        forget(server);
         return pending;
+    }
+
+    /**
+     * Forgets everything that's happened since the last issue, e.g. when the next issue starts
+     * without one being published, so it only has what happened in the time it covers.
+     */
+    public static void forget(MinecraftServer server) {
+        PENDING.set(server, Issue.Moments.EMPTY);
     }
 
     // Records a first, if it's never happened before

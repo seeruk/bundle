@@ -54,14 +54,32 @@ public final class IssueSchedule {
      * {@link StatPeriods#check}).
      */
     static StatPeriods.Outcome check(MinecraftServer server, DigestConfig config, String period, Clock clock) {
-        return PERIODS.check(server, period, config.schedule(), clock, ended -> publish(server, config, period, ended));
+        return startedQuietly(
+            server, PERIODS.check(
+                server, period, config.schedule(), clock, ended ->
+                    publish(server, config, period, ended)
+            )
+        );
     }
 
     static Optional<Issue> publishNow(MinecraftServer server, DigestConfig config, String period, Clock clock) {
         final var published = new AtomicReference<Issue>();
-        PERIODS.endNow(server, period, config.schedule(), clock, ended ->
-            publish(server, config, period, ended).ifPresent(published::set));
+        startedQuietly(
+            server, PERIODS.endNow(
+                server, period, config.schedule(), clock, ended ->
+                    publish(server, config, period, ended).ifPresent(published::set)
+            )
+        );
         return Optional.ofNullable(published.get());
+    }
+
+    // An issue that starts without one being published only counts stats from now, so it only has
+    // moments from now too
+    private static StatPeriods.Outcome startedQuietly(MinecraftServer server, StatPeriods.Outcome outcome) {
+        if (outcome == StatPeriods.Outcome.STARTED) {
+            Moments.forget(server);
+        }
+        return outcome;
     }
 
     // Makes the issue, then archives it and fires the event, unless nobody was active

@@ -70,6 +70,24 @@ public class MomentsGameTest {
     }
 
     @GameTest
+    public void deathsAfterBeingHurtAreCreditedToWhoeverHurtThem(GameTestHelper helper) {
+        final var player = player(helper);
+        final var skeleton = EntityTypes.SKELETON.create(helper.getLevel(), EntitySpawnReason.COMMAND);
+
+        // Knocked off a cliff by a skeleton, rather than killed by its arrow
+        player.hurtServer(helper.getLevel(), helper.getLevel().damageSources().mobAttack(skeleton), 1);
+        kill(helper, player, helper.getLevel().damageSources().fall());
+        final var moments = Moments.take(helper.getLevel().getServer());
+
+        helper.assertValueEqual(
+            deathsOf(moments, player).stream().map(Issue.Death::killer).toList(),
+            List.of(Optional.of("minecraft:skeleton")),
+            "killers"
+        );
+        helper.succeed();
+    }
+
+    @GameTest
     public void onlyTheFirstDeathOfACauseIsAFirst(GameTestHelper helper) {
         final var first = player(helper);
         final var second = player(helper);
@@ -112,14 +130,14 @@ public class MomentsGameTest {
         final var player = player(helper);
 
         kill(helper, player, helper.getLevel().damageSources().drown());
-        Moments.take(server);
 
+        helper.assertValueEqual(deathsOf(Moments.take(server), player).size(), 1, "deaths taken");
         helper.assertValueEqual(deathsOf(Moments.take(server), player), List.of(), "deaths taken again");
         helper.succeed();
     }
 
     @GameTest
-    public void existingMomentsAreSeededFromExistingData(GameTestHelper helper) throws IOException {
+    public void existingMomentsAreReadFromPlayersSavedFiles(GameTestHelper helper) throws IOException {
         final var server = helper.getLevel().getServer();
         // An offline player who played before Digest was added
         final var id = UUID.randomUUID();

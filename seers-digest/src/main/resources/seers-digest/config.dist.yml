@@ -17,7 +17,7 @@ schedule:
 
 # When players playing count as night owls, as HH:MM in the time zone above. Time played between
 # these hours is counted in the seers_digest.night_ticks scoreboard objective. They can go past
-# midnight, e.g. from "22:00" to "04:00".
+# midnight, e.g. from "22:00" to "04:00", but can't start and end at the same time.
 night_hours:
   from: "00:00"
   to: "06:00"

@@ -29,7 +29,6 @@ public class SeersDigest implements ModInitializer {
     @Override
     public void onInitialize() {
         final var config = ModConfig.load(MOD_ID, DigestConfig.CODEC);
-        // Says what time it is in the configured time zone, which the schedule and night hours are in
         final var clock = Clock.system(config.timezone());
 
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->

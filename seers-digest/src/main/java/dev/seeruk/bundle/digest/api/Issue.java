@@ -21,7 +21,7 @@ import java.util.UUID;
  * @param started       When the time it covers started, i.e. when the last issue was published.
  * @param ended         When the time it covers ended, i.e. when it was published.
  * @param groups        Each stat group's results, by the group's ID.
- * @param activePlayers Everyone whose stats went up in that time.
+ * @param activePlayers Everyone whose stats went up, or who any moments are about, in that time.
  * @param newPlayers    Active players who had no stats before that time started.
  * @param moments       What happened in that time that isn't a stat, e.g. deaths.
  */
@@ -102,8 +102,8 @@ public record Issue(
      *
      * @param player Who died.
      * @param cause  The damage type's ID, e.g. {@code minecraft:fall}.
-     * @param killer The ID of the type of entity that killed them, if one did, e.g.
-     *               {@code minecraft:warden}.
+     * @param killer The ID of the type of entity credited with killing them, if any, e.g.
+     *               {@code minecraft:warden}, as in Vanilla's death messages.
      * @param at     When they died.
      */
     public record Death(UUID player, String cause, Optional<String> killer, Instant at) {

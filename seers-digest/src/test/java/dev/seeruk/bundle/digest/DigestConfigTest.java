@@ -62,4 +62,10 @@ public class DigestConfigTest {
     void refusesTimeZonesThatAreNotTimeZones() {
         assertTrue(parse(Map.of("timezone", "Nowhere/Special", "schedule", SCHEDULE, "night_hours", NIGHT, "groups", List.of())).isError());
     }
+
+    @Test
+    void refusesNightHoursThatStartWhenTheyEnd() {
+        final var night = Map.of("from", "22:00", "to", "22:00");
+        assertTrue(parse(Map.of("schedule", SCHEDULE, "night_hours", night, "groups", List.of())).isError());
+    }
 }

@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
@@ -36,6 +37,11 @@ public class IssueScheduleGameTest {
             .filter(total -> total.player().equals(player.getUUID()))
             .map(PlayerTotal::value)
             .findFirst();
+    }
+
+    // Everyone who died in the issue, in order
+    private static List<UUID> diedIn(Issue issue) {
+        return issue.moments().deaths().stream().map(Issue.Death::player).toList();
     }
 
     @GameTest
@@ -98,7 +104,8 @@ public class IssueScheduleGameTest {
         final var config = config(objective);
 
         try {
-            // Nothing can change between these, as they're in the same tick
+            // Starting the issue forgets any moments still pending from elsewhere, and nothing can
+            // change between these, as they're in the same tick
             IssueSchedule.check(server, config, "empty", at(day));
             final var next = Archive.nextIssueNumber(server);
             final var issue = IssueSchedule.publishNow(server, config, "empty", at(day.plusHours(1)));
@@ -167,18 +174,43 @@ public class IssueScheduleGameTest {
         final var day = uniqueDay();
         final var objective = addObjective(server, "issue_schedule_moments");
         final var config = config(objective);
-        final var player = player(helper);
+        final var before = player(helper);
+        final var after = player(helper);
 
         try {
             IssueSchedule.check(server, config, "moments", at(day));
-            Moments.died(player, helper.getLevel().damageSources().fall());
+            Moments.died(before, helper.getLevel().damageSources().fall());
+            final var first = IssueSchedule.publishNow(server, config, "moments", at(day.plusHours(1))).orElseThrow();
+            Moments.died(after, helper.getLevel().damageSources().fall());
+            final var second = IssueSchedule.publishNow(server, config, "moments", at(day.plusHours(2))).orElseThrow();
 
-            final var issue = IssueSchedule.publishNow(server, config, "moments", at(day.plusHours(1))).orElseThrow();
+            helper.assertValueEqual(diedIn(first), List.of(before.getUUID()), "died in the first issue");
+            helper.assertValueEqual(diedIn(second), List.of(after.getUUID()), "died in the second issue");
+        } finally {
+            server.getScoreboard().removeObjective(objective);
+        }
 
-            helper.assertTrue(
-                issue.moments().deaths().stream().anyMatch(death -> death.player().equals(player.getUUID())),
-                "Issue should have the player's death"
-            );
+        helper.succeed();
+    }
+
+    @GameTest
+    public void startingAnIssueWithoutPublishingForgetsPendingMoments(GameTestHelper helper) {
+        final var server = helper.getLevel().getServer();
+        final var day = uniqueDay();
+        final var objective = addObjective(server, "issue_schedule_forget");
+        final var config = config(objective);
+        final var before = player(helper);
+        final var after = player(helper);
+
+        try {
+            // Died before the issue started, e.g. before the schedule was changed
+            Moments.died(before, helper.getLevel().damageSources().fall());
+            IssueSchedule.check(server, config, "forget", at(day));
+            Moments.died(after, helper.getLevel().damageSources().fall());
+
+            final var issue = IssueSchedule.publishNow(server, config, "forget", at(day.plusHours(1))).orElseThrow();
+
+            helper.assertValueEqual(diedIn(issue), List.of(after.getUUID()), "died in the issue");
         } finally {
             server.getScoreboard().removeObjective(objective);
         }
