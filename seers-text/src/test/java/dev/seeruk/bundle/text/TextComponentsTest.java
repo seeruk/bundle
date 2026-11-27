@@ -151,6 +151,66 @@ public class TextComponentsTest {
     }
 
     @Nested
+    class WrapToWidth {
+        // Most letters are 6 pixels wide, a space is 4, and an i is 2 (see TextWidths)
+        static Stream<Arguments> shouldWrapToWidth() {
+            return Stream.of(
+                Arguments.of(
+                    "Keeps a line of exactly the maximum width as it is",
+                    Component.literal("aaa aaa"),
+                    40,
+                    List.of(List.of(chunk("aaa aaa", Style.EMPTY)))
+                ),
+                Arguments.of(
+                    "Wraps at the last space that fits, dropping it",
+                    Component.literal("aaa aaa"),
+                    39,
+                    List.of(List.of(chunk("aaa", Style.EMPTY)), List.of(chunk("aaa", Style.EMPTY)))
+                ),
+                Arguments.of(
+                    "Fits more narrow characters on a line",
+                    Component.literal("iiiiii"),
+                    6,
+                    List.of(List.of(chunk("iii", Style.EMPTY)), List.of(chunk("iii", Style.EMPTY)))
+                ),
+                Arguments.of(
+                    "Measures bold text as wider",
+                    literal("aa", BOLD),
+                    13,
+                    List.of(List.of(chunk("a", BOLD)), List.of(chunk("a", BOLD)))
+                ),
+                Arguments.of(
+                    "Keeps styles across the wrap point",
+                    Component.empty().append(literal("Red ", RED)).append(literal("text", RED.withBold(true))),
+                    30,
+                    List.of(List.of(chunk("Red", RED)), List.of(chunk("text", RED.withBold(true))))
+                ),
+                Arguments.of(
+                    "Breaks a word wider than a whole line",
+                    Component.literal("aaaaa"),
+                    18,
+                    List.of(List.of(chunk("aaa", Style.EMPTY)), List.of(chunk("aa", Style.EMPTY)))
+                ),
+                Arguments.of(
+                    "Puts a character wider than a whole line on a line of its own",
+                    Component.literal("aa"),
+                    3,
+                    List.of(List.of(chunk("a", Style.EMPTY)), List.of(chunk("a", Style.EMPTY)))
+                )
+            );
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource
+        void shouldWrapToWidth(final String description, final Component line, final int maxWidth, final List<List<Chunk>> expected) {
+            assertEquals(
+                expected,
+                TextComponents.wrapToWidth(line, maxWidth).stream().map(TextChunks::chunks).toList()
+            );
+        }
+    }
+
+    @Nested
     class Length {
         static Stream<Arguments> shouldCountCharactersAsShown() {
             return Stream.of(

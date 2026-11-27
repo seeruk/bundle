@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Style;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -52,31 +53,73 @@ public final class TextComponents {
      * never inside a character.
      */
     public static List<Component> wrap(Component line, int maxLength) {
+        final var characters = characterBreaks(line.getString()).length - 1;
+        final var widths = new int[characters];
+        Arrays.fill(widths, 1);
+        return wrap(line, widths, maxLength);
+    }
+
+    /**
+     * Wraps a line of text into lines at most {@code maxWidth} pixels wide in the default font (see
+     * {@link TextWidths}), keeping its styling, and breaking lines as {@link #wrap} does.
+     */
+    public static List<Component> wrapToWidth(Component line, int maxWidth) {
+        // Whether each UTF-16 unit of the text is bold, so each character is measured by the style
+        // it starts in, even if it's split across differently styled chunks
+        final var bold = new ArrayList<Boolean>();
+        chunks(line).forEach(chunk -> chunk.text().chars().forEach(unit -> bold.add(chunk.style().isBold())));
+
+        final var text = line.getString();
+        final var breaks = characterBreaks(text);
+        final var widths = new int[breaks.length - 1];
+        for (var character = 0; character < widths.length; character++) {
+            final var start = breaks[character];
+            widths[character] = TextWidths.characterWidth(text.substring(start, breaks[character + 1]), bold.get(start));
+        }
+        return wrap(line, widths, maxWidth);
+    }
+
+    // Wraps the line so each is at most max wide, given how wide each of its characters is. At
+    // least one character goes on each line, so a character wider than a line can't loop forever.
+    private static List<Component> wrap(Component line, int[] widths, int max) {
         final var text = line.getString();
         // Where each character starts in the text, and where the text ends
         final var breaks = characterBreaks(text);
         final var characters = breaks.length - 1;
-        if (characters <= maxLength) {
+        if (Arrays.stream(widths).sum() <= max) {
             return List.of(line);
         }
 
         final var chunks = chunks(line);
         final var lines = new ArrayList<Component>();
         var start = 0;
+        var end = fits(widths, start, max);
 
-        while (characters - start > maxLength) {
-            final var space = lastSpace(text, breaks, start, start + maxLength);
+        while (end < characters) {
+            final var space = lastSpace(text, breaks, start, end);
             if (space > start) {
                 lines.add(slice(chunks, breaks[start], breaks[space]));
                 start = space + 1;
             } else {
-                lines.add(slice(chunks, breaks[start], breaks[start + maxLength]));
-                start += maxLength;
+                lines.add(slice(chunks, breaks[start], breaks[end]));
+                start = end;
             }
+            end = fits(widths, start, max);
         }
 
         lines.add(slice(chunks, breaks[start], text.length()));
         return lines;
+    }
+
+    // Where a line starting at the given character ends, if as many characters as fit go on it
+    private static int fits(int[] widths, int start, int max) {
+        var end = start;
+        var width = 0;
+        while (end < widths.length && (end == start || width + widths[end] <= max)) {
+            width += widths[end];
+            end++;
+        }
+        return end;
     }
 
     /**
