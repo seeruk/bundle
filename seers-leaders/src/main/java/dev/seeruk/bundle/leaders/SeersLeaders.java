@@ -11,6 +11,8 @@ import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Clock;
+
 public class SeersLeaders implements ModInitializer {
     public static final String MOD_ID = "seers-leaders";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -22,12 +24,14 @@ public class SeersLeaders implements ModInitializer {
     @Override
     public void onInitialize() {
         final var config = ModConfig.load(MOD_ID, LeadersConfig.CODEC);
+        // Says what time it is in the configured time zone, which periods' schedules are in
+        final var clock = Clock.system(config.timezone());
 
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
             LeadersCommand.register(dispatcher, config));
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> Leaders.started(server, config));
-        ServerTickEvents.END_SERVER_TICK.register(server -> Leaders.tick(server, config));
+        ServerTickEvents.END_SERVER_TICK.register(server -> Leaders.tick(server, config, clock));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> Leaders.clear());
 
 

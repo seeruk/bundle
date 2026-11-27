@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 /**
@@ -22,6 +23,20 @@ public final class TimeCodecs {
             }
         },
         Instant::toString
+    );
+
+    /**
+     * A time of day, written as {@code HH:MM}, e.g. {@code 18:00}.
+     */
+    public static final Codec<LocalTime> LOCAL_TIME = Codec.STRING.comapFlatMap(
+        time -> {
+            try {
+                return DataResult.success(LocalTime.parse(time));
+            } catch (DateTimeParseException e) {
+                return DataResult.error(() -> "Time should be written as HH:MM: " + time);
+            }
+        },
+        LocalTime::toString
     );
 
     private TimeCodecs() {}

@@ -48,6 +48,13 @@ public class ScheduleTest {
                     "2026-11-25T18:00:00Z"
                 ),
                 Arguments.of("Monthly, later in the month", Schedule.monthly(1, LocalTime.MIDNIGHT), "2026-11-25T12:00", "2026-11-01T00:00:00Z"),
+                // October is in summer time, so 18:00 in London is 17:00 UTC
+                Arguments.of(
+                    "Monthly, before this month's day, is last month's",
+                    Schedule.monthly(20, SIX_PM),
+                    "2026-11-05T12:00",
+                    "2026-10-20T17:00:00Z"
+                ),
                 Arguments.of(
                     "Monthly, on a day past the end of a shorter month",
                     Schedule.monthly(31, SIX_PM),
@@ -74,7 +81,7 @@ public class ScheduleTest {
         @MethodSource
         void shouldFindTheLatestMoment(final String description, final Schedule schedule, final String now, final String expected) {
             final var at = ZonedDateTime.of(LocalDateTime.parse(now), LONDON);
-            assertEquals(Instant.parse(expected), schedule.latest(at));
+            assertEquals(Instant.parse(expected), schedule.latestAtOrBefore(at));
         }
     }
 

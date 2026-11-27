@@ -18,6 +18,7 @@ import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
+import static dev.seeruk.bundle.core.testing.TestTimes.at;
 import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.BLOCK;
 import static dev.seeruk.bundle.leaders.LeadersFixtures.config;
@@ -253,13 +254,13 @@ public class LeaderMannequinsGameTest {
 
         try {
             final var day = uniqueDay();
-            Periods.check(server, config, day);
+            Periods.check(server, config, at(day));
             setScore(player, objective, 5);
             final var mannequin = placed(helper, LeaderMannequins.place(player, config, new Seat("previous", 1)));
 
             // Ending the period empties the seat, so the mannequin shows who held it instead (from
             // the config's previous_description), but not their skin, as they don't hold it now
-            Periods.check(server, config, day.plusDays(1));
+            Periods.check(server, config, at(day.plusDays(1)));
 
             helper.assertValueEqual(description(mannequin), "Last: " + player.getGameProfile().name(), "description");
             helper.assertValueEqual(profileId(mannequin), Optional.empty(), "profile");

@@ -2,6 +2,7 @@ package dev.seeruk.bundle.core.testing;
 
 import dev.seeruk.bundle.core.time.Schedule;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
@@ -23,6 +24,14 @@ public final class TestTimes {
     private static final long DAYS_APART = 10_000;
 
     private TestTimes() {}
+
+    /**
+     * A clock that always says it's the given time, in the time's zone, for code that asks a clock
+     * what time it is, e.g. {@code check(server, config, at(day.plusDays(1)))}.
+     */
+    public static Clock at(ZonedDateTime time) {
+        return Clock.fixed(time.toInstant(), time.getZone());
+    }
 
     /**
      * 19:00 on a day no other test uses, an hour after that day's {@link #DAILY} period started.

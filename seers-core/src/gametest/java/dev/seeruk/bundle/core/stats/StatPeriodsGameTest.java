@@ -18,15 +18,17 @@ import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.StatScores.setScore;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
 import static dev.seeruk.bundle.core.testing.TestTimes.DAILY;
+import static dev.seeruk.bundle.core.testing.TestTimes.at;
 import static dev.seeruk.bundle.core.testing.TestTimes.uniqueDay;
 
 public class StatPeriodsGameTest {
-    // Periods end every day at 18:00 (see TestTimes.DAILY), and each check says what the time is,
-    // so these don't depend on the real clock. Each test uses its own period and day.
+    // Periods end every day at 18:00 (see TestTimes.DAILY), and each check is given a clock fixed
+    // at a time (see TestTimes.at), so these don't depend on the real clock. Each test uses its own
+    // period and day.
 
     private static final StatPeriods PERIODS = StatPeriods.of("stat-periods-test");
 
-    // The moment that day's period started
+    // The given day's 18:00, when our test period ends
     private static Instant sixPm(ZonedDateTime day) {
         return day.withHour(18).toInstant();
     }
@@ -36,7 +38,7 @@ public class StatPeriodsGameTest {
         final var server = helper.getLevel().getServer();
         final var endings = new ArrayList<Ended>();
 
-        final var outcome = PERIODS.check(server, "first", DAILY, uniqueDay(), endings::add);
+        final var outcome = PERIODS.check(server, "first", DAILY, at(uniqueDay()), endings::add);
 
         helper.assertValueEqual(outcome, Outcome.STARTED, "outcome");
         helper.assertValueEqual(endings, List.of(), "endings");
@@ -52,7 +54,7 @@ public class StatPeriodsGameTest {
         try {
             // The first check starts the period, snapshotting the 5 the player already has
             setScore(player, objective, 5);
-            PERIODS.check(server, "since", DAILY, uniqueDay(), ended -> {});
+            PERIODS.check(server, "since", DAILY, at(uniqueDay()), ended -> {});
 
             // So only the 3 gained since counts
             setScore(player, objective, 8);
@@ -83,15 +85,16 @@ public class StatPeriodsGameTest {
         final var server = helper.getLevel().getServer();
         final var day = uniqueDay();
         final var endings = new ArrayList<Ended>();
-        PERIODS.check(server, "ends", DAILY, day, endings::add);
+        PERIODS.check(server, "ends", DAILY, at(day), endings::add);
 
         // The next day's 18:00 has passed, so it ends. Checking again does nothing, as the next
         // period started at that 18:00.
-        final var first = PERIODS.check(server, "ends", DAILY, day.plusDays(1), endings::add);
-        final var second = PERIODS.check(server, "ends", DAILY, day.plusDays(1), endings::add);
+        final var first = PERIODS.check(server, "ends", DAILY, at(day.plusDays(1)), endings::add);
+        final var second = PERIODS.check(server, "ends", DAILY, at(day.plusDays(1)), endings::add);
 
         helper.assertValueEqual(List.of(first, second), List.of(Outcome.ENDED, Outcome.UNCHANGED), "outcomes");
-        helper.assertValueEqual(endings, List.of(new Ended(sixPm(day), sixPm(day.plusDays(1)), false)), "endings");
+        // The first period started when it was first checked, not at the 18:00 before that
+        helper.assertValueEqual(endings, List.of(new Ended(day.toInstant(), sixPm(day.plusDays(1)), false)), "endings");
         helper.succeed();
     }
 
@@ -99,10 +102,10 @@ public class StatPeriodsGameTest {
     public void periodDoesNotEndBeforeItsSchedule(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
         final var day = uniqueDay();
-        PERIODS.check(server, "early", DAILY, day, ended -> {});
+        PERIODS.check(server, "early", DAILY, at(day), ended -> {});
 
         // Still before the next day's 18:00
-        final var outcome = PERIODS.check(server, "early", DAILY, day.plusHours(4), ended -> {});
+        final var outcome = PERIODS.check(server, "early", DAILY, at(day.plusHours(4)), ended -> {});
 
         helper.assertValueEqual(outcome, Outcome.UNCHANGED, "outcome");
         helper.succeed();
@@ -113,13 +116,13 @@ public class StatPeriodsGameTest {
         final var server = helper.getLevel().getServer();
         final var day = uniqueDay();
         final var endings = new ArrayList<Ended>();
-        PERIODS.check(server, "several", DAILY, day, endings::add);
+        PERIODS.check(server, "several", DAILY, at(day), endings::add);
 
         // Two 18:00s have passed, e.g. while the server was stopped, but it only ends once, and
         // says a whole period was missed
-        PERIODS.check(server, "several", DAILY, day.plusDays(2), endings::add);
+        PERIODS.check(server, "several", DAILY, at(day.plusDays(2)), endings::add);
 
-        helper.assertValueEqual(endings, List.of(new Ended(sixPm(day), sixPm(day.plusDays(2)), true)), "endings");
+        helper.assertValueEqual(endings, List.of(new Ended(day.toInstant(), sixPm(day.plusDays(2)), true)), "endings");
         helper.succeed();
     }
 
@@ -128,10 +131,10 @@ public class StatPeriodsGameTest {
         final var server = helper.getLevel().getServer();
         final var day = uniqueDay();
         final var endings = new ArrayList<Ended>();
-        PERIODS.check(server, "back", DAILY, day, endings::add);
+        PERIODS.check(server, "back", DAILY, at(day), endings::add);
 
         // The period started after this, so its start can't be trusted
-        final var outcome = PERIODS.check(server, "back", DAILY, day.minusDays(1), endings::add);
+        final var outcome = PERIODS.check(server, "back", DAILY, at(day.minusDays(1)), endings::add);
 
         helper.assertValueEqual(outcome, Outcome.STARTED, "outcome");
         helper.assertValueEqual(endings, List.of(), "endings");
@@ -146,10 +149,10 @@ public class StatPeriodsGameTest {
         // The clock jumps 5 years ahead, ending the period, and starting one in 5 years. When the
         // clock comes back, that one starts again from now, so it can still end at the next 18:00.
         final var outcomes = List.of(
-            PERIODS.check(server, "jump", DAILY, day, ended -> {}),
-            PERIODS.check(server, "jump", DAILY, day.plusYears(5), ended -> {}),
-            PERIODS.check(server, "jump", DAILY, day.plusHours(1), ended -> {}),
-            PERIODS.check(server, "jump", DAILY, day.plusDays(1), ended -> {})
+            PERIODS.check(server, "jump", DAILY, at(day), ended -> {}),
+            PERIODS.check(server, "jump", DAILY, at(day.plusYears(5)), ended -> {}),
+            PERIODS.check(server, "jump", DAILY, at(day.plusHours(1)), ended -> {}),
+            PERIODS.check(server, "jump", DAILY, at(day.plusDays(1)), ended -> {})
         );
 
         helper.assertValueEqual(
@@ -165,12 +168,12 @@ public class StatPeriodsGameTest {
         final var server = helper.getLevel().getServer();
         final var day = uniqueDay();
         final var endings = new ArrayList<Ended>();
-        PERIODS.check(server, "changed", DAILY, day, endings::add);
+        PERIODS.check(server, "changed", DAILY, at(day), endings::add);
 
         // 20:00 has passed under the new schedule, but the period never ran on it, so it starts
         // again, rather than ending
         final var changed = Schedule.daily(LocalTime.of(20, 0));
-        final var outcome = PERIODS.check(server, "changed", changed, day.plusHours(2), endings::add);
+        final var outcome = PERIODS.check(server, "changed", changed, at(day.plusHours(2)), endings::add);
 
         helper.assertValueEqual(outcome, Outcome.STARTED, "outcome");
         helper.assertValueEqual(endings, List.of(), "endings");
@@ -182,19 +185,19 @@ public class StatPeriodsGameTest {
         final var server = helper.getLevel().getServer();
         final var day = uniqueDay();
         final var endings = new ArrayList<Ended>();
-        PERIODS.check(server, "end_now", DAILY, day, endings::add);
+        PERIODS.check(server, "end_now", DAILY, at(day), endings::add);
 
         // Ends at 20:00, before the schedule says, so the next period starts then, and ends at
         // the next day's 18:00 as normal
-        final var ended = PERIODS.endNow(server, "end_now", DAILY, day.plusHours(1), endings::add);
-        final var early = PERIODS.check(server, "end_now", DAILY, day.plusHours(2), endings::add);
-        final var onTime = PERIODS.check(server, "end_now", DAILY, day.plusDays(1), endings::add);
+        final var ended = PERIODS.endNow(server, "end_now", DAILY, at(day.plusHours(1)), endings::add);
+        final var early = PERIODS.check(server, "end_now", DAILY, at(day.plusHours(2)), endings::add);
+        final var onTime = PERIODS.check(server, "end_now", DAILY, at(day.plusDays(1)), endings::add);
 
         helper.assertValueEqual(List.of(ended, early, onTime), List.of(Outcome.ENDED, Outcome.UNCHANGED, Outcome.ENDED), "outcomes");
         helper.assertValueEqual(
             endings,
             List.of(
-                new Ended(sixPm(day), day.plusHours(1).toInstant(), false),
+                new Ended(day.toInstant(), day.plusHours(1).toInstant(), false),
                 new Ended(day.plusHours(1).toInstant(), sixPm(day.plusDays(1)), false)
             ),
             "endings"
@@ -207,7 +210,7 @@ public class StatPeriodsGameTest {
         final var server = helper.getLevel().getServer();
         final var endings = new ArrayList<Ended>();
 
-        final var outcome = PERIODS.endNow(server, "end_now_first", DAILY, uniqueDay(), endings::add);
+        final var outcome = PERIODS.endNow(server, "end_now_first", DAILY, at(uniqueDay()), endings::add);
 
         helper.assertValueEqual(outcome, Outcome.STARTED, "outcome");
         helper.assertValueEqual(endings, List.of(), "endings");
@@ -218,7 +221,7 @@ public class StatPeriodsGameTest {
     public void playersAtStartAreThoseWithStatsWhenItStarted(GameTestHelper helper) {
         final var server = helper.getLevel().getServer();
         final var before = player(helper);
-        PERIODS.check(server, "at_start", DAILY, uniqueDay(), ended -> {});
+        PERIODS.check(server, "at_start", DAILY, at(uniqueDay()), ended -> {});
         final var after = player(helper);
 
         final var atStart = PERIODS.playersAtStart(server, "at_start");
@@ -235,17 +238,17 @@ public class StatPeriodsGameTest {
         final var periods = StatPeriods.of("stat-periods-forget-test");
         final var other = StatPeriods.of("stat-periods-forget-other-test");
         final var day = uniqueDay();
-        periods.check(server, "kept", DAILY, day, ended -> {});
-        periods.check(server, "removed", DAILY, day, ended -> {});
-        other.check(server, "removed", DAILY, day, ended -> {});
+        periods.check(server, "kept", DAILY, at(day), ended -> {});
+        periods.check(server, "removed", DAILY, at(day), ended -> {});
+        other.check(server, "removed", DAILY, at(day), ended -> {});
 
         final var forgotten = periods.forgetExcept(server, List.of("kept"));
 
         helper.assertValueEqual(forgotten, List.of("removed"), "forgotten");
         // A forgotten period starts again, but the other mod's period of the same name doesn't
-        helper.assertValueEqual(periods.check(server, "removed", DAILY, day, ended -> {}), Outcome.STARTED, "removed");
-        helper.assertValueEqual(periods.check(server, "kept", DAILY, day, ended -> {}), Outcome.UNCHANGED, "kept");
-        helper.assertValueEqual(other.check(server, "removed", DAILY, day, ended -> {}), Outcome.UNCHANGED, "other mod's");
+        helper.assertValueEqual(periods.check(server, "removed", DAILY, at(day), ended -> {}), Outcome.STARTED, "removed");
+        helper.assertValueEqual(periods.check(server, "kept", DAILY, at(day), ended -> {}), Outcome.UNCHANGED, "kept");
+        helper.assertValueEqual(other.check(server, "removed", DAILY, at(day), ended -> {}), Outcome.UNCHANGED, "other mod's");
         helper.succeed();
     }
 }

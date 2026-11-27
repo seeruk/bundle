@@ -5,7 +5,7 @@ import dev.seeruk.bundle.leaders.LeadersConfig.Period;
 import dev.seeruk.bundle.leaders.api.LeaderEvents;
 import net.minecraft.server.MinecraftServer;
 
-import java.time.ZonedDateTime;
+import java.time.Clock;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,10 +36,10 @@ public final class Periods {
      * Ends any period whose schedule has come round since it started, with its results, and starts
      * the next (see {@link StatPeriods#check}).
      */
-    public static void check(MinecraftServer server, LeadersConfig config, ZonedDateTime now) {
+    public static void check(MinecraftServer server, LeadersConfig config, Clock clock) {
         var changed = false;
         for (final var period : config.periods()) {
-            final var outcome = PERIODS.check(server, period.id(), period.schedule(), now, ended ->
+            final var outcome = PERIODS.check(server, period.id(), period.schedule(), clock, ended ->
                 end(server, config, period, ended.missedWholePeriod()));
             changed |= outcome != StatPeriods.Outcome.UNCHANGED;
         }

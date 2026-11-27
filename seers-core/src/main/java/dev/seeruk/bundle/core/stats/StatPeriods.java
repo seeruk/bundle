@@ -6,8 +6,10 @@ import dev.seeruk.bundle.core.storage.WorldStorage;
 import dev.seeruk.bundle.core.time.Schedule;
 import net.minecraft.server.MinecraftServer;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -69,13 +71,13 @@ public final class StatPeriods {
      * Ends the period if its schedule has come round since it started, and starts the next.
      * However many times the schedule has come round, it only ends once, as stats can't change
      * while the server isn't running. A period whose start can't be trusted (it never started, its
-     * schedule has changed, or the clock went back past it) is started again quietly instead, so
-     * the first one is shorter.
+     * schedule has changed, or the clock went back past it) is started again quietly instead, from
+     * now, so the first one is shorter.
      *
      * @param server   The server.
      * @param id       The period's ID, within the mod.
      * @param schedule When it ends.
-     * @param now      The time now, in the schedule's time zone.
+     * @param clock    Says what time it is, in the schedule's time zone.
      * @param ending   Given the period when it ends, while its stats can still be counted with
      *                 {@link #sinceStart}, before the next one starts.
      */
@@ -83,17 +85,23 @@ public final class StatPeriods {
         MinecraftServer server,
         String id,
         Schedule schedule,
-        ZonedDateTime now,
+        Clock clock,
         Consumer<Ended> ending
     ) {
-        // The moment the period would have started at, if it had started on time
-        final var latest = schedule.latest(now);
+        // Read once, so every part of the check agrees on what time it is
+        final var now = ZonedDateTime.now(clock);
+
+        // The last time the schedule came round (at or before now). If the period started before
+        // this, the schedule's come round since, so it ends here.
+        final var latest = schedule.latestAtOrBefore(now);
         final var started = StatSnapshots.held(server, holder(id)).map(StatSnapshots.Snapshot::at);
 
+        // The new period is started from now, as that's when its stats are counted from. Starting
+        // it from the schedule's last moment would claim it covered time that it didn't cover.
         if (started.isEmpty()
             || !schedule.equals(SCHEDULES.get(server).get(holder(id)))
             || started.get().isAfter(now.toInstant())) {
-            start(server, id, schedule, latest);
+            start(server, id, schedule, secondOf(now));
             return Outcome.STARTED;
         }
 
@@ -113,24 +121,25 @@ public final class StatPeriods {
      * @param server   The server.
      * @param id       The period's ID, within the mod.
      * @param schedule When it normally ends.
-     * @param now      The time now, which it ends at.
+     * @param clock    Says what time it is, which it ends at, in the schedule's time zone.
      * @param ending   Given the period, before the next one starts, as with {@link #check}.
      */
     public Outcome endNow(
         MinecraftServer server,
         String id,
         Schedule schedule,
-        ZonedDateTime now,
+        Clock clock,
         Consumer<Ended> ending
     ) {
+        final var now = ZonedDateTime.now(clock);
         final var started = StatSnapshots.held(server, holder(id)).map(StatSnapshots.Snapshot::at);
         if (started.isEmpty()) {
-            start(server, id, schedule, now.toInstant());
+            start(server, id, schedule, secondOf(now));
             return Outcome.STARTED;
         }
 
-        ending.accept(new Ended(started.get(), now.toInstant(), false));
-        start(server, id, schedule, now.toInstant());
+        ending.accept(new Ended(started.get(), secondOf(now), false));
+        start(server, id, schedule, secondOf(now));
         return Outcome.ENDED;
     }
 
@@ -182,10 +191,16 @@ public final class StatPeriods {
         return forgotten;
     }
 
+    // The second it is now. Periods started in the same second (e.g. by different mods, as the
+    // server starts) share a snapshot, which they wouldn't if they started a few nanoseconds apart.
+    private static Instant secondOf(ZonedDateTime now) {
+        return now.toInstant().truncatedTo(ChronoUnit.SECONDS);
+    }
+
     // Whether the schedule also came round between `started` and `latest`. The schedule's moment
     // just before `latest` is normally `started` itself.
     private static boolean missedWholePeriod(Schedule schedule, Instant started, Instant latest, ZonedDateTime now) {
-        final var before = schedule.latest(ZonedDateTime.ofInstant(latest.minusSeconds(1), now.getZone()));
+        final var before = schedule.latestAtOrBefore(ZonedDateTime.ofInstant(latest.minusSeconds(1), now.getZone()));
         return before.isAfter(started);
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
 
-import java.time.ZonedDateTime;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,11 +58,11 @@ public final class Leaders {
         refresh(server, config);
     }
 
-    public static void tick(MinecraftServer server, LeadersConfig config) {
+    public static void tick(MinecraftServer server, LeadersConfig config, Clock clock) {
         // Periods are checked every second, so they end within a second of their schedule. Boards
         // are refreshed less often, as reading every player's stats costs more.
         if (server.getTickCount() % SharedConstants.TICKS_PER_SECOND == 0) {
-            Periods.check(server, config, ZonedDateTime.now(config.timezone()));
+            Periods.check(server, config, clock);
         }
 
         if (server.getTickCount() % (config.refreshSeconds() * SharedConstants.TICKS_PER_SECOND) == 0) {

@@ -12,7 +12,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
 import java.util.Optional;
@@ -30,17 +29,6 @@ import java.util.Optional;
 public record Schedule(Every every, int day, LocalTime at) {
     private static final int LAST_DAY = 31;
 
-    private static final Codec<LocalTime> TIME_CODEC = Codec.STRING.comapFlatMap(
-        time -> {
-            try {
-                return DataResult.success(LocalTime.parse(time));
-            } catch (DateTimeParseException e) {
-                return DataResult.error(() -> "Time should be written as HH:MM: " + time);
-            }
-        },
-        LocalTime::toString
-    );
-
     // Written as it is in config, e.g. "sunday", 1, or "last", until it's checked against `every`
     private record Written(Every every, Optional<Either<Integer, String>> on, LocalTime at) {}
 
@@ -50,7 +38,7 @@ public record Schedule(Every every, int day, LocalTime at) {
     public static final MapCodec<Schedule> MAP_CODEC = RecordCodecBuilder.<Written>mapCodec(instance -> instance.group(
         Every.CODEC.fieldOf("every").forGetter(Written::every),
         Codec.either(Codec.INT, Codec.STRING).optionalFieldOf("on").forGetter(Written::on),
-        TIME_CODEC.fieldOf("at").forGetter(Written::at)
+        TimeCodecs.LOCAL_TIME.fieldOf("at").forGetter(Written::at)
     ).apply(instance, Written::new)).flatXmap(Schedule::read, schedule -> DataResult.success(schedule.written()));
 
     public static final Codec<Schedule> CODEC = MAP_CODEC.codec();
@@ -92,32 +80,36 @@ public record Schedule(Every every, int day, LocalTime at) {
     }
 
     /**
-     * The most recent moment it came round, at or before {@code now}, in {@code now}'s time zone.
+     * The most recent moment it came round, at or before the given time, in the time's zone. It
+     * works from any time, so it's up to the caller to give it the time they mean, e.g. now (from a
+     * clock), or a moment in the past to look back from.
      */
-    public Instant latest(ZonedDateTime now) {
-        final var date = now.toLocalDate();
-        final var thisOne = ZonedDateTime.of(on(date), at, now.getZone());
-        return thisOne.isAfter(now)
-            ? ZonedDateTime.of(on(before(date)), at, now.getZone()).toInstant()
-            : thisOne.toInstant();
+    public Instant latestAtOrBefore(ZonedDateTime time) {
+        final var day = time.toLocalDate();
+        final var latest = ZonedDateTime.of(scheduledDayOnOrBefore(day), at, time.getZone());
+
+        // The day might be a scheduled day, but before its time, in which case it hadn't come round
+        // yet, so it's the scheduled day before it
+        return latest.isAfter(time)
+            ? ZonedDateTime.of(scheduledDayOnOrBefore(day.minusDays(1)), at, time.getZone()).toInstant()
+            : latest.toInstant();
     }
 
-    // The day it comes round in the day, week, or month that the date is in
-    private LocalDate on(LocalDate date) {
+    // The most recent day it comes round on, on or before the date
+    private LocalDate scheduledDayOnOrBefore(LocalDate date) {
         return switch (every) {
             case DAY -> date;
             case WEEK -> date.with(TemporalAdjusters.previousOrSame(DayOfWeek.of(day)));
-            case MONTH -> date.withDayOfMonth(Math.min(day, date.lengthOfMonth()));
+            case MONTH -> {
+                final var thisMonth = dayInMonth(date);
+                yield thisMonth.isAfter(date) ? dayInMonth(date.minusMonths(1)) : thisMonth;
+            }
         };
     }
 
-    // A date in the day, week, or month before the date's
-    private LocalDate before(LocalDate date) {
-        return switch (every) {
-            case DAY -> date.minusDays(1);
-            case WEEK -> date.minusWeeks(1);
-            case MONTH -> date.minusMonths(1);
-        };
+    // The day it comes round on in the date's month, which is the month's last day if it's shorter
+    private LocalDate dayInMonth(LocalDate date) {
+        return date.withDayOfMonth(Math.min(day, date.lengthOfMonth()));
     }
 
     private static DataResult<Schedule> read(Written written) {
