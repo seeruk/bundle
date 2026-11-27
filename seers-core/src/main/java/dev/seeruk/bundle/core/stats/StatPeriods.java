@@ -115,8 +115,8 @@ public final class StatPeriods {
     }
 
     /**
-     * Ends the period now, whatever its schedule says, and starts the next straight away, which then
-     * ends when the schedule next comes round. Starts it instead, if it hasn't started.
+     * Ends the period now, whatever its schedule says, and starts the next straight away, which
+     * then ends when the schedule next comes round. Starts it instead, if it hasn't started.
      *
      * @param server   The server.
      * @param id       The period's ID, within the mod.

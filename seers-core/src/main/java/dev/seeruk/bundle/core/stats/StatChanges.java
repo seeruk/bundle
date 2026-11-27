@@ -15,7 +15,7 @@ public final class StatChanges {
     /**
      * Returns how much each stat in {@code current} has gone up since {@code before}. Stats that
      * didn't go up are left out, so a value that went down (e.g. a reset scoreboard objective)
-     * counts as nothing, rather than taking away. Anything missing from {@code before} counts from 0.
+     * counts as nothing, rather than taking away. Stats missing from {@code before} count from 0.
      */
     public static Map<UUID, Map<String, Integer>> since(
         Map<UUID, Map<String, Integer>> current,

@@ -73,7 +73,7 @@ public class ZoneOutlineTest {
         void spreadsParticlesAlongTheWholeSide() {
             final var points = outline(EYES, 64, ParticleIntensity.MEDIUM, ParticleStyle.BAND);
 
-            // A particle every block from end to end (17), on each of 7 rows from 3 below to 3 above
+            // A particle every block from end to end (17), on 7 rows from 3 below to 3 above
             assertEquals(17 * 7, points.size());
             assertTrue(points.stream().allMatch(point -> point.z == 32), "Particle off the chunk's north side");
             assertEquals(16, points.stream().mapToDouble(point -> point.x).min().orElseThrow());
@@ -116,7 +116,8 @@ public class ZoneOutlineTest {
 
             final var points = outline(eyes, 8, ParticleIntensity.MEDIUM, ParticleStyle.BAND);
 
-            // Only the column straight across from the player is 8 blocks away, however high up they are
+            // Only the column straight across from the player is 8 blocks away, however high up
+            // they are
             assertEquals(7, points.size());
             assertTrue(points.stream().allMatch(point -> point.x == 24), "Particle beyond the radius");
         }

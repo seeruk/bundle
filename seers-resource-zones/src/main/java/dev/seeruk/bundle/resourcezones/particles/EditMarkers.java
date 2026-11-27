@@ -31,8 +31,9 @@ public final class EditMarkers {
     }
 
     /**
-     * Shows the player markers on the chunks near them, if they're editing (or have paused editing),
-     * and it's time to show them again. They're shown whatever the player's own particle settings.
+     * Shows the player markers on the chunks near them, if they're editing (or have paused
+     * editing), and it's time to show them again. They're shown whatever the player's own particle
+     * settings.
      *
      * @param player The player to show them to.
      * @param tick   The current server tick.

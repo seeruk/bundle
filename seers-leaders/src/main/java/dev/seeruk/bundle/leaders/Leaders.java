@@ -27,7 +27,7 @@ import static dev.seeruk.bundle.leaders.SeersLeaders.MOD_ID;
  * Each category's leaderboard, worked out from every player's stats.
  */
 public final class Leaders {
-    // Each category's ranked players, by category ID. Concurrent, as it can be read from many threads.
+    // Each category's ranked players, by category ID. Concurrent, as it's read from many threads.
     private static final Map<String, List<Standing>> BOARDS = new ConcurrentHashMap<>();
 
     // Each category's leader as of the last refresh, kept so restarting doesn't count as a change

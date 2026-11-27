@@ -52,7 +52,7 @@ public final class DiscordRelay {
 
         // The name chat shows, e.g. with the player's nickname, or their team's prefix
         final var displayName = chat.name().getString();
-        // Tags (e.g. a long item name, many times over) can make a message longer than Discord allows
+        // Tags (e.g. a long item name, many times over) can make a message too long for Discord
         final var content = TextComponents.truncate(
             format.format(Map.of(
                 "display_name", MarkdownRenderer.escape(displayName),

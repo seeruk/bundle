@@ -96,12 +96,12 @@ discord:
       format: "${display_name} is now the top ${category}!"
       colour: gold
 
-    # Only sent if Seer's Leaders is installed, when a period ends, as it's announced in game (so not
-    # when nobody won anything, or whole periods were missed while the server was stopped). It's one
-    # embed with a line for each category's winner. ${period} is the period's title. In line_format,
-    # ${category} is the category's title, ${display_name} and ${username} are the winner, and
-    # ${value} is their total. line_format can use Discord's formatting. When there are more winners
-    # than fit in one embed, the rest go in more, using continued_format.
+    # Only sent if Seer's Leaders is installed, when a period ends, as it's announced in game (so
+    # not when nobody won anything, or whole periods were missed while the server was stopped). It's
+    # one embed with a line for each category's winner. ${period} is the period's title. In
+    # line_format, ${category} is the category's title, ${display_name} and ${username} are the
+    # winner, and ${value} is their total. line_format can use Discord's formatting. When there are
+    # more winners than fit in one embed, the rest go in more, using continued_format.
     leaders_period_ended:
       enabled: true
       format: "🏆  The ${period} leaders are in!"

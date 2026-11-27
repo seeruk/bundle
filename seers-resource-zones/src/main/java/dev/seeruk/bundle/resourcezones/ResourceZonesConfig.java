@@ -81,7 +81,7 @@ public record ResourceZonesConfig(TextTemplate notice, Particles particles, Edit
     }
 
     /**
-     * @param folder The folder each dimension's file is written to, relative to the server's folder.
+     * @param folder Where each dimension's file is written, relative to the server's folder.
      */
     public record Export(String folder) {
         public static final Codec<Export> CODEC = RecordCodecBuilder.create(instance -> instance.group(

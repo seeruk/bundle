@@ -49,8 +49,8 @@ public final class LeaderEvents {
      * @param title        The category's title, as players see it.
      * @param previous     Who led the category before, if anyone.
      * @param leader       Who leads the category now, if anyone.
-     * @param announceable Whether it's worth announcing: someone took the lead from someone else, in
-     *                     a category that announces changes. Leaders' own chat announcements
+     * @param announceable Whether it's worth announcing: someone took the lead from someone else,
+     *                     in a category that announces changes. Leaders' own chat announcements
      *                     follow this, but it doesn't depend on whether they're turned on.
      */
     public record Change(
@@ -66,7 +66,7 @@ public final class LeaderEvents {
      *
      * @param period       The period's ID.
      * @param title        The period's title, as players see it.
-     * @param winners      Who won each of the period's categories, leaving out any nobody scored in.
+     * @param winners      Who won each of the period's categories, except any nobody scored in.
      * @param announceable Whether it's worth announcing: someone won something, and the server
      *                     wasn't stopped for whole periods (so the winners aren't from long ago).
      *                     Leaders' own chat announcements follow this, but it doesn't depend on

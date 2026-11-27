@@ -103,8 +103,8 @@ public record LeadersConfig(
     /**
      * @param enabled Whether it's sent at all.
      * @param header  The first line, with {@code ${period}}.
-     * @param line    A line for each category's winner, with {@code ${category}}, {@code ${player}},
-     *                and {@code ${value}}.
+     * @param line    A line for each category's winner, with {@code ${category}},
+     *                {@code ${player}}, and {@code ${value}}.
      */
     public record PeriodAnnouncement(boolean enabled, TextTemplate header, TextTemplate line) {
         public static final Codec<PeriodAnnouncement> CODEC = RecordCodecBuilder.create(instance -> instance.group(

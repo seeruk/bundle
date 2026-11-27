@@ -19,8 +19,9 @@ import java.util.stream.Collectors;
 
 /**
  * Reads every player's stats, whether they're online or not, for use with {@link StatSelection}.
- * Vanilla stats are named by their scoreboard criterion (e.g. {@code minecraft.mined:minecraft.stone}),
- * and scoreboard scores as {@code scoreboard:<objective>}.
+ * Vanilla stats are named by their scoreboard criterion (e.g.
+ * {@code minecraft.mined:minecraft.stone}), and scoreboard scores as
+ * {@code scoreboard:<objective>}.
  */
 public final class AllPlayerStats {
     public static final String SCOREBOARD_PREFIX = "scoreboard:";

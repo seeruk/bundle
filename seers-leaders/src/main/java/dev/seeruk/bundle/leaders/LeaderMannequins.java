@@ -46,7 +46,7 @@ public final class LeaderMannequins {
     // Leader mannequins that are loaded, by UUID. Concurrent, as it's shared across levels.
     private static final Map<UUID, Mannequin> LOADED = new ConcurrentHashMap<>();
 
-    // Categories a mannequin's seat names that aren't in the config, so each is only warned about once
+    // Categories seats name that aren't in the config, so each is only warned about once
     private static final Set<String> UNKNOWN = ConcurrentHashMap.newKeySet();
 
     private LeaderMannequins() {}
@@ -55,7 +55,7 @@ public final class LeaderMannequins {
     public static void init() {}
 
     /**
-     * Places a mannequin showing the seat on top of the block the player is looking at, facing them.
+     * Places a mannequin showing the seat on the block the player is looking at, facing them.
      */
     public static PlaceResult place(ServerPlayer player, LeadersConfig config, Seat seat) {
         if (config.category(seat.category()).isEmpty()) {
