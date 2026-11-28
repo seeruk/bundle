@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 
 import static dev.seeruk.bundle.core.testing.StatScores.addObjective;
 import static dev.seeruk.bundle.core.testing.TestPlayers.player;
+import static dev.seeruk.bundle.digest.DigestFixtures.book;
 import static dev.seeruk.bundle.digest.DigestFixtures.config;
 
 public class DigestBooksGameTest {
@@ -47,14 +48,14 @@ public class DigestBooksGameTest {
 
         try {
             final var issue = issue(helper, player(helper));
-            final var content = DigestBooks.create(server, config(objective), issue).get(DataComponents.WRITTEN_BOOK_CONTENT);
+            final var content = DigestBooks.create(server, config(objective), book(), issue).get(DataComponents.WRITTEN_BOOK_CONTENT);
 
             helper.assertValueEqual(content.title().raw(), "Test Digest", "title");
             helper.assertValueEqual(content.author(), "Tests", "author");
             // The cover is wrapped to fit the page, dropping the spaces it's wrapped at
             helper.assertValueEqual(
                 content.pages().getFirst().raw().getString().replace("\n", " "),
-                "Test Digest Daily #%d: 21 Nov 2026 to 22 Nov 2026".formatted(issue.number()),
+                "Test Digest Daily #%d: 21 to 22 Nov 2026".formatted(issue.number()),
                 "cover"
             );
             helper.assertValueEqual(
@@ -86,17 +87,14 @@ public class DigestBooksGameTest {
                 List.of(player.getUUID()),
                 base.moments()
             );
-            final var pages = DigestBooks.create(server, config(objective), issue)
+            final var names = DigestBooks.create(server, config(objective), book(), issue)
                 .get(DataComponents.WRITTEN_BOOK_CONTENT)
                 .pages().stream()
-                // Long names are wrapped onto the next line, dropping the space they're wrapped at
-                .map(page -> page.raw().getString().replace("\n", " "))
+                .flatMap(page -> TextChunks.chunks(page.raw()).stream())
+                .filter(chunk -> chunk.text().equals(player.getGameProfile().name()))
                 .toList();
 
-            helper.assertTrue(
-                pages.contains("Welcome  Welcome, " + player.getGameProfile().name() + "!"),
-                "New player wasn't welcomed by name: " + pages
-            );
+            helper.assertTrue(!names.isEmpty(), "New player wasn't welcomed by name");
         } finally {
             server.getScoreboard().removeObjective(objective);
         }
@@ -124,7 +122,7 @@ public class DigestBooksGameTest {
                 List.of(player.getUUID()),
                 base.moments()
             );
-            final var colours = DigestBooks.create(server, config(objective), issue)
+            final var colours = DigestBooks.create(server, config(objective), book(), issue)
                 .get(DataComponents.WRITTEN_BOOK_CONTENT)
                 .pages().stream()
                 .flatMap(page -> TextChunks.chunks(page.raw()).stream())
@@ -167,7 +165,7 @@ public class DigestBooksGameTest {
                 base.newPlayers(),
                 new Issue.Moments(deaths, List.of(), List.of())
             );
-            final var content = DigestBooks.create(server, config(objective), issue).get(DataComponents.WRITTEN_BOOK_CONTENT);
+            final var content = DigestBooks.create(server, config(objective), book(), issue).get(DataComponents.WRITTEN_BOOK_CONTENT);
 
             final var contents = content.pages().get(1).raw().getString();
             helper.assertTrue(content.pages().size() <= BookLayout.MAX_PAGES, "Book has " + content.pages().size() + " pages");

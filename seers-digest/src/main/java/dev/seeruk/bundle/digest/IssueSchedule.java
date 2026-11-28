@@ -35,7 +35,8 @@ public final class IssueSchedule {
 
     /**
      * Publishes the current issue if the schedule has come round since it started (see
-     * {@link StatPeriods#endIfDue}).
+     * {@link StatPeriods#endIfDue}). Whenever the next issue starts, including when the first one
+     * does, it starts with no moments, as it only counts what happens from then.
      */
     public static void publishIfDue(MinecraftServer server, DigestConfig config, Clock clock) {
         publishIfDue(server, config, ISSUE, clock);
@@ -43,7 +44,7 @@ public final class IssueSchedule {
 
     /**
      * Publishes the current issue now, rather than when the schedule says, if anyone's been active
-     * since the last one. The next issue then covers from now.
+     * since the last one. The next issue then covers from now, starting with no moments.
      */
     public static Optional<Issue> publishNow(MinecraftServer server, DigestConfig config, Clock clock) {
         return publishNow(server, config, ISSUE, clock);

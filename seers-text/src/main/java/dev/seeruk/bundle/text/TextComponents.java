@@ -123,6 +123,16 @@ public final class TextComponents {
     }
 
     /**
+     * Centres a line within {@code width} pixels in the default font (see {@link TextWidths}), by
+     * padding it with spaces, so it's within 2 pixels of the centre. A line as wide as that, or
+     * wider, and an empty line, are left as they are.
+     */
+    public static Component centre(Component line, int width) {
+        final var spaces = (width - TextWidths.width(line)) / 2 / TextWidths.width(" ", false);
+        return spaces <= 0 || line.getString().isEmpty() ? line : Component.literal(" ".repeat(spaces)).append(line);
+    }
+
+    /**
      * How many characters the text shows, so an emoji counts as one, even one made of several
      * others (e.g. a family emoji).
      */

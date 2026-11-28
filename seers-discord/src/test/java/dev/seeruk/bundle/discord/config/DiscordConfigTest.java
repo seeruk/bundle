@@ -1,6 +1,9 @@
 package dev.seeruk.bundle.discord.config;
 
 import com.mojang.serialization.DataResult;
+import dev.seeruk.bundle.core.config.DistConfigs;
+import dev.seeruk.bundle.core.config.ModConfig;
+import dev.seeruk.bundle.discord.SeersDiscord;
 import com.mojang.serialization.JavaOps;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,11 +13,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DiscordConfigTest {
+    @Test
+    void readsTheShippedConfig() {
+        assertDoesNotThrow(() -> DistConfigs.read(SeersDiscord.MOD_ID, ModConfig.CONFIG, DiscordConfig.CODEC));
+    }
+
     private static final Map<String, Object> EVENT = Map.of(
         "enabled", true,
         "format", "${display_name}",

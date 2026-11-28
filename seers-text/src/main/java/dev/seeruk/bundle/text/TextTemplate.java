@@ -8,8 +8,10 @@ import eu.pb4.placeholders.api.parsers.ParserBuilder;
 import eu.pb4.placeholders.api.parsers.TagLikeParser;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * Trusted text with named placeholders like {@code ${player}}, which are filled in each time it's
@@ -29,16 +31,22 @@ public final class TextTemplate {
         .markdown()
         .build();
 
+    // A placeholder's name is everything between its ${ and }
+    private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{([^}]*)}");
+
     private final String template;
     private final TextNode node;
+    private final List<String> placeholders;
 
-    private TextTemplate(String template, TextNode node) {
+    private TextTemplate(String template, TextNode node, List<String> placeholders) {
         this.template = template;
         this.node = node;
+        this.placeholders = placeholders;
     }
 
     public static TextTemplate parse(String template) {
-        return new TextTemplate(template, PARSER.parseNode(template));
+        final var placeholders = PLACEHOLDER.matcher(template).results().map(match -> match.group(1)).toList();
+        return new TextTemplate(template, PARSER.parseNode(template), placeholders);
     }
 
     /**
@@ -46,6 +54,14 @@ public final class TextTemplate {
      */
     public String template() {
         return template;
+    }
+
+    /**
+     * The names of the template's placeholders, in the order they're written, e.g.
+     * {@code player} for {@code ${player}}.
+     */
+    public List<String> placeholders() {
+        return placeholders;
     }
 
     /**

@@ -19,37 +19,56 @@ import java.util.Optional;
  * which is written to the config folder for admins to read. Admins put their own settings in
  * {@code config.yml}, which is merged over the defaults, so it only needs the settings they want to
  * change. As every default is expected to be in the dist file, codecs don't need any defaults of
- * their own.
+ * their own. A mod can have other config files too, named in the same way, e.g.
+ * {@code book.dist.yml} and {@code book.yml}.
  */
 public final class ModConfig {
-    public static final String DIST_FILE = "config.dist.yml";
-    public static final String USER_FILE = "config.yml";
+    /** The name of a mod's main config file. */
+    public static final String CONFIG = "config";
+    public static final String DIST_FILE = distFile(CONFIG);
+    public static final String USER_FILE = userFile(CONFIG);
 
     private ModConfig() {}
 
     /**
-     * Loads the mod's config, logging whether the defaults were used, and any unknown settings.
+     * Loads the mod's main config (see {@link #load(String, String, Codec)}).
      *
      * @throws ConfigException if the config can't be read or isn't valid, which stops the server
      *                         from starting
      */
     public static <T> T load(String modId, Codec<T> codec) throws ConfigException {
+        return load(modId, CONFIG, codec);
+    }
+
+    /**
+     * Loads one of the mod's config files, e.g. {@code book} for {@code book.yml} merged over
+     * {@code book.dist.yml}, logging whether the defaults were used, and any unknown settings.
+     *
+     * @throws ConfigException if the config can't be read or isn't valid, which stops the server
+     *                         from starting
+     */
+    public static <T> T load(String modId, String name, Codec<T> codec) throws ConfigException {
         final var logger = LoggerFactory.getLogger(modId);
         final var folder = FabricLoader.getInstance().getConfigDir().resolve(modId);
-        final var loaded = load(folder, dist(modId), codec);
+        final var loaded = load(folder, name, dist(modId, name), codec);
 
         loaded.distWriteFailure().ifPresent(e ->
-            logger.warn("Couldn't update {}, so it may be out of date", folder.resolve(DIST_FILE), e));
+            logger.warn("Couldn't update {}, so it may be out of date", folder.resolve(distFile(name)), e));
 
         if (loaded.usedDefaults()) {
-            logger.info("No {} in {}, so using the defaults. Copy {} to change them", USER_FILE, folder, DIST_FILE);
+            logger.info(
+                "No {} in {}, so using the defaults. Copy {} to change them",
+                userFile(name),
+                folder,
+                distFile(name)
+            );
         }
 
         for (final var key : loaded.unknownKeys()) {
             logger.warn(
                 "Unknown config setting '{}' in {} (a typo, or no longer used?)",
                 key,
-                folder.resolve(USER_FILE)
+                folder.resolve(userFile(name))
             );
         }
 
@@ -66,18 +85,18 @@ public final class ModConfig {
                      Optional<IOException> distWriteFailure) {}
 
     /**
-     * Writes the dist file, then loads the admin's config merged over the defaults.
+     * Writes the named config's dist file, then loads the admin's config merged over the defaults.
      */
-    static <T> Loaded<T> load(Path folder, String dist, Codec<T> codec) throws ConfigException {
-        final var distFile = folder.resolve(DIST_FILE);
-        final var userFile = folder.resolve(USER_FILE);
+    static <T> Loaded<T> load(Path folder, String name, String dist, Codec<T> codec) throws ConfigException {
+        final var distFile = folder.resolve(distFile(name));
+        final var userFile = folder.resolve(userFile(name));
 
         // The dist file is only there for admins to read, so failing to write it (e.g. because it's
         // been made read-only) shouldn't stop the config from loading
         final var distWriteFailure = writeIfChanged(distFile, dist);
 
         final var usedDefaults = !Files.exists(userFile);
-        final var defaults = ConfigTree.parse(DIST_FILE, dist);
+        final var defaults = ConfigTree.parse(distFile(name), dist);
         final var user = usedDefaults ? Map.of() : ConfigTree.parse(userFile.toString(), read(userFile));
 
         final var config = codec.parse(JavaOps.INSTANCE, ConfigTree.merge(defaults, user)).getOrThrow(error ->
@@ -114,8 +133,16 @@ public final class ModConfig {
         }
     }
 
-    private static String dist(String modId) {
-        final var resource = modId + "/" + DIST_FILE;
+    private static String distFile(String name) {
+        return name + ".dist.yml";
+    }
+
+    private static String userFile(String name) {
+        return name + ".yml";
+    }
+
+    private static String dist(String modId, String name) {
+        final var resource = modId + "/" + distFile(name);
         final var path = FabricLoader.getInstance().getModContainer(modId)
             .flatMap(container -> container.findPath(resource))
             .orElseThrow(() -> new ConfigException("The " + modId + " mod doesn't include " + resource));

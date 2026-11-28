@@ -49,7 +49,7 @@ public class ModConfigTest {
 
     @Test
     void usesTheDefaultsWithoutAUserFile() {
-        final var loaded = ModConfig.load(folder, DIST, TestConfig.CODEC);
+        final var loaded = ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC);
 
         assertEquals(new TestConfig("default", 1, new Section(false, 0.5)), loaded.config());
         assertTrue(loaded.usedDefaults(), "Didn't say it used the defaults");
@@ -59,7 +59,7 @@ public class ModConfigTest {
     void mergesTheUserFileOverTheDefaults() throws IOException {
         Files.writeString(folder.resolve(ModConfig.USER_FILE), "count: 3\nsection:\n  enabled: true\n");
 
-        final var loaded = ModConfig.load(folder, DIST, TestConfig.CODEC);
+        final var loaded = ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC);
 
         assertEquals(new TestConfig("default", 3, new Section(true, 0.5)), loaded.config());
         assertFalse(loaded.usedDefaults(), "Said it used the defaults");
@@ -71,7 +71,7 @@ public class ModConfigTest {
 
         assertEquals(
             new TestConfig("default", 1, new Section(false, 0.5)),
-            ModConfig.load(folder, DIST, TestConfig.CODEC).config()
+            ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC).config()
         );
     }
 
@@ -79,14 +79,14 @@ public class ModConfigTest {
     void reportsUnknownSettings() throws IOException {
         Files.writeString(folder.resolve(ModConfig.USER_FILE), "cuont: 3\nsection:\n  enabld: true\n");
 
-        assertEquals(List.of("cuont", "section.enabld"), ModConfig.load(folder, DIST, TestConfig.CODEC).unknownKeys());
+        assertEquals(List.of("cuont", "section.enabld"), ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC).unknownKeys());
     }
 
     @Test
     void refusesInvalidSettings() throws IOException {
         Files.writeString(folder.resolve(ModConfig.USER_FILE), "count: lots\n");
 
-        final var e = assertThrows(ConfigException.class, () -> ModConfig.load(folder, DIST, TestConfig.CODEC));
+        final var e = assertThrows(ConfigException.class, () -> ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC));
         assertTrue(e.getMessage().contains(ModConfig.USER_FILE), "Error doesn't say which file: " + e.getMessage());
     }
 
@@ -94,15 +94,26 @@ public class ModConfigTest {
     void emptyDistSettingsCanBeOptional() throws IOException {
         final var codec = Codec.STRING.optionalFieldOf("token").codec();
         final var dist = "# Left empty, so it's off until it's set.\ntoken:\n";
-        assertEquals(Optional.empty(), ModConfig.load(folder, dist, codec).config());
+        assertEquals(Optional.empty(), ModConfig.load(folder, ModConfig.CONFIG, dist, codec).config());
 
         Files.writeString(folder.resolve(ModConfig.USER_FILE), "token: secret\n");
-        assertEquals(Optional.of("secret"), ModConfig.load(folder, dist, codec).config());
+        assertEquals(Optional.of("secret"), ModConfig.load(folder, ModConfig.CONFIG, dist, codec).config());
+    }
+
+    @Test
+    void loadsOtherConfigFilesByName() throws IOException {
+        Files.writeString(folder.resolve("book.yml"), "count: 3\n");
+
+        final var loaded = ModConfig.load(folder, "book", DIST, TestConfig.CODEC);
+
+        assertEquals(3, loaded.config().count());
+        assertEquals(DIST, Files.readString(folder.resolve("book.dist.yml")));
+        assertTrue(!Files.exists(folder.resolve(ModConfig.DIST_FILE)), "Wrote the main config's dist file");
     }
 
     @Test
     void writesTheDistFile() throws IOException {
-        ModConfig.load(folder, DIST, TestConfig.CODEC);
+        ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC);
 
         assertEquals(DIST, Files.readString(folder.resolve(ModConfig.DIST_FILE)));
     }
@@ -111,7 +122,7 @@ public class ModConfigTest {
     void replacesAnOutdatedDistFile() throws IOException {
         Files.writeString(folder.resolve(ModConfig.DIST_FILE), "name: outdated\n");
 
-        ModConfig.load(folder, DIST, TestConfig.CODEC);
+        ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC);
 
         assertEquals(DIST, Files.readString(folder.resolve(ModConfig.DIST_FILE)));
     }
@@ -123,7 +134,7 @@ public class ModConfigTest {
         final var modified = FileTime.fromMillis(0);
         Files.setLastModifiedTime(dist, modified);
 
-        ModConfig.load(folder, DIST, TestConfig.CODEC);
+        ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC);
 
         assertEquals(modified, Files.getLastModifiedTime(dist));
     }
@@ -133,7 +144,7 @@ public class ModConfigTest {
         // A folder where the dist file should be, so it can't be written
         Files.createDirectories(folder.resolve(ModConfig.DIST_FILE));
 
-        final var loaded = ModConfig.load(folder, DIST, TestConfig.CODEC);
+        final var loaded = ModConfig.load(folder, ModConfig.CONFIG, DIST, TestConfig.CODEC);
 
         assertEquals("default", loaded.config().name());
         assertTrue(loaded.distWriteFailure().isPresent(), "Didn't report the failure");

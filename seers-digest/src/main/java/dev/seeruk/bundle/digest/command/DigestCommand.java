@@ -11,7 +11,9 @@ import dev.seeruk.bundle.digest.DigestConfig;
 import dev.seeruk.bundle.digest.IssueSchedule;
 import dev.seeruk.bundle.digest.SeersDigest;
 import dev.seeruk.bundle.digest.api.Issue;
+import dev.seeruk.bundle.digest.book.BookConfig;
 import dev.seeruk.bundle.digest.book.DigestBooks;
+import dev.seeruk.bundle.digest.book.IssueDates;
 import dev.seeruk.bundle.text.TextParsers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,8 +21,6 @@ import net.minecraft.util.Prediction;
 
 import java.time.Clock;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -36,12 +36,15 @@ public final class DigestCommand {
     static final String NAME = "digest";
 
     private static final Predicate<CommandSourceStack> ADMIN = Commands.hasPermission(Commands.LEVEL_GAMEMASTERS);
-    private static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("d MMM", Locale.ROOT);
-    private static final DateTimeFormatter DAY_AND_YEAR = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ROOT);
 
     private DigestCommand() {}
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, DigestConfig config, Clock clock) {
+    public static void register(
+        CommandDispatcher<CommandSourceStack> dispatcher,
+        DigestConfig config,
+        BookConfig book,
+        Clock clock
+    ) {
         NamespacedCommands.register(
             dispatcher, SeersDigest.MOD_ID, NAME, name -> Commands.literal(name)
                 .requires(ADMIN)
@@ -50,11 +53,12 @@ public final class DigestCommand {
                 .then(Commands.literal("list")
                     .executes(CommandExecutors.logged(context -> list(context, clock))))
                 .then(Commands.literal("book")
-                    .executes(CommandExecutors.logged(context -> giveBook(context, config, Optional.empty())))
+                    .executes(CommandExecutors.logged(context -> giveBook(context, config, book, Optional.empty())))
                     .then(Commands.argument("number", IntegerArgumentType.integer(1))
                         .executes(CommandExecutors.logged(context -> giveBook(
                             context,
                             config,
+                            book,
                             Optional.of(IntegerArgumentType.getInteger(context, "number"))
                         )))))
         );
@@ -76,13 +80,18 @@ public final class DigestCommand {
     }
 
     // Gives the player running it the numbered issue's book, or the latest issue's
-    private static int giveBook(CommandContext<CommandSourceStack> context, DigestConfig config, Optional<Integer> number)
+    private static int giveBook(
+        CommandContext<CommandSourceStack> context,
+        DigestConfig config,
+        BookConfig book,
+        Optional<Integer> number
+    )
         throws CommandSyntaxException {
         final var source = context.getSource();
         final var player = source.getPlayerOrException();
-        final var issue = number.isPresent()
-            ? Archive.get(source.getServer(), number.get())
-            : Archive.latest(source.getServer());
+        final var issue = number
+            .map(found -> Archive.get(source.getServer(), found))
+            .orElseGet(() -> Archive.latest(source.getServer()));
 
         if (issue.isEmpty()) {
             return fail(
@@ -94,7 +103,7 @@ public final class DigestCommand {
 
         // Dropped at their feet if their inventory is full
         player.getInventory().placeItemBackInInventory(
-            DigestBooks.create(source.getServer(), config, issue.get()),
+            DigestBooks.create(source.getServer(), config, book, issue.get()),
             Prediction.SERVER_ONLY
         );
         return succeed(
@@ -118,12 +127,11 @@ public final class DigestCommand {
         return succeed(context.getSource(), TextParsers.parseAsTrusted(lines));
     }
 
-    // e.g. "#3: 16 Nov to 23 Nov 2026, 12 players (2 new)"
-    private static String describe(Issue issue, ZoneId zone) {
-        return "<gold>#%d</gold>: %s to %s, %d %s (%d new)".formatted(
+    // e.g. "#3: 16 to 23 Nov 2026, 12 players (2 new)"
+    static String describe(Issue issue, ZoneId zone) {
+        return "<gold>#%d</gold>: %s, %d %s (%d new)".formatted(
             issue.number(),
-            DAY.format(issue.started().atZone(zone)),
-            DAY_AND_YEAR.format(issue.ended().atZone(zone)),
+            IssueDates.between(issue.started(), issue.ended(), zone),
             issue.activePlayers().size(),
             issue.activePlayers().size() == 1 ? "player" : "players",
             issue.newPlayers().size()

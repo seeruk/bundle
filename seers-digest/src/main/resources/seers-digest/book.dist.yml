@@ -1,0 +1,204 @@
+# Seer's Digest book. To change it, copy a setting into book.yml in this folder. Anything that's
+# not in book.yml uses the default from this file. Setting sections in book.yml replaces the whole
+# list, so copy every section you want to keep.
+#
+# Text can be formatted with tags, e.g. <bold>, <dark_green>, or <gray>. Colours too light for the
+# book's page are darkened, keeping their hue, so names coloured for chat stay readable.
+#
+# Placeholders like ${issue.number} are filled in for each issue. Every template can use:
+#   ${title} and ${author}: as set below.
+#   ${issue.number}: which issue it is, from 1.
+#   ${issue.dates}: the days it covers, e.g. 16 to 23 Nov 2026, or 23 Nov 2026 for one day.
+#   ${issue.from} and ${issue.to}: when it started and was published, as date_format says.
+#   ${issue.period}: Daily, Weekly, or Monthly, from the schedule in config.yml.
+#   ${issue.active} and ${issue.new}: how many players were active, and how many were new.
+#   ${issue.deaths}, ${issue.advancements}, and ${issue.firsts}: how many of each there were.
+#   For each group in config.yml, e.g. miner:
+#     ${miner.total}: everyone's total, in the group's unit.
+#     ${miner.players}: how many players scored.
+#     ${miner.leader} and ${miner.leader.value}: who scored the most, and how much.
+#
+# Placeholders can be followed by filters, each after a |, e.g. ${played.total|minutes}:
+#   plural:<word>: the number then the word, plural unless it's 1, e.g. plural:player for
+#     "1 player" or "3 players". For irregular plurals, plural:<word>:<plural>, e.g.
+#     plural:person:people.
+#   round:<places>: shown to that many decimal places.
+#   blocks or km: a distance shown in blocks or kilometres.
+#   minutes, hours, or days: a time shown in that unit.
+#
+# Most things have several ways of being written, as a list. One is picked for each issue from those
+# that read well, and is picked the same way every time the issue's book is made. A way doesn't read
+# well if one of its placeholders has no value (e.g. there's no leader), or shows a number that's
+# more than 0 as 0 (e.g. 0.0 km). If no way reads well, it's left out, and so is a section with
+# nothing left to say.
+
+# The book's name, shown on the item. At most 32 characters.
+title: "Seer's Digest"
+
+# Who the book is by, shown in its tooltip and on the cover.
+author: "The Editors"
+
+# How ${issue.from} and ${issue.to} are shown, as a Java date pattern, e.g. "d MMM yyyy" for
+# 23 Nov 2026. ${issue.dates} always uses its own format.
+date_format: "d MMM yyyy"
+
+# The cover page.
+#   align: left, or centre to centre each line, like the front of a signed book.
+#   template: what it says.
+cover:
+  align: centre
+  template: |-
+
+
+    <bold>${title}</bold>
+    <gray>by ${author}</gray>
+
+
+
+    ${issue.period} issue #${issue.number}
+
+    ${issue.dates}
+
+# The contents page, after the cover, with an entry for each section that goes to it when clicked.
+#   title: the page's title.
+#   entry: each section's entry, with ${section} for its title, and ${page} for its first page.
+#   hover: shown when an entry is hovered, with ${page}.
+contents:
+  title: "<bold>Contents</bold>"
+  entry: "${section} - ${page}"
+  hover: "Go to page ${page}"
+
+# Added to a section's title on each page it carries on to, in the title's style.
+continued: " (cont.)"
+
+# The book's sections, in order, each starting on a new page. Each has:
+#   id: names it, so its writing is picked the same way however the sections are ordered.
+#   title: shown at the top of the section, on each page it carries on to (with continued, above),
+#     and in the contents.
+#   max_pages: the most pages it takes, which leaves out what doesn't fit (the default, 0, has no
+#     limit).
+#
+# A fixed section has:
+#   entries: what it says, each a list of ways of writing it.
+#
+# A list section has an entry for each item of a list, or of a group's ranking:
+#   list: which list, from those below.
+#   ranking: or instead, a group from config.yml, for its players, highest first. Each entry can
+#     use ${rank}, ${player}, and ${value}.
+#   limit: the most items it shows (the default, 0, has no limit).
+#   intro: what it says before the items, if anything.
+#   entry: how each item is written.
+#   more: what it says after the items, if any were left out by limit or max_pages.
+#   Its intro, entries, and more can use ${count}, how many items there are, and its more can use
+#   ${more}, how many were left out.
+#
+# The lists, and what each item's entry can use:
+#   deaths: each player death, oldest first. ${player}, ${cause}, and ${killer} (if something
+#     killed them).
+#   advancements: each advancement the game announced, oldest first. ${player} and ${advancement}.
+#   firsts: each thing done for the first time on the server, oldest first. ${player} and ${what}.
+#   new_players: each player new this issue. ${player}.
+#   leaders: each group's leader, in config.yml's order, for groups anyone scored in. ${group},
+#     ${player}, and ${value}. Its entry can be written for each group, by the group's ID, with a
+#     default for the rest.
+sections:
+- id: headlines
+  title: "<dark_green><bold>Headlines</bold></dark_green>"
+  entries:
+  - - "${issue.active|plural:player} played for ${played.total|plural:hour}"
+    - "${played.total|plural:hour} were played by ${issue.active|plural:player}"
+  - - "${issue.new|plural:new player:new players} joined"
+  - - "${miner.total|plural:block} were mined"
+    - "Everyone dug through ${miner.total|plural:block}"
+  - - "${explorer.total|plural:block} were travelled"
+    - "Everyone travelled ${explorer.total|km|plural:kilometre}"
+  - - "${issue.deaths|plural:death} were had"
+    - "Players died ${issue.deaths|plural:time}"
+
+- id: spotlight
+  title: "<dark_blue><bold>Spotlight</bold></dark_blue>"
+  list: leaders
+  max_pages: 2
+  entry:
+    played:
+    - "<bold>Most played</bold>\n${player} played for ${value|plural:hour}"
+    miner:
+    - "<bold>Miner</bold>\n${player} dug through ${value|plural:block}"
+    - "<bold>Miner</bold>\n${player} mined ${value|plural:block}"
+    explorer:
+    - "<bold>Explorer</bold>\n${player} travelled ${value|plural:block}"
+    - "<bold>Explorer</bold>\n${player} covered ${value|km|plural:kilometre}"
+    slayer:
+    - "<bold>Slayer</bold>\n${player} defeated ${value|plural:mob}"
+    deaths:
+    - "<bold>Most unlucky</bold>\n${player} died ${value|plural:time}"
+    farmer:
+    - "<bold>Farmer</bold>\n${player} harvested and bred ${value|plural:time}"
+    trader:
+    - "<bold>Trader</bold>\n${player} traded with villagers ${value|plural:time}"
+    angler:
+    - "<bold>Angler</bold>\n${player} caught ${value|plural:fish:fish}"
+    night_owl:
+    - "<bold>Night owl</bold>\n${player} played through the night for ${value|plural:hour}"
+    nether_visits:
+    - "<bold>Nether explorer</bold>\n${player} went to the Nether ${value|plural:time}"
+    end_visits:
+    - "<bold>End explorer</bold>\n${player} went to the End ${value|plural:time}"
+    chat:
+    - "<bold>Chatterbox</bold>\n${player} sent ${value|plural:message}"
+    default:
+    - "<bold>${group}</bold>\n${player}: ${value}"
+
+- id: most_active
+  title: "<dark_blue><bold>Most active</bold></dark_blue>"
+  ranking: played
+  limit: 5
+  intro:
+  - "Who played the most since the last issue:"
+  entry:
+  - "${rank}. ${player}, ${value|plural:hour}"
+
+- id: deaths
+  title: "<dark_red><bold>Deaths</bold></dark_red>"
+  list: deaths
+  max_pages: 3
+  intro:
+  - "${count|plural:death} since the last issue"
+  entry:
+  - "${player} died to ${cause}"
+  - "${player} was killed by ${killer}"
+  more:
+  - "<dark_gray>…and ${more} more</dark_gray>"
+
+- id: advancements
+  title: "<dark_purple><bold>Advancements</bold></dark_purple>"
+  list: advancements
+  max_pages: 3
+  intro:
+  - "${count|plural:advancement} earned since the last issue"
+  entry:
+  - "${player} earned ${advancement}"
+  more:
+  - "<dark_gray>…and ${more} more</dark_gray>"
+
+- id: firsts
+  title: "<dark_aqua><bold>Firsts</bold></dark_aqua>"
+  list: firsts
+  max_pages: 3
+  intro:
+  - "Done for the first time on the server:"
+  entry:
+  - "${player}: ${what}"
+  more:
+  - "<dark_gray>…and ${more} more</dark_gray>"
+
+- id: welcome
+  title: "<dark_green><bold>Welcome</bold></dark_green>"
+  list: new_players
+  max_pages: 1
+  intro:
+  - "Say hello to our ${count|plural:new player:new players}:"
+  entry:
+  - "${player}"
+  more:
+  - "<dark_gray>…and ${more} more</dark_gray>"

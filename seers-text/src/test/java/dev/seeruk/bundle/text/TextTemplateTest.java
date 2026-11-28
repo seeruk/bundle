@@ -8,6 +8,7 @@ import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,6 +78,23 @@ public class TextTemplateTest {
     @Test
     void leavesPlaceholdersWithoutValuesAsWritten() {
         assertEquals("${other} is now AFK", TextTemplate.parse("${other} is now AFK").format(Map.of()).getString());
+    }
+
+    @Test
+    void listsItsPlaceholdersInOrder() {
+        final var template = TextTemplate.parse("<gold>${player}</gold> mined ${miner.total|plural:block}");
+
+        assertEquals(List.of("player", "miner.total|plural:block"), template.placeholders());
+    }
+
+    @Test
+    void fillsInPlaceholdersNamedWithFilters() {
+        final var template = TextTemplate.parse("${miner.total|plural:block:blocks}");
+
+        assertEquals(
+            "4 blocks",
+            template.format(Map.of("miner.total|plural:block:blocks", Component.literal("4 blocks"))).getString()
+        );
     }
 
     @Test

@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -207,6 +208,33 @@ public class TextComponentsTest {
                 expected,
                 TextComponents.wrapToWidth(line, maxWidth).stream().map(TextChunks::chunks).toList()
             );
+        }
+    }
+
+    @Nested
+    class Centre {
+        // Most letters are 6 pixels wide, and a space is 4
+        static Stream<Arguments> shouldCentre() {
+            return Stream.of(
+                Arguments.of("Pads both sides evenly", "aa", 44, "    aa"),
+                Arguments.of("Rounds down to whole spaces", "aa", 46, "    aa"),
+                Arguments.of("Leaves a line as wide as the width as it is", "aaaaa", 30, "aaaaa"),
+                Arguments.of("Leaves a line wider than the width as it is", "aaaaaa", 30, "aaaaaa"),
+                Arguments.of("Leaves an empty line as it is", "", 30, "")
+            );
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource
+        void shouldCentre(final String description, final String line, final int width, final String expected) {
+            assertEquals(expected, TextComponents.centre(Component.literal(line), width).getString());
+        }
+
+        @Test
+        void keepsTheLinesStyle() {
+            final var centred = TextComponents.centre(literal("aa", RED), 44);
+
+            assertEquals(List.of(chunk("    ", Style.EMPTY), chunk("aa", RED)), TextChunks.chunks(centred));
         }
     }
 

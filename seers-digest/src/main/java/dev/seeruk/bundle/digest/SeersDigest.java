@@ -1,8 +1,12 @@
 package dev.seeruk.bundle.digest;
 
 import dev.seeruk.bundle.core.api.PlayerEvents;
+import dev.seeruk.bundle.core.config.ConfigException;
 import dev.seeruk.bundle.core.config.ModConfig;
 import dev.seeruk.bundle.core.stats.AllPlayerStats;
+import dev.seeruk.bundle.digest.api.DigestEvents;
+import dev.seeruk.bundle.digest.book.BookConfig;
+import dev.seeruk.bundle.digest.book.DigestBooks;
 import dev.seeruk.bundle.digest.command.DigestCommand;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -22,6 +26,9 @@ public class SeersDigest implements ModInitializer {
     public static final String MOD_ID = "seers-digest";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+    // What the book says, in book.yml
+    private static final String BOOK = "book";
+
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
@@ -29,10 +36,15 @@ public class SeersDigest implements ModInitializer {
     @Override
     public void onInitialize() {
         final var config = ModConfig.load(MOD_ID, DigestConfig.CODEC);
+        final var book = ModConfig.load(MOD_ID, BOOK, BookConfig.CODEC);
+        final var unknownGroups = book.unknownGroups(config.groups().stream().map(DigestConfig.StatGroup::id).toList());
+        if (!unknownGroups.isEmpty()) {
+            throw new ConfigException("The book names groups that aren't in the config: " + String.join(", ", unknownGroups));
+        }
         final var clock = Clock.system(config.timezone());
 
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
-            DigestCommand.register(dispatcher, config, clock));
+            DigestCommand.register(dispatcher, config, book, clock));
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             config.groups().forEach(group -> AllPlayerStats.unknownNames(server, group.stats()).forEach(name ->
@@ -50,6 +62,8 @@ public class SeersDigest implements ModInitializer {
                 DigestStats.recordNightSecond(server, config.nightHours(), clock);
             }
         });
+
+        DigestEvents.PUBLISHED.register((server, issue) -> DigestBooks.warnIfTooLong(server, config, book, issue));
 
         // Handle events Digest tracks on its own
         PlayerEvents.ADVANCEMENT_MESSAGE.register((player, advancement, message) ->

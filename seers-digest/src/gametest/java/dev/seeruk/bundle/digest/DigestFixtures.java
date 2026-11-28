@@ -1,12 +1,13 @@
 package dev.seeruk.bundle.digest;
 
+import dev.seeruk.bundle.core.config.TestConfigs;
 import dev.seeruk.bundle.core.stats.StatSelection;
 import dev.seeruk.bundle.core.stats.StatUnit;
 import dev.seeruk.bundle.core.testing.EventLog;
 import dev.seeruk.bundle.digest.DigestConfig.StatGroup;
 import dev.seeruk.bundle.digest.api.DigestEvents;
 import dev.seeruk.bundle.digest.api.Issue;
-import dev.seeruk.bundle.text.TextTemplate;
+import dev.seeruk.bundle.digest.book.BookConfig;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.world.scores.Objective;
 
@@ -40,21 +41,46 @@ public final class DigestFixtures implements ModInitializer {
 
     /**
      * A config whose issues are published every day at 18:00 (see {@code TestTimes.DAILY}), with
-     * one group, called {@code test}, adding up the given objective's scores, and a book whose
-     * cover is every cover variable on one line.
+     * one group, called {@code test}, adding up the given objective's scores.
      */
     public static DigestConfig config(Objective objective) {
         return new DigestConfig(
             ZoneOffset.UTC,
             DAILY,
             new NightHours(LocalTime.MIDNIGHT, LocalTime.of(6, 0)),
-            List.of(new StatGroup("test", StatSelection.of(List.of("scoreboard:" + objective.getName())), StatUnit.COUNT)),
-            new DigestConfig.Book(
-                "Test Digest",
-                "Tests",
-                "d MMM yyyy",
-                TextTemplate.parse("${title} ${period} #${number}: ${from} to ${to}")
-            )
+            List.of(new StatGroup("test", StatSelection.of(List.of("scoreboard:" + objective.getName())), StatUnit.COUNT))
         );
+    }
+
+    /**
+     * A book whose cover is its title, period, number, and dates on one line, with a Headlines
+     * section, a Deaths section with an entry per death, and a Welcome section with an entry per
+     * new player, none of them with a page limit.
+     */
+    public static BookConfig book() {
+        return TestConfigs.parse("""
+            title: "Test Digest"
+            author: "Tests"
+            date_format: "d MMM yyyy"
+            cover:
+              template: "${title} ${issue.period} #${issue.number}: ${issue.dates}"
+            contents:
+              title: "Contents"
+              entry: "${section} - ${page}"
+              hover: "Go to page ${page}"
+            continued: " (cont.)"
+            sections:
+            - id: headlines
+              title: "Headlines"
+              entries: [["${issue.active|plural:player} played"]]
+            - id: deaths
+              title: "Deaths"
+              list: deaths
+              entry: ["${player} died to ${cause}"]
+            - id: welcome
+              title: "Welcome"
+              list: new_players
+              entry: ["Welcome, ${player}!"]
+            """, BookConfig.CODEC);
     }
 }

@@ -2,6 +2,8 @@ package dev.seeruk.bundle.digest;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JavaOps;
+import dev.seeruk.bundle.core.config.DistConfigs;
+import dev.seeruk.bundle.core.config.ModConfig;
 import dev.seeruk.bundle.core.stats.StatUnit;
 import dev.seeruk.bundle.core.time.Schedule;
 import org.junit.jupiter.api.Test;
@@ -13,26 +15,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DigestConfigTest {
     private static final Map<String, Object> SCHEDULE = Map.of("every", "week", "on", "sunday", "at", "18:00");
     private static final Map<String, Object> NIGHT = Map.of("from", "22:00", "to", "04:00");
-    private static final Map<String, Object> BOOK = Map.of(
-        "title", "Seer's Digest",
-        "author", "The Editors",
-        "date_format", "d MMM yyyy",
-        "cover", "${title}"
-    );
 
     // A config with everything it needs, with the given settings replacing those
     private static DataResult<DigestConfig> parse(Map<String, Object> settings) {
         final var config = new HashMap<String, Object>(Map.of(
             "schedule", SCHEDULE,
             "night_hours", NIGHT,
-            "groups", List.of(),
-            "book", BOOK
+            "groups", List.of()
         ));
         config.putAll(settings);
         return DigestConfig.CODEC.parse(JavaOps.INSTANCE, config);
@@ -42,10 +38,9 @@ public class DigestConfigTest {
         return Map.of("id", id, "stats", List.of("minecraft.mined:*"));
     }
 
-    private static Map<String, Object> book(String key, String value) {
-        final var book = new HashMap<>(BOOK);
-        book.put(key, value);
-        return Map.of("book", book);
+    @Test
+    void readsTheShippedConfig() {
+        assertDoesNotThrow(() -> DistConfigs.read(SeersDigest.MOD_ID, ModConfig.CONFIG, DigestConfig.CODEC));
     }
 
     @Test
@@ -59,10 +54,6 @@ public class DigestConfigTest {
         assertEquals(Schedule.weekly(DayOfWeek.SUNDAY, LocalTime.of(18, 0)), config.schedule());
         assertEquals(new NightHours(LocalTime.of(22, 0), LocalTime.of(4, 0)), config.nightHours());
         assertEquals(List.of("miner"), config.groups().stream().map(DigestConfig.StatGroup::id).toList());
-        assertEquals("Seer's Digest", config.book().title());
-        assertEquals("The Editors", config.book().author());
-        assertEquals("d MMM yyyy", config.book().dateFormat());
-        assertEquals("${title}", config.book().cover().template());
     }
 
     @Test
@@ -107,13 +98,10 @@ public class DigestConfigTest {
     }
 
     @Test
-    void refusesBookTitlesLongerThanVanillaAllows() {
-        assertTrue(parse(book("title", "a".repeat(32))).isSuccess());
-        assertTrue(parse(book("title", "a".repeat(33))).isError());
-    }
-
-    @Test
-    void refusesDateFormatsThatAreNotDateFormats() {
-        assertTrue(parse(book("date_format", "d MMM {")).isError());
+    void refusesGroupIdsTheBookUses() {
+        // Templates use issue for the issue's own values (e.g. ${issue.number}), and Spotlight uses
+        // default for groups without their own wording
+        assertTrue(parse(Map.of("groups", List.of(group("issue")))).isError());
+        assertTrue(parse(Map.of("groups", List.of(group("default")))).isError());
     }
 }
